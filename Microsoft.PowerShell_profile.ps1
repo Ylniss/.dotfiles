@@ -23,8 +23,15 @@ function dwn()
     Set-Location $dwn
 }
 
-function symlink ($target, $link) {
-    New-Item -Path $link -ItemType SymbolicLink -Value $target
+function ntpd()
+{
+    param([string] $path)
+    start notepad++ $path
+}
+
+function symlink () {
+    param([string] $source, [string] $target)
+    New-Item -Path $source -ItemType SymbolicLink -Value $target
 }
 
 oh-my-posh init pwsh | Invoke-Expression
