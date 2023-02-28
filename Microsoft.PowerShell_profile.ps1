@@ -25,7 +25,13 @@ function dwn()
 
 function e()
 {
-    explorer .
+	param([string] $path)
+	if($path) {
+		explorer $path
+	} else {
+		explorer .
+	}
+
 }
 
 function ntpd()
