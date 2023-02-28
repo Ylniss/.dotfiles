@@ -23,6 +23,11 @@ function dwn()
     Set-Location $dwn
 }
 
+function e()
+{
+    explorer .
+}
+
 function ntpd()
 {
     param([string] $path)
