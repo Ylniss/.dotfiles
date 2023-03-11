@@ -1,6 +1,6 @@
-$repo = "C:/Repo/"
+$repo = "~/Stuff/Repo/"
 $games = "C:/Games/"
-$dwn = "C:/Downloads/"
+$dwn = "~/Stuff/Downloads/"
 
 function fnd()
 {
