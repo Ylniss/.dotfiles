@@ -40,6 +40,15 @@ function ntpd()
     start notepad++ $path
 }
 
+function cnc()
+{
+	$originalPath = Get-Location
+	start "C:\Program Files (x86)\Red Alert 2 Blitz Autoclicker\autoclicker.exe"
+	Set-Location "C:\Games\Command and Conquer Red Alert II"
+	start CnCNetYRLauncher.exe
+	Set-Location $originalPath
+}
+
 function symlink () {
     param([string] $source, [string] $target)
     New-Item -Path $source -ItemType SymbolicLink -Value $target
