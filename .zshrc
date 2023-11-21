@@ -37,7 +37,7 @@ zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
 # ------------- my cli functions  -------------  
-repo_dir=/mnt/c/repo #change to your repo path
+repo_dir=/mnt/c/users/zupqa/stuff/repo #change to your repo path
 
 repo() {
   cd $repo_dir
@@ -45,6 +45,10 @@ repo() {
 
 fnd() {
   find $1 -name $2 2>/dev/null
+}
+
+ntpd() {
+  /mnt/c/Program\ Files/Notepad++/Notepad++.exe $1
 }
 
 # oh-my-posh init
