@@ -43,10 +43,44 @@ function ntpd()
 function cnc()
 {
 	$originalPath = Get-Location
-	start "C:\Program Files (x86)\Red Alert 2 Blitz Autoclicker\autoclicker.exe"
-	Set-Location "C:\Games\Command and Conquer Red Alert II"
+	start "$env:ProgramFiles (x86)\Red Alert 2 Blitz Autoclicker\autoclicker.exe"
+	Set-Location "$games\Command and Conquer Red Alert II"
 	start CnCNetYRLauncher.exe
 	Set-Location $originalPath
+}
+
+function dev {
+    param (
+        [switch]$f
+    )
+
+    $riderPath = Get-ChildItem -Path "$env:ProgramFiles\JetBrains\*Rider *\bin\rider*.exe" -File | Select-Object -First 1 -ExpandProperty FullName
+    $dataGripPath = Get-ChildItem -Path "$env:ProgramFiles (x86)\JetBrains\*DataGrip *\bin\datagrip*.exe" -File | Select-Object -First 1 -ExpandProperty FullName
+	$webStormPath = Get-ChildItem -Path "$env:ProgramFiles (x86)\JetBrains\*WebStorm *\bin\webstorm*.exe" -File | Select-Object -First 1 -ExpandProperty FullName
+    
+    $dockerDesktopPath = "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe"
+    $githubDesktopPath = "~\AppData\Local\GitHubDesktop\GitHubDesktop.exe"
+    $postmanPath = "~\AppData\Local\Postman\Postman.exe"
+
+    foreach ($app in @(
+        @{Path = $riderPath; Name = "JetBrains Rider"},
+        @{Path = $dataGripPath; Name = "JetBrains DataGrip"},
+        @{Path = $dockerDesktopPath; Name = "Docker Desktop"},
+        @{Path = $githubDesktopPath; Name = "GitHub Desktop"},
+        @{Path = $postmanPath; Name = "Postman"}
+    )) {
+        if ($app.Path -and (Test-Path $app.Path)) {
+            start $app.Path
+        } else {
+            Write-Host "$($app.Name) not found at $($app.Path)"
+        }
+    }
+
+    if ($f -and $webStormPath -and (Test-Path $webStormPath)) {
+        start $webStormPath
+    } elseif ($f) {
+        Write-Host "JetBrains WebStorm not found."
+    }
 }
 
 function symlink () {
@@ -55,11 +89,7 @@ function symlink () {
 }
 
 oh-my-posh init pwsh | Invoke-Expression
-# Import the Chocolatey Profile that contains the necessary code to enable
-# tab-completions to function for `choco`.
-# Be aware that if you are missing these lines from your profile, tab completion
-# for `choco` will not function.
-# See https://ch0.co/tab-completion for details.
+
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile))
 {
