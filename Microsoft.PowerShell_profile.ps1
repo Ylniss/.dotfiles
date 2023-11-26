@@ -9,7 +9,7 @@ $downloadsPath = "~/Downloads/"
 function FindDirOrFileName()
 {
     param([string]$path, [string]$dirOrFileName)
-    Get-Childitem -Path "$path" -Include *$dirOrFileName* -Recurse -ErrorAction SilentlyContinue
+	Get-Childitem -Path "$path" -Include *$dirOrFileName* -Recurse -ErrorAction SilentlyContinue
 }
 
 function ChangeDirToRepo()
@@ -104,6 +104,17 @@ function GitAddAll
 	}
 }
 
+function GitDiff {
+    param(
+        [Switch]$staged
+    )
+    if ($staged) {
+        git diff --staged
+    } else {
+        git diff
+    }
+}
+
 function GitCommitMessage 
 { 
 	param($message); 
@@ -119,6 +130,7 @@ Set-Alias -Name ntpd -Value OpenWithNotepad
 Set-Alias -Name dev  -Value StartDevTools
 Set-Alias -Name gits -Value GitStatus
 Set-Alias -Name gita -Value GitAddAll
+Set-Alias -Name gitd -Value GitDiff
 Set-Alias -Name gitc -Value GitCommitMessage
 Set-Alias -Name gitp -Value GitPushOrigin
 
