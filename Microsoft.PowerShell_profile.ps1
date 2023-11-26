@@ -1,29 +1,33 @@
-$repo = "~/Stuff/Repo/"
-$games = "C:/Games/"
-$dwn = "~/Stuff/Downloads/"
+$repoPath = "~/Stuff/Repo/"
+$gamesPath = "C:/Games/"
+$downloadsPath = "~/Downloads/"
 
-function fnd()
+# --------------------------------
+#           NAVIGATION
+# --------------------------------
+
+function FindDirOrFileName()
 {
     param([string]$path, [string]$dirOrFileName)
     Get-Childitem -Path "$path" -Include *$dirOrFileName* -Recurse -ErrorAction SilentlyContinue
 }
 
-function repo()
+function ChangeDirToRepo()
 {
-    Set-Location $repo
+    Set-Location $repoPath
 }
 
-function games()
+function ChangeDirToGames()
 {
-    Set-Location $games
+    Set-Location $gamesPath
 }
 
-function dwn()
+function ChangeDirToDownloads()
 {
-    Set-Location $dwn
+    Set-Location $downloadsPath
 }
 
-function e()
+function OpenExplorer()
 {
 	param([string] $path)
 	if($path) {
@@ -31,25 +35,26 @@ function e()
 	} else {
 		explorer .
 	}
-
 }
 
-function ntpd()
+Set-Alias -Name fnd   -Value FindDirOrFileName
+Set-Alias -Name repo  -Value ChangeDirToRepo
+Set-Alias -Name games -Value ChangeDirToGames
+Set-Alias -Name dwn   -Value ChangeDirToDownloads
+Set-Alias -Name e     -Value OpenExplorer
+
+
+# --------------------------------
+#           DEVELOPMENT
+# --------------------------------
+
+function OpenWithNotepad()
 {
     param([string] $path)
     start notepad++ $path
 }
 
-function cnc()
-{
-	$originalPath = Get-Location
-	start "$env:ProgramFiles (x86)\Red Alert 2 Blitz Autoclicker\autoclicker.exe"
-	Set-Location "$games\Command and Conquer Red Alert II"
-	start CnCNetYRLauncher.exe
-	Set-Location $originalPath
-}
-
-function dev {
+function StartDevTools {
     param (
         [switch]$f
     )
@@ -82,6 +87,60 @@ function dev {
         Write-Host "JetBrains WebStorm not found."
     }
 }
+
+function GitStatus 
+{ 
+	git status 
+}
+
+function GitAddAll 
+{ 
+	param([string] $path)
+	
+	if($path) {
+		git add $path
+	} else {
+		git add .
+	}
+}
+
+function GitCommitMessage 
+{ 
+	param($message); 
+	git commit -m $message 
+}
+
+function GitPushOrigin 
+{ 
+	git push -u origin
+}
+
+Set-Alias -Name ntpd -Value OpenWithNotepad
+Set-Alias -Name dev  -Value StartDevTools
+Set-Alias -Name gits -Value GitStatus
+Set-Alias -Name gita -Value GitAddAll
+Set-Alias -Name gitc -Value GitCommitMessage
+Set-Alias -Name gitp -Value GitPushOrigin
+
+
+# --------------------------------
+#             GAMES
+# --------------------------------
+
+function StartRa2WithAutoClicker()
+{
+	$originalPath = Get-Location
+	start "$env:ProgramFiles (x86)\Red Alert 2 Blitz Autoclicker\autoclicker.exe"
+	Set-Location "$gamesPath\Command and Conquer Red Alert II"
+	start CnCNetYRLauncher.exe
+	Set-Location $originalPath
+}
+Set-Alias -Name ra2 -Value StartRa2WithAutoClicker
+
+
+# --------------------------------
+#             SYSTEM
+# --------------------------------
 
 function symlink () {
     param([string] $source, [string] $target)
