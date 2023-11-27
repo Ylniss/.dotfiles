@@ -105,14 +105,22 @@ function GitAddAll
 }
 
 function GitDiff {
-    param(
-        [Switch]$staged
-    )
-    if ($staged) {
-        git diff --staged
-    } else {
-        git diff
-    }
+	
+	$gitDiffOutput = git diff
+
+    if (![string]::IsNullOrWhiteSpace($gitDiffOutput))
+	{
+		Write-Host "Unstaged Changes:" -ForegroundColor Red
+		git diff
+    } 
+	
+	$gitDiffStagedOutput = git diff --staged
+	
+	if (![string]::IsNullOrWhiteSpace($gitDiffStagedOutput))
+	{
+		Write-Host "Staged Changes:" -ForegroundColor Green
+		git diff --staged
+    }  
 }
 
 function GitCommitMessage 
