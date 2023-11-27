@@ -88,6 +88,8 @@ function StartDevTools {
     }
 }
 
+# ----- GIT -----
+
 function GitStatus 
 { 
 	git status 
@@ -134,14 +136,30 @@ function GitPushOrigin
 	git push -u origin
 }
 
+# ----- DOCKER -----
+
+function DockerComposeUp 
+{ 
+	docker compose up
+}
+
+function DockerComposeUpBuild
+{ 
+	docker compose up --build
+}
+
+
 Set-Alias -Name ntpd -Value OpenWithNotepad
 Set-Alias -Name dev  -Value StartDevTools
+
 Set-Alias -Name gits -Value GitStatus
 Set-Alias -Name gita -Value GitAddAll
 Set-Alias -Name gitd -Value GitDiff
 Set-Alias -Name gitc -Value GitCommitMessage
 Set-Alias -Name gitp -Value GitPushOrigin
 
+Set-Alias -Name dckrcu -Value DockerComposeUp
+Set-Alias -Name dckrcub -Value DockerComposeUpBuild
 
 # --------------------------------
 #             GAMES
