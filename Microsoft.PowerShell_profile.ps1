@@ -132,7 +132,14 @@ function GitCommitMessage {
 }
 
 function GitPushOrigin { 
-	git push -u origin
+	param($branchName); 
+	
+	if($branchName) {
+		git push -u origin $branchName
+	}
+	else {
+		git push -u origin
+	}
 }
 
 function GitBranch { 
@@ -168,6 +175,10 @@ function GitBranchCheckout {
     git checkout $newBranchName
 }
 
+function ShowGitGraph {
+	git log --all --decorate --oneline --graph --pretty=format:'%C(auto)%h %<(12,trunc)%an %<(16,trunc)%ar %s %d'
+}
+
 # ----- DOCKER -----
 
 function DockerComposeUp { 
@@ -189,6 +200,7 @@ Set-Alias -Name gitp -Value GitPushOrigin
 Set-Alias -Name gitb -Value GitBranch
 Set-Alias -Name gitch -Value GitCheckout
 Set-Alias -Name gitbch -Value GitBranchCheckout
+Set-Alias -Name gitg -Value ShowGitGraph
 
 Set-Alias -Name dckrcu  -Value DockerComposeUp
 Set-Alias -Name dckrcub -Value DockerComposeUpBuild
