@@ -179,6 +179,31 @@ function ShowGitGraph {
 	git log --all --decorate --oneline --graph --pretty=format:'%C(auto)%h %<(12,trunc)%an %<(16,trunc)%ar %s %d'
 }
 
+function CheckGitRepos {
+    $repos = Get-ChildItem -Path $repoPath -Directory -Recurse | Where-Object { Test-Path "$($_.FullName)/.git" }
+
+	Write-Host "Checking repositories:"
+
+    foreach ($repo in $repos) {
+        $repoName = Split-Path $repo.FullName -Leaf
+        Write-Host "`n$repoName" -NoNewline -ForegroundColor Cyan
+
+        Push-Location -Path $repo.FullName
+
+        $uncommitted = git status --porcelain
+        if ($uncommitted) {
+            Write-Host " - Uncommitted changes " -ForegroundColor Yellow -NoNewline
+        }
+
+        $unpushed = git cherry -v
+        if ($unpushed) {
+            Write-Host " - Unpushed commits " -ForegroundColor Red -NoNewline
+        }
+
+        Pop-Location
+    }
+}
+
 # ----- DOCKER -----
 
 function DockerComposeUp { 
@@ -201,6 +226,7 @@ Set-Alias -Name gitb -Value GitBranch
 Set-Alias -Name gitch -Value GitCheckout
 Set-Alias -Name gitbch -Value GitBranchCheckout
 Set-Alias -Name gitg -Value ShowGitGraph
+Set-Alias -Name repogits -Value CheckGitRepos
 
 Set-Alias -Name dckrcu  -Value DockerComposeUp
 Set-Alias -Name dckrcub -Value DockerComposeUpBuild
