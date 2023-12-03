@@ -175,6 +175,29 @@ function GitBranchCheckout {
     git checkout $newBranchName
 }
 
+function SafeGitRebase {
+    param(
+        [Parameter(Mandatory=$true)] [string]$targetBranch
+    )
+
+    $currentBranch = git rev-parse --abbrev-ref HEAD
+
+    if ($currentBranch -eq $targetBranch) {
+        Write-Host "Already on the branch '$targetBranch'. Please switch to the branch you want to rebase." -ForegroundColor Red
+        return
+    }
+
+    git checkout $targetBranch
+    git pull
+
+    git checkout $currentBranch
+    git rebase $targetBranch
+
+    git checkout $currentBranch
+
+    Write-Host "Rebase of '$currentBranch' onto '$targetBranch' completed." -ForegroundColor Green
+}
+
 function ShowGitGraph {
 	git log --all --decorate --oneline --graph --pretty=format:'%C(auto)%h %<(12,trunc)%an %<(16,trunc)%ar %s %d'
 }
@@ -226,10 +249,11 @@ Set-Alias -Name gitb -Value GitBranch
 Set-Alias -Name gitch -Value GitCheckout
 Set-Alias -Name gitbch -Value GitBranchCheckout
 Set-Alias -Name gitg -Value ShowGitGraph
+Set-Alias -Name gitreb -Value SafeGitRebase
 Set-Alias -Name repogits -Value CheckGitRepos
 
-Set-Alias -Name dckrcu  -Value DockerComposeUp
-Set-Alias -Name dckrcub -Value DockerComposeUpBuild
+Set-Alias -Name dockercu  -Value DockerComposeUp
+Set-Alias -Name dockercub -Value DockerComposeUpBuild
 
 
 # --------------------------------
