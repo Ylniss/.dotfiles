@@ -4,13 +4,28 @@
 " Find more examples here: https://jb.gg/share-ideavimrc
 let mapleader = " "
 
+" Move to the first character in line
 map Z ^
+
+" Move to the end of line
 map X $
+
+" Jump to matching bracket
 map <C-B> %
+
+" Move down by 1 paragraph
 map <C-J> }
+
+" Move up by 1 paragraph
 map <C-K> {
+
+" Move right by 1 word
 map <C-L> w
+
+" Move left by 1 word
 map <C-H> b
+
+" Go into definition
 map <C-G> <C-]>
 
 set relativenumber number
