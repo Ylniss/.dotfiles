@@ -147,7 +147,7 @@ function GitBranch {
         [Parameter(Mandatory=$false)] [string]$newBranchName,
         [Parameter(Mandatory=$false)] [switch]$a, # list all branches
         [Parameter(Mandatory=$false)] [switch]$d, # delete branch
-		[Parameter(Mandatory=$false)] [string]$branchNameToDelete
+	[Parameter(Mandatory=$false)] [string]$branchNameToDelete
     )
 
     if ($a) {
@@ -274,7 +274,9 @@ Set-Alias -Name ra2 -Value StartRa2WithAutoClicker
 #             SYSTEM
 # --------------------------------
 
-function symlink () {
+function symlink () { 
+    # source is symbolic link itself 
+    # target is original file that will be linked
     param([string] $source, [string] $target)
     New-Item -Path $source -ItemType SymbolicLink -Value $target
 }
