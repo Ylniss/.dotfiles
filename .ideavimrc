@@ -2,6 +2,7 @@
 "  the same commands as the original .vimrc configuration.
 " You can find a list of commands here: https://jb.gg/h38q75
 " Find more examples here: https://jb.gg/share-ideavimrc
+
 let mapleader = " "
 
 " Move to the first character in line
@@ -28,17 +29,17 @@ map <C-H> b
 " Go into definition
 map <C-G> <C-]>
 
+" Add new line in normal mode
+nnoremap <CR> o<Esc>
+
+" Go back to previous file
+noremap <Leader>n <C-6>
+
 set relativenumber number
 set scrolloff=10
 
-" Do incremental searching.
+" Do incremental searching
 set incsearch
-
-" Highlight search results
-set hlsearch
- 
-" Don't use Ex mode, use Q for formatting.
-map Q gq
 
 set clipboard+=unnamedplus
 
@@ -57,7 +58,8 @@ Plug 'tpope/vim-commentary'
 " Map <leader>d to start debug
 "map <leader>d <Action>(Debug)
 
+" Open solution explorer
 map <leader>e <Action>(ActivateProjectToolWindow)
 
-" Map <leader>b to toggle the breakpoint on the current line
+" Toggle breakpoint on the current line
 map <leader>b <Action>(ToggleLineBreakpoint)
