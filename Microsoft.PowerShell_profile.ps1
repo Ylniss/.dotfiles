@@ -59,7 +59,7 @@ Set-Alias -Name e	-Value OpenExplorer
 
 function OpenWithNotepad() {
     param([string] $path)
-    start notepad++ $path
+    Start-Process notepad++ $path
 }
 
 function StartDevTools {
@@ -81,14 +81,14 @@ function StartDevTools {
         @{Path = $postmanPath; Name = "Postman"}
     )) {
         if ($app.Path -and (Test-Path $app.Path)) {
-            start $app.Path
+            Start-Process $app.Path
         } else {
             Write-Host "$($app.Name) not found at $($app.Path)"
         }
     }
 
     if ($f -and $webStormPath -and (Test-Path $webStormPath)) {
-        start $webStormPath
+        Start-Process $webStormPath
     } elseif ($f) {
         Write-Host "JetBrains WebStorm not found."
     }
@@ -262,9 +262,9 @@ Set-Alias -Name dockercub -Value DockerComposeUpBuild
 
 function StartRa2WithAutoClicker() {
 	$originalPath = Get-Location
-	start "$env:ProgramFiles (x86)\Red Alert 2 Blitz Autoclicker\autoclicker.exe"
+	Start-Process "$env:ProgramFiles (x86)\Red Alert 2 Blitz Autoclicker\autoclicker.exe"
 	Set-Location "$gamesPath\Command and Conquer Red Alert II"
-	start CnCNetYRLauncher.exe
+	Start-Process CnCNetYRLauncher.exe
 	Set-Location $originalPath
 }
 Set-Alias -Name ra2 -Value StartRa2WithAutoClicker
