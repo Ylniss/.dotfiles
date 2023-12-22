@@ -49,6 +49,10 @@ vim.keymap.set('v', '<C-c>', 'gc' , { desc = 'make inline comment' })
 vim.keymap.set('n', '<C-S-c>', 'gbc' , { desc = 'make block comment' })
 vim.keymap.set('v', '<C-S-c>', 'gb' , { desc = 'make block comment' })
 
+-- Git actions in Fugitive
+vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = 'git status' })
+vim.keymap.set('n', '<leader>gp', ':Git push' , { desc = 'git push' })
+
 -- Document existing key chains
 require('which-key').register {
   ['<leader>c'] = { name = 'code', _ = 'which_key_ignore' },
