@@ -1,8 +1,6 @@
 require('nvim-treesitter.configs').setup {
   ensure_installed = { 'c_sharp', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash' },
 
-  diagnostics = { disable = { 'missing-fields' } },
-
   highlight = { enable = true },
   indent = { enable = true },
   incremental_selection = {

@@ -43,12 +43,6 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 -- NeoTree
 vim.keymap.set('n', '<leader>e', ':Neotree<CR>' , { desc = 'open explorer' })
 
--- Comment.nvim
-vim.keymap.set('n', '<C-c>', 'gcc' , { desc = 'make inline comment' })
-vim.keymap.set('v', '<C-c>', 'gc' , { desc = 'make inline comment' })
-vim.keymap.set('n', '<C-S-c>', 'gbc' , { desc = 'make block comment' })
-vim.keymap.set('v', '<C-S-c>', 'gb' , { desc = 'make block comment' })
-
 -- Git actions in Fugitive
 vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = 'git status' })
 vim.keymap.set('n', '<leader>g>', ':Git push<CR>' , { noremap = true, desc = 'git push' })

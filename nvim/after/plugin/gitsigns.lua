@@ -15,27 +15,6 @@ require('gitsigns').setup({
             vim.keymap.set(mode, l, r, opts)
         end
 
-        -- Navigation
-        keymap({ 'n', 'v' }, ']h', function()
-            if vim.wo.diff then
-                return ']h'
-            end
-            vim.schedule(function()
-                gs.next_hunk()
-            end)
-            return '<Ignore>'
-        end, { expr = true, desc = 'jump to next hunk' })
-
-        keymap({ 'n', 'v' }, '[h', function()
-            if vim.wo.diff then
-                return '[h'
-            end
-            vim.schedule(function()
-                gs.prev_hunk()
-            end)
-            return '<Ignore>'
-        end, { expr = true, desc = 'jump to previous hunk' })
-
         -- Actions
         -- visual mode
         keymap('v', '<leader>hs', function()
