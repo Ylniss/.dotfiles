@@ -1,70 +1,5 @@
 require("ylniss")
 
--- Configure Treesitter
---Defer Treesitter setup after first render to improve startup time of 'nvim {filename}'
-vim.defer_fn(function()
-  require('nvim-treesitter.configs').setup {
-    -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = { 'c_sharp', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash' },
-
-    highlight = { enable = true },
-    indent = { enable = true },
-    incremental_selection = {
-      enable = true,
-      keymaps = {
-        init_selection = '<c-space>',
-        node_incremental = '<c-space>',
-        scope_incremental = '<c-s>',
-        node_decremental = '<M-space>',
-      },
-    },
-    textobjects = {
-      select = {
-        enable = true,
-        lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-        keymaps = {
-          -- You can use the capture groups defined in textobjects.scm
-          ['aa'] = '@parameter.outer',
-          ['ia'] = '@parameter.inner',
-          ['af'] = '@function.outer',
-          ['if'] = '@function.inner',
-          ['ac'] = '@class.outer',
-          ['ic'] = '@class.inner',
-        },
-      },
-      move = {
-        enable = true,
-        set_jumps = true, -- whether to set jumps in the jumplist
-        goto_next_start = {
-          [']m'] = '@function.outer',
-          [']]'] = '@class.outer',
-        },
-        goto_next_end = {
-          [']M'] = '@function.outer',
-          [']['] = '@class.outer',
-        },
-        goto_previous_start = {
-          ['[m'] = '@function.outer',
-          ['[['] = '@class.outer',
-        },
-        goto_previous_end = {
-          ['[M'] = '@function.outer',
-          ['[]'] = '@class.outer',
-        },
-      },
-      swap = {
-        enable = true,
-        swap_next = {
-          ['<leader>a'] = '@parameter.inner',
-        },
-        swap_previous = {
-          ['<leader>A'] = '@parameter.inner',
-        },
-      },
-    },
-  }
-end, 0)
-
 -- Configure LSP 
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(_, bufnr)
@@ -78,50 +13,35 @@ local on_attach = function(_, bufnr)
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
 
-  lsp_keymap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-  lsp_keymap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+  lsp_keymap('<leader>r', vim.lsp.buf.rename, 'rename')
+
+  lsp_keymap('<leader>ca', vim.lsp.buf.code_action, 'code action')
 
   local telescope = require('telescope.builtin')
 
-  lsp_keymap('gd', telescope.lsp_definitions, '[G]oto [D]efinition')
-  lsp_keymap('gr', telescope.lsp_references, '[G]oto [R]eferences')
-  lsp_keymap('gI', telescope.lsp_implementations, '[G]oto [I]mplementation')
-  lsp_keymap('<leader>D', telescope.lsp_type_definitions, 'Type [D]efinition')
-  lsp_keymap('<leader>ds', telescope.lsp_document_symbols, '[D]ocument [S]ymbols')
-  lsp_keymap('<leader>ws', telescope.lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+  lsp_keymap('gd', telescope.lsp_definitions, 'goto definition')
+  lsp_keymap('gr', telescope.lsp_references, 'goto references')
+  lsp_keymap('gI', telescope.lsp_implementations, 'goto implementation')
+  lsp_keymap('<leader>D', telescope.lsp_type_definitions, 'type definition')
+  lsp_keymap('<leader>ds', telescope.lsp_document_symbols, 'document symbols')
+  lsp_keymap('<leader>ws', telescope.lsp_dynamic_workspace_symbols, 'workspace symbols')
 
   -- lsp_keymap('K', vim.lsp.buf.hover, 'Hover Documentation')
 
   -- Lesser used LSP functionality
-  lsp_keymap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-  lsp_keymap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
-  lsp_keymap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
+  lsp_keymap('gD', vim.lsp.buf.declaration, 'goto declaration')
+  lsp_keymap('<leader>wa', vim.lsp.buf.add_workspace_folder, 'workspace add folder')
+  lsp_keymap('<leader>wr', vim.lsp.buf.remove_workspace_folder, 'workspace remove folder')
   lsp_keymap('<leader>wl', function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, '[W]orkspace [L]ist Folders')
+  end, 'workspace list folders')
 
   -- Create a command `:Format` local to the LSP buffer
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
     vim.lsp.buf.format()
-  end, { desc = 'Format current buffer with LSP' })
+  end, { desc = 'format current buffer with LSP' })
 end
 
--- document existing key chains
-require('which-key').register {
-  ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-  ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-  ['<leader>e'] = { name = '[E]explore', _ = 'which_key_ignore' },
-  ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
-  ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
-  ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-  ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-  ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-}
--- required for visual <leader>hs (hunk stage) to work
-require('which-key').register({
-  ['<leader>'] = { name = 'VISUAL <leader>' },
-  ['<leader>h'] = { 'Git [H]unk' },
-}, { mode = 'v' })
 
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
