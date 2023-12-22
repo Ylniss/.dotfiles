@@ -7,7 +7,7 @@ local on_attach = function(_, bufnr)
   -- for LSP related items. It sets the mode, buffer and description for us each time.
   local lsp_keymap = function(keys, func, desc)
     if desc then
-      desc = 'LSP: ' .. desc
+      desc = 'lsp: ' .. desc
     end
 
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
