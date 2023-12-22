@@ -20,14 +20,16 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
-  -- NEDRTree - side panel file explorer
-  'preservim/nerdtree',
-
-  -- Git icons for NERDTree 
-  { 'Xuyuanp/nerdtree-git-plugin', dependencies = { 'preservim/nerdtree' } },
-
-  -- Filetype icons for NEDRTree
-  { 'ryanoasis/vim-devicons', dependencies = { 'preservim/nerdtree','Xuyuanp/nerdtree-git-plugin' } },
+  { -- Tree file explorer
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons",
+      "MunifTanjim/nui.nvim",
+      -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
+    }
+  },
 
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',

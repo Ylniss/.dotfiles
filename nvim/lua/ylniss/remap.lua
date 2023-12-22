@@ -39,5 +39,5 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
--- NERDTree
-vim.keymap.set('n', '<leader>e', ':NERDTreeMirror<CR>:NERDTreeFocus<CR>' , { desc = 'Open Explorer' })
+-- NeoTree
+vim.keymap.set('n', '<leader>e', ':Neotree<CR>' , { desc = 'Open Explorer' })
