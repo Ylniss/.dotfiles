@@ -35,7 +35,9 @@ vim.keymap.set('n', '<leader>v', vim.cmd.vsplit , { desc = 'open new vertical sp
 
 -- Commands
 vim.keymap.set('n', '<C-s>', vim.cmd.write, { desc = 'save file' })
-vim.keymap.set('n', '<C-S-s>', vim.cmd.wa, { noremap = true, desc = 'save all changed files' })
+vim.keymap.set('n', '<C-S-s>', vim.cmd.wa, { noremap = true, desc = 'save all changes' })
+
+vim.keymap.set('n', 'wqa', vim.cmd.wqa, { noremap = true, desc = 'save all changes and quit vim' })
 
 -- Terminal
 vim.keymap.set('t', '<esc>', '<C-\\><C-n>', { noremap = true, desc = 'exit terminal mode' })
