@@ -7,40 +7,39 @@ $downloadsPath = "~/Downloads/"
 # --------------------------------
 
 function FindDirOrFileName() {
-    param([string]$path, [string]$dirOrFileName)
-	Get-Childitem -Path "$path" -Include *$dirOrFileName* -Recurse -ErrorAction SilentlyContinue
+	param([string]$path, [string]$dirOrFileName)
+		Get-Childitem -Path "$path" -Include *$dirOrFileName* -Recurse -ErrorAction SilentlyContinue
 }
 
 function ChangeDirToRepo() {
-    Set-Location $repoPath
+	Set-Location $repoPath
 }
 
 function ChangeDirToGames() {
-    Set-Location $gamesPath
+	Set-Location $gamesPath
 }
 
 function ChangeDirToDownloads() {
-    Set-Location $downloadsPath
+	Set-Location $downloadsPath
 }
 
 function NewDirectoryAndEnter {
-    param([string]$dirName)
+	param([string]$dirName)
 
-    $newPath = Join-Path -Path (Get-Location) -ChildPath $dirName
-    New-Item -Path $newPath -ItemType Directory -Force
+		$newPath = Join-Path -Path (Get-Location) -ChildPath $dirName
+		New-Item -Path $newPath -ItemType Directory -Force
 
-    Set-Location -Path $newPath
+		Set-Location -Path $newPath
 }
 
 function OpenExplorer() {
 	param([string] $path)
-	if($path) {
-		explorer $path
-	} else {
-		explorer .
-	}
+		if($path) {
+			explorer $path
+		} else {
+			explorer .
+		}
 }
-
 
 
 Set-Alias -Name fnd   -Value FindDirOrFileName
@@ -58,40 +57,40 @@ Set-Alias -Name e	-Value OpenExplorer
 # --------------------------------
 
 function OpenWithNotepad() {
-    param([string] $path)
-    Start-Process notepad++ $path
+	param([string] $path)
+		Start-Process notepad++ $path
 }
 
 function StartDevTools {
-    param ([switch]$f) # start WebStorm for frontend development
+	param ([switch]$f) # start WebStorm for frontend development
 
-    $riderPath = Get-ChildItem -Path "$env:ProgramFiles\JetBrains\*Rider *\bin\rider*.exe" -File | Select-Object -First 1 -ExpandProperty FullName
-    $dataGripPath = Get-ChildItem -Path "$env:ProgramFiles (x86)\JetBrains\*DataGrip *\bin\datagrip*.exe" -File | Select-Object -First 1 -ExpandProperty FullName
-	$webStormPath = Get-ChildItem -Path "$env:ProgramFiles (x86)\JetBrains\*WebStorm *\bin\webstorm*.exe" -File | Select-Object -First 1 -ExpandProperty FullName
-    
-    $dockerDesktopPath = "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe"
-    $githubDesktopPath = "~\AppData\Local\GitHubDesktop\GitHubDesktop.exe"
-    $postmanPath = "~\AppData\Local\Postman\Postman.exe"
+		$riderPath = Get-ChildItem -Path "$env:ProgramFiles\JetBrains\*Rider *\bin\rider*.exe" -File | Select-Object -First 1 -ExpandProperty FullName
+		$dataGripPath = Get-ChildItem -Path "$env:ProgramFiles (x86)\JetBrains\*DataGrip *\bin\datagrip*.exe" -File | Select-Object -First 1 -ExpandProperty FullName
+		$webStormPath = Get-ChildItem -Path "$env:ProgramFiles (x86)\JetBrains\*WebStorm *\bin\webstorm*.exe" -File | Select-Object -First 1 -ExpandProperty FullName
 
-    foreach ($app in @(
-        @{Path = $riderPath; Name = "JetBrains Rider"},
-        @{Path = $dataGripPath; Name = "JetBrains DataGrip"},
-        @{Path = $dockerDesktopPath; Name = "Docker Desktop"},
-        @{Path = $githubDesktopPath; Name = "GitHub Desktop"},
-        @{Path = $postmanPath; Name = "Postman"}
-    )) {
-        if ($app.Path -and (Test-Path $app.Path)) {
-            Start-Process $app.Path
-        } else {
-            Write-Host "$($app.Name) not found at $($app.Path)"
-        }
-    }
+		$dockerDesktopPath = "$env:ProgramFiles\Docker\Docker\Docker Desktop.exe"
+		$githubDesktopPath = "~\AppData\Local\GitHubDesktop\GitHubDesktop.exe"
+		$postmanPath = "~\AppData\Local\Postman\Postman.exe"
 
-    if ($f -and $webStormPath -and (Test-Path $webStormPath)) {
-        Start-Process $webStormPath
-    } elseif ($f) {
-        Write-Host "JetBrains WebStorm not found."
-    }
+		foreach ($app in @(
+					@{Path = $riderPath; Name = "JetBrains Rider"},
+					@{Path = $dataGripPath; Name = "JetBrains DataGrip"},
+					@{Path = $dockerDesktopPath; Name = "Docker Desktop"},
+					@{Path = $githubDesktopPath; Name = "GitHub Desktop"},
+					@{Path = $postmanPath; Name = "Postman"}
+					)) {
+			if ($app.Path -and (Test-Path $app.Path)) {
+				Start-Process $app.Path
+			} else {
+				Write-Host "$($app.Name) not found at $($app.Path)"
+			}
+		}
+
+	if ($f -and $webStormPath -and (Test-Path $webStormPath)) {
+		Start-Process $webStormPath
+	} elseif ($f) {
+		Write-Host "JetBrains WebStorm not found."
+	}
 }
 
 # ----- GIT -----
@@ -102,28 +101,28 @@ function GitStatus {
 
 function GitAddAll { 
 	param([string] $path)
-	
-	if($path) {
-		git add $path
-	} else {
-		git add .
-	}
+
+		if($path) {
+			git add $path
+		} else {
+			git add .
+		}
 }
 
 function GitDiff {
 	$gitDiffOutput = git diff
 
-    if (![string]::IsNullOrWhiteSpace($gitDiffOutput)) {
-		Write-Host "Unstaged Changes:" -ForegroundColor Red
-		git diff
-    } 
-	
+		if (![string]::IsNullOrWhiteSpace($gitDiffOutput)) {
+			Write-Host "Unstaged Changes:" -ForegroundColor Red
+				git diff
+		} 
+
 	$gitDiffStagedOutput = git diff --staged
-	
-	if (![string]::IsNullOrWhiteSpace($gitDiffStagedOutput)) {
-		Write-Host "Staged Changes:" -ForegroundColor Green
-		git diff --staged
-    }  
+
+		if (![string]::IsNullOrWhiteSpace($gitDiffStagedOutput)) {
+			Write-Host "Staged Changes:" -ForegroundColor Green
+				git diff --staged
+		}  
 }
 
 function GitCommitMessage { 
@@ -133,7 +132,7 @@ function GitCommitMessage {
 
 function GitPushOrigin { 
 	param($branchName); 
-	
+
 	if($branchName) {
 		git push -u origin $branchName
 	}
@@ -143,59 +142,59 @@ function GitPushOrigin {
 }
 
 function GitBranch { 
-    param(
-        [Parameter(Mandatory=$false)] [string]$newBranchName,
-        [Parameter(Mandatory=$false)] [switch]$a, # list all branches
-        [Parameter(Mandatory=$false)] [switch]$d, # delete branch
-	[Parameter(Mandatory=$false)] [string]$branchNameToDelete
-    )
+	param(
+			[Parameter(Mandatory=$false)] [string]$newBranchName,
+			[Parameter(Mandatory=$false)] [switch]$a, # list all branches
+			[Parameter(Mandatory=$false)] [switch]$d, # delete branch
+			[Parameter(Mandatory=$false)] [string]$branchNameToDelete
+			)
 
-    if ($a) {
-        git branch -a
-    }
-    elseif ($d -and $branchNameToDelete) {
-        git branch -d $branchNameToDelete
-    }
+		if ($a) {
+			git branch -a
+		}
+	elseif ($d -and $branchNameToDelete) {
+		git branch -d $branchNameToDelete
+	}
 	elseif ($newBranchName) {
 		git branch $newBranchName
 	}
-    else {
-        Write-Host "Please specify an operation or a new branch name."
-    }
+		else {
+			Write-Host "Please specify an operation or a new branch name."
+		}
 }
 
 function GitCheckout {
-    param($branchName); 
-    git checkout $branchName
+	param($branchName); 
+	git checkout $branchName
 }
 
 function GitBranchCheckout {
-    param($newBranchName); 
+	param($newBranchName); 
 	git branch $newBranchName
-    git checkout $newBranchName
+		git checkout $newBranchName
 }
 
 function SafeGitRebase {
-    param(
-        [Parameter(Mandatory=$true)] [string]$targetBranch
-    )
+	param(
+			[Parameter(Mandatory=$true)] [string]$targetBranch
+			)
 
-    $currentBranch = git rev-parse --abbrev-ref HEAD
+		$currentBranch = git rev-parse --abbrev-ref HEAD
 
-    if ($currentBranch -eq $targetBranch) {
-        Write-Host "Already on the branch '$targetBranch'. Please switch to the branch you want to rebase." -ForegroundColor Red
-        return
-    }
+		if ($currentBranch -eq $targetBranch) {
+			Write-Host "Already on the branch '$targetBranch'. Please switch to the branch you want to rebase." -ForegroundColor Red
+				return
+		}
 
-    git checkout $targetBranch
-    git pull
+	git checkout $targetBranch
+		git pull
 
-    git checkout $currentBranch
-    git rebase $targetBranch
+		git checkout $currentBranch
+		git rebase $targetBranch
 
-    git checkout $currentBranch
+		git checkout $currentBranch
 
-    Write-Host "Rebase of '$currentBranch' onto '$targetBranch' completed." -ForegroundColor Green
+		Write-Host "Rebase of '$currentBranch' onto '$targetBranch' completed." -ForegroundColor Green
 }
 
 function ShowGitGraph {
@@ -203,28 +202,28 @@ function ShowGitGraph {
 }
 
 function CheckGitRepos {
-    $repos = Get-ChildItem -Path $repoPath -Directory -Recurse | Where-Object { Test-Path "$($_.FullName)/.git" }
+	$repos = Get-ChildItem -Path $repoPath -Directory -Recurse | Where-Object { Test-Path "$($_.FullName)/.git" }
 
 	Write-Host "Checking repositories:"
 
-    foreach ($repo in $repos) {
-        $repoName = Split-Path $repo.FullName -Leaf
-        Write-Host "`n$repoName" -NoNewline -ForegroundColor Cyan
+		foreach ($repo in $repos) {
+			$repoName = Split-Path $repo.FullName -Leaf
+				Write-Host "`n$repoName" -NoNewline -ForegroundColor Cyan
 
-        Push-Location -Path $repo.FullName
+				Push-Location -Path $repo.FullName
 
-        $uncommitted = git status --porcelain
-        if ($uncommitted) {
-            Write-Host " - Uncommitted changes " -ForegroundColor Yellow -NoNewline
-        }
+				$uncommitted = git status --porcelain
+				if ($uncommitted) {
+					Write-Host " - Uncommitted changes " -ForegroundColor Yellow -NoNewline
+				}
 
-        $unpushed = git cherry -v
-        if ($unpushed) {
-            Write-Host " - Unpushed commits " -ForegroundColor Red -NoNewline
-        }
+			$unpushed = git cherry -v
+				if ($unpushed) {
+					Write-Host " - Unpushed commits " -ForegroundColor Red -NoNewline
+				}
 
-        Pop-Location
-    }
+			Pop-Location
+		}
 }
 
 # ----- DOCKER -----
@@ -262,10 +261,10 @@ Set-Alias -Name dockercub -Value DockerComposeUpBuild
 
 function StartRa2WithAutoClicker() {
 	$originalPath = Get-Location
-	Start-Process "$env:ProgramFiles (x86)\Red Alert 2 Blitz Autoclicker\autoclicker.exe"
-	Set-Location "$gamesPath\Command and Conquer Red Alert II"
-	Start-Process CnCNetYRLauncher.exe
-	Set-Location $originalPath
+		Start-Process "$env:ProgramFiles (x86)\Red Alert 2 Blitz Autoclicker\autoclicker.exe"
+		Set-Location "$gamesPath\Command and Conquer Red Alert II"
+		Start-Process CnCNetYRLauncher.exe
+		Set-Location $originalPath
 }
 Set-Alias -Name ra2 -Value StartRa2WithAutoClicker
 
@@ -275,15 +274,15 @@ Set-Alias -Name ra2 -Value StartRa2WithAutoClicker
 # --------------------------------
 
 function symlink () { 
-    # source is symbolic link itself 
-    # target is original file that will be linked
-    param([string] $source, [string] $target)
-    New-Item -Path $source -ItemType SymbolicLink -Value $target
+# source is symbolic link itself 
+# target is original file that will be linked
+	param([string] $source, [string] $target)
+		New-Item -Path $source -ItemType SymbolicLink -Value $target
 }
 
 oh-my-posh init pwsh | Invoke-Expression
 
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
-    Import-Module "$ChocolateyProfile"
+	Import-Module "$ChocolateyProfile"
 }
