@@ -21,10 +21,17 @@ vim.keymap.set('n', '<C-Right>', '<C-w>>' , { desc = 'increase window width' })
 vim.keymap.set('n', '<C-Down>', '<C-w>-' , { desc = 'decrese window height' })
 vim.keymap.set('n', '<C-Up>', '<C-w>+' , { desc = 'increase window height' })
 
+vim.keymap.set('n', '<A-Left>', '<C-w>H' , { desc = 'move window left' })
+vim.keymap.set('n', '<A-Right>', '<C-w>L' , { desc = 'move window right' })
+vim.keymap.set('n', '<A-Down>', '<C-w>J' , { desc = 'move window down' })
+vim.keymap.set('n', '<A-Up>', '<C-w>K' , { desc = 'move window up' })
+
 vim.keymap.set('n', '<C-h>', '<C-w>h' , { desc = 'move to left window' })
 vim.keymap.set('n', '<C-j>', '<C-w>j' , { desc = 'move to upper window' })
 vim.keymap.set('n', '<C-k>', '<C-w>k' , { desc = 'move to bottom window' })
 vim.keymap.set('n', '<C-l>', '<C-w>l' , { desc = 'move to right window' })
+
+vim.keymap.set('n', '<leader>v', vim.cmd.vsplit , { desc = 'open new vertical split window' })
 
 -- Commands
 vim.keymap.set('n', '<C-s>', vim.cmd.write, { desc = 'save file' })
@@ -44,7 +51,7 @@ vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = tr
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- NeoTree
-vim.keymap.set('n', '<leader>e', ':Neotree<CR>' , { desc = 'open explorer' })
+vim.keymap.set('n', '<leader>e', ':Neotree toggle reveal_force_cwd<CR>' , { noremap = true, desc = 'open/close explorer' })
 
 -- Git actions in Fugitive
 vim.keymap.set('n', '<leader>gs', function()
@@ -63,13 +70,10 @@ vim.keymap.set('v', '<C-A-_>', 'gb' , { remap = true, desc = 'make block comment
 -- Document existing key chains
 require('which-key').register {
   ['<leader>c'] = { name = 'code', _ = 'which_key_ignore' },
-  ['<leader>d'] = { name = 'document', _ = 'which_key_ignore' },
   ['<leader>e'] = { name = 'explore', _ = 'which_key_ignore' },
   ['<leader>g'] = { name = 'git', _ = 'which_key_ignore' },
   ['<leader>h'] = { name = 'git hunk', _ = 'which_key_ignore' },
-  ['<leader>r'] = { name = 'rename', _ = 'which_key_ignore' },
   ['<leader>s'] = { name = 'search', _ = 'which_key_ignore' },
-  ['<leader>w'] = { name = 'workspace', _ = 'which_key_ignore' },
 }
 
 -- Required for visual <leader>hs (hunk stage) to work

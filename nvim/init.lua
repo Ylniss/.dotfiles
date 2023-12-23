@@ -23,8 +23,6 @@ local on_attach = function(_, bufnr)
   lsp_keymap('gr', telescope.lsp_references, 'goto references')
   lsp_keymap('gI', telescope.lsp_implementations, 'goto implementation')
   lsp_keymap('<leader>D', telescope.lsp_type_definitions, 'type definition')
-  lsp_keymap('<leader>ds', telescope.lsp_document_symbols, 'document symbols')
-  lsp_keymap('<leader>ws', telescope.lsp_dynamic_workspace_symbols, 'workspace symbols')
 
   -- Create a command `:Format` local to the LSP buffer
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
