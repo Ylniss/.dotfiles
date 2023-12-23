@@ -30,6 +30,9 @@ vim.keymap.set('n', '<C-l>', '<C-w>l' , { desc = 'move to right window' })
 vim.keymap.set('n', '<C-s>', vim.cmd.write, { desc = 'save file' })
 vim.keymap.set('n', '<C-S-s>', vim.cmd.wa, { noremap = true, desc = 'save all changed files' })
 
+-- Terminal
+vim.keymap.set('t', '<esc>', '<C-\\><C-n>', { noremap = true, desc = 'exit terminal mode' })
+
 -- LSP
 vim.keymap.set('n', '<leader>k', vim.lsp.buf.hover , { desc = 'hover documentation' })
 

@@ -14,11 +14,11 @@ local on_attach = function(_, bufnr)
   end
 
   lsp_keymap('<leader>r', vim.lsp.buf.rename, 'rename')
-
   lsp_keymap('<leader>ca', vim.lsp.buf.code_action, 'code action')
 
   local telescope = require('telescope.builtin')
 
+  lsp_keymap('gD', vim.lsp.buf.declaration, 'goto declaration')
   lsp_keymap('gd', telescope.lsp_definitions, 'goto definition')
   lsp_keymap('gr', telescope.lsp_references, 'goto references')
   lsp_keymap('gI', telescope.lsp_implementations, 'goto implementation')
@@ -26,20 +26,11 @@ local on_attach = function(_, bufnr)
   lsp_keymap('<leader>ds', telescope.lsp_document_symbols, 'document symbols')
   lsp_keymap('<leader>ws', telescope.lsp_dynamic_workspace_symbols, 'workspace symbols')
 
-  -- Lesser used LSP functionality
-  lsp_keymap('gD', vim.lsp.buf.declaration, 'goto declaration')
-  lsp_keymap('<leader>wa', vim.lsp.buf.add_workspace_folder, 'workspace add folder')
-  lsp_keymap('<leader>wr', vim.lsp.buf.remove_workspace_folder, 'workspace remove folder')
-  lsp_keymap('<leader>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, 'workspace list folders')
-
   -- Create a command `:Format` local to the LSP buffer
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
     vim.lsp.buf.format()
   end, { desc = 'format current buffer with LSP' })
 end
-
 
 -- mason-lspconfig requires that these setup functions are called in this order
 -- before setting up the servers.
@@ -65,7 +56,7 @@ local servers = {
       workspace = { checkThirdParty = false },
       telemetry = { enable = false },
       -- NOTE: toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-      -- diagnostics = { disable = { 'missing-fields' } },
+      diagnostics = { disable = { 'missing-fields' } },
     },
   },
 }
@@ -94,7 +85,6 @@ mason_lspconfig.setup_handlers {
     }
   end,
 }
-
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
