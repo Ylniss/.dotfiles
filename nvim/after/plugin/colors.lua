@@ -1,7 +1,7 @@
 require("kanagawa").setup({
-    transparent = true,         -- do not set background color
-    dimInactive = false,         -- dim inactive window `:h hl-NormalNC`
-    terminalColors = false,
+    transparent = true,      -- do not set background color
+    dimInactive = false,     -- dim inactive window `:h hl-NormalNC`
+    terminalColors = true,
 
     overrides = function(colors)
         local theme = colors.theme
@@ -31,20 +31,19 @@ end,
 
 vim.cmd.colorscheme("kanagawa")
 
-
 -- Set transparent lualine
 local lualine_theme = require('lualine.themes.auto')
 lualine_theme.normal.c.bg = 'none'
 require('lualine').setup { options = { theme = lualine_theme } }
 
-
 -- Set transparent line numbers
+vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
+vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
+
+-- Colorize git signs
 local color_red = '#ff6961'
 local color_blue = '#54b4d8'
 local color_green = '#77dd77'
-
-vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
-vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
 vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = color_green, bg = "none" })
 vim.api.nvim_set_hl(0, "GitSignsChange", { fg = color_blue, bg = "none" })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = color_red, bg = "none" })

@@ -6,6 +6,7 @@ require('gitsigns').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
     },
+
     on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
 
@@ -33,14 +34,14 @@ require('gitsigns').setup({
         keymap('n', '<leader>hb', function()
             gs.blame_line { full = false }
         end, { desc = 'git blame line' })
-        keymap('n', '<leader>hd', gs.diffthis, { desc = 'git diff against index' })
-        keymap('n', '<leader>hD', function()
+        keymap('n', '<leader>gd', gs.diffthis, { desc = 'git diff against index' })
+        keymap('n', '<leader>gD', function()
             gs.diffthis '~'
         end, { desc = 'git diff against last commit' })
 
         -- Toggles
-        keymap('n', '<leader>tb', gs.toggle_current_line_blame, { desc = 'toggle git blame line' })
-        keymap('n', '<leader>td', gs.toggle_deleted, { desc = 'toggle git show deleted' })
+        keymap('n', '<leader>gb', gs.toggle_current_line_blame, { desc = 'toggle git blame line' })
+        keymap('n', '<leader>gr', gs.toggle_deleted, { desc = 'toggle git show removed' })
     end,
 })
 

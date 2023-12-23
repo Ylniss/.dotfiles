@@ -11,6 +11,10 @@ vim.keymap.set({'n', 'v'}, 'K', '{' , { noremap = true, desc = 'move up by 1 par
 vim.keymap.set({'n', 'v'}, 'L', 'w' , { desc = 'move right by 1 word' })
 vim.keymap.set({'n', 'v'}, 'H', 'b' , { desc = 'move left by 1 word' })
 
+-- Move selected code
+vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
+
 -- Window management
 vim.keymap.set('n', '<C-Left>', '<C-w><' , { desc = 'decrese window width' })
 vim.keymap.set('n', '<C-Right>', '<C-w>>' , { desc = 'increase window width' })
@@ -23,15 +27,11 @@ vim.keymap.set('n', '<C-k>', '<C-w>k' , { desc = 'move to bottom window' })
 vim.keymap.set('n', '<C-l>', '<C-w>l' , { desc = 'move to right window' })
 
 -- Commands
-vim.keymap.set('n', '<C-s>', vim.cmd.write , { desc = 'save file' })
-vim.keymap.set('n', '<C-S-s>', vim.cmd.wall , { desc = 'save all changed files' })
+vim.keymap.set('n', '<C-s>', vim.cmd.write, { desc = 'save file' })
+vim.keymap.set('n', '<C-S-s>', vim.cmd.wa, { noremap = true, desc = 'save all changed files' })
 
 -- LSP
 vim.keymap.set('n', '<leader>k', vim.lsp.buf.hover , { desc = 'hover documentation' })
-
--- Move selected code
-vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
 
 -- Remove space functions because it is a leader key
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
@@ -44,9 +44,18 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 vim.keymap.set('n', '<leader>e', ':Neotree<CR>' , { desc = 'open explorer' })
 
 -- Git actions in Fugitive
-vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { desc = 'git status' })
+vim.keymap.set('n', '<leader>gs', function()
+  vim.cmd.Git()
+  vim.cmd.wincmd('L')
+end, { desc = 'git status' })
 vim.keymap.set('n', '<leader>g>', ':Git push<CR>' , { noremap = true, desc = 'git push' })
 vim.keymap.set('n', '<leader>g<', ':Git pull<CR>' , { noremap = true, desc = 'git pull' })
+
+-- Comment.nvim
+vim.keymap.set('n', '<C-_>', 'gcc' , { remap = true, desc = 'make inline comment' })
+vim.keymap.set('v', '<C-_>', 'gc' , { remap = true, desc = 'make inline comment' })
+vim.keymap.set('n', '<C-A-_>', 'gbc' , { remap = true, desc = 'make block comment' })
+vim.keymap.set('v', '<C-A-_>', 'gb' , { remap = true, desc = 'make block comment' })
 
 -- Document existing key chains
 require('which-key').register {
