@@ -113,4 +113,6 @@ require('lazy').setup({
     },
     build = ':TSUpdate',
   },
+
+  "RRethy/vim-illuminate",
 }, {})
