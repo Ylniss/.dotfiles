@@ -6,9 +6,9 @@ $downloadsPath = "~/Downloads/"
 #           NAVIGATION
 # --------------------------------
 
-function FindDirOrFileName() {
-	param([string]$path, [string]$dirOrFileName)
-		Get-Childitem -Path "$path" -Include *$dirOrFileName* -Recurse -ErrorAction SilentlyContinue
+function FindDirOrfilename() {
+	param([string]$path, [string]$dirOrfilename)
+		Get-Childitem -Path "$path" -Include *$dirOrfilename* -Recurse -ErrorAction SilentlyContinue
 }
 
 function ChangeDirToRepo() {
@@ -42,7 +42,7 @@ function OpenExplorer() {
 }
 
 
-Set-Alias -Name fnd   -Value FindDirOrFileName
+Set-Alias -Name fnd   -Value FindDirOrfilename
 
 Set-Alias -Name repo  	-Value ChangeDirToRepo
 Set-Alias -Name games 	-Value ChangeDirToGames
@@ -274,11 +274,62 @@ Set-Alias -Name ra2 -Value StartRa2WithAutoClicker
 # --------------------------------
 
 function symlink () { 
-# source is symbolic link itself 
 # target is original file that will be linked
-	param([string] $source, [string] $target)
+# source is symbolic link itself 
+	param([string] $target, [string] $source)
 		New-Item -Path $source -ItemType SymbolicLink -Value $target
 }
+
+function SafelyOpenPasswordsForEdit {
+    param(
+        [string] $archivePath = "$HOME\stuff\sec\accounts.7z",
+        [string] $extractPath = "$HOME\stuff\sec",
+        [string] $fileName = "accounts.txt"
+    )
+
+    # Ensure the temporary directory exists
+    if (-not (Test-Path -Path $extractPath)) {
+        New-Item -ItemType Directory -Path $extractPath
+    }
+
+    $password = Read-Host -AsSecureString "Enter archive password"
+
+    # Convert the SecureString password to plain text
+    $passwordText = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($password))
+
+    # Unzip the file
+    $7zPath = "C:\Program Files\7-Zip\7z.exe"
+    if (-not (Test-Path -Path $7zPath)) {
+        Write-Error "7-Zip executable not found at path: $7zPath"
+        return
+    }
+
+    $unzipArgs = "x `"$archivePath`" -o`"$extractPath`" -p`"$passwordText`" -y"
+    $unzipProcess = Start-Process -FilePath $7zPath -ArgumentList $unzipArgs -Wait -PassThru -WindowStyle Hidden
+
+    if ($unzipProcess.ExitCode -ne 0) {
+        Write-Error "Failed to unzip file. Exit Code: $($unzipProcess.ExitCode)"
+        return
+    }
+
+    nvim "$extractPath\$fileName"
+
+    # Check if the file exists before attempting to re-zip
+    if (-not (Test-Path "$extractPath\$fileName")) {
+        Write-Error "The file to be re-zipped does not exist: $extractPath\$fileName"
+        return
+    }
+
+    # Re-zip the file with encryption
+    $zipArgs = "a -t7z -p$passwordText -mx0 `"$archivePath`" `"$extractPath\$fileName`""
+    Write-Host $zipArgs
+    Start-Process -FilePath $7zPath -ArgumentList $zipArgs -Wait -NoNewWindow
+
+    # Remove the temporary files
+    Remove-Item -Path "$extractPath\$fileName"
+}
+
+Set-Alias psw SafelyOpenPasswordsForEdit
 
 oh-my-posh init pwsh | Invoke-Expression
 
