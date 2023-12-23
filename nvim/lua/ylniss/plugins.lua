@@ -115,4 +115,5 @@ require('lazy').setup({
   },
 
   "RRethy/vim-illuminate",
+  'NvChad/nvim-colorizer.lua'
 }, {})
