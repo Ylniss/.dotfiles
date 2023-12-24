@@ -49,7 +49,7 @@ vim.api.nvim_set_hl(0, "GitSignsChange", { fg = color_blue, bg = "none" })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = color_red, bg = "none" })
 
 -- Setup text color colorizer
-require("colorizer").setup()
+require("colorizer").setup {}
 
 -- Setup same text highlights
 require('illuminate').configure({
@@ -57,17 +57,9 @@ require('illuminate').configure({
 })
 
 local function set_custom_highlights()
-  vim.api.nvim_set_hl(0, "IlluminatedWordText", { fg = "Orange", bg = "DarkBlue" })
-  vim.api.nvim_set_hl(0, "IlluminatedWordRead", { fg = "Orange", bg = "DarkBlue" })
-  vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { fg = "Orange", bg = "DarkBlue" })
-
-  -- vim.api.nvim_set_hl(0, "IlluminatedWordText", { bg = "LightGrey" })
-  -- vim.api.nvim_set_hl(0, "IlluminatedWordRead", { bg = "LightGrey" })
-  -- vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { bg = "LightGrey" })
-  --
-  -- vim.api.nvim_set_hl(0, "IlluminatedWordText", { link = "Visual" })
-  -- vim.api.nvim_set_hl(0, "IlluminatedWordRead", { link = "Visual" })
-  -- vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { link = "Visual" })
+  vim.api.nvim_set_hl(0, "IlluminatedWordText", { fg = "Orange" })
+  vim.api.nvim_set_hl(0, "IlluminatedWordRead", { fg = "Orange" })
+  vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { fg = "Orange" })
 end
 
 set_custom_highlights()

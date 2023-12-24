@@ -14,7 +14,7 @@ local on_attach = function(_, bufnr)
   end
 
   lsp_keymap('<leader>r', vim.lsp.buf.rename, 'rename')
-  lsp_keymap('<leader>ca', vim.lsp.buf.code_action, 'code action')
+  lsp_keymap('<A-h>', vim.lsp.buf.code_action, 'code action') -- with .ahk script it is also <C-.> (powershell fix)
 
   local telescope = require('telescope.builtin')
 
@@ -44,11 +44,10 @@ require('mason-lspconfig').setup()
 --  If you want to override the default filetypes that your language server will attach to you can
 --  define the property 'filetypes' to the map in question.
 local servers = {
-  -- tsserver = {},
-  -- html = { filetypes = { 'html', 'twig', 'hbs'} },
-
+  tsserver = {},
+  html = { filetypes = { 'html' } },
   powershell_es = {},
-  omnisharp = { filetypes = { "cs", "csx" } },
+  csharp_ls = {},
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },

@@ -2,7 +2,6 @@
 "  the same commands as the original .vimrc configuration.
 " You can find a list of commands here: https://jb.gg/h38q75
 " Find more examples here: https://jb.gg/share-ideavimrc
-
 let mapleader = " "
 
 " Move to the first character in line
@@ -14,17 +13,39 @@ map X $
 " Jump to matching bracket
 map <C-B> %
 
+" Move selected code
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+
 " Move down by 1 paragraph
-map <C-J> }
+map <S-j> }
 
 " Move up by 1 paragraph
-map <C-K> {
+map <S-k> {
 
 " Move right by 1 word
-map <C-L> w
+map <S-l> w
 
 " Move left by 1 word
-map <C-H> b
+map <S-h> b
+
+" Move window down
+map <C-j> <C-w>j
+
+" Move window up
+map <C-k> <C-w>k
+
+" Move window left
+map <C-h> <C-w>h
+
+" Move window right
+map <C-l> <C-w>l
+
+" Open vsplit window
+map <leader>v :vsplit<CR>
+
+" Close tab
+map <leader>q :bd<CR>
 
 " Go into definition
 map <C-G> <C-]>
@@ -44,12 +65,8 @@ set incsearch
 set clipboard+=unnamedplus
 
 " --- Enable IdeaVim plugins https://jb.gg/ideavim-plugins
-
 " Highlight copied text
 Plug 'machakann/vim-highlightedyank'
-" Commentary plugin
-Plug 'tpope/vim-commentary'
-
 
 " -- Map IDE actions to IdeaVim -- https://jb.gg/abva4t
 " Map \r to the Reformat Code action
@@ -60,6 +77,10 @@ Plug 'tpope/vim-commentary'
 
 " Open solution explorer
 map <leader>e <Action>(ActivateProjectToolWindow)
-
-" Toggle breakpoint on the current line
 map <leader>b <Action>(ToggleLineBreakpoint)
+map <leader>k <Action>(ShowHoverInfo)
+map <leader>t <Action>(ActivateTerminalToolWindow)
+map <leader>ss <Action>(GotoFile)
+map <leader>sg <Action>(SearchEverywhere)
+
+

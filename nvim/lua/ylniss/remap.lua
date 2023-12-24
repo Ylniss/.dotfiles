@@ -32,12 +32,14 @@ vim.keymap.set('n', '<C-k>', '<C-w>k' , { desc = 'move to bottom window' })
 vim.keymap.set('n', '<C-l>', '<C-w>l' , { desc = 'move to right window' })
 
 vim.keymap.set('n', '<leader>v', vim.cmd.vsplit , { desc = 'open new vertical split window' })
+vim.keymap.set('n', '<leader>q', vim.cmd.bd , { desc = 'close window' })
 
 -- Commands
 vim.keymap.set('n', '<C-s>', vim.cmd.write, { desc = 'save file' })
 vim.keymap.set('n', '<C-S-s>', vim.cmd.wa, { noremap = true, desc = 'save all changes' })
 
 vim.keymap.set('n', 'wqa', vim.cmd.wqa, { noremap = true, desc = 'save all changes and quit vim' })
+vim.keymap.set('n', 'wqA', ':qa!<CR>', { noremap = true, desc = 'quit vim without saving changes' })
 
 -- Terminal
 vim.keymap.set('t', '<esc>', '<C-\\><C-n>', { noremap = true, desc = 'exit terminal mode' })
