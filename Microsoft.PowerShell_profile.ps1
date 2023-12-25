@@ -330,7 +330,9 @@ function SafelyOpenPasswordsForEdit {
 }
 
 Set-Alias psw SafelyOpenPasswordsForEdit
+Set-Alias sudo gsudo
 
+gsudo config PowerShellLoadProfile true | Out-Null
 oh-my-posh init pwsh | Invoke-Expression
 
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
