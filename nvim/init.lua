@@ -47,7 +47,7 @@ local servers = {
   tsserver = {},
   html = { filetypes = { 'html' } },
   powershell_es = {},
-  csharp_ls = {},
+  omnisharp = {},
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },

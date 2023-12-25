@@ -48,8 +48,9 @@ vim.api.nvim_set_hl(0, "GitSignsAdd", { fg = color_green, bg = "none" })
 vim.api.nvim_set_hl(0, "GitSignsChange", { fg = color_blue, bg = "none" })
 vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = color_red, bg = "none" })
 
--- Setup text color colorizer
-require("colorizer").setup {}
+-- Set the cursor color
+local light_orange = '#FFA500'
+vim.api.nvim_set_hl(0, "Cursor", { bg = light_orange })
 
 -- Setup same text highlights
 require('illuminate').configure({
