@@ -1,3 +1,5 @@
+#SingleInstance Ignore
+
 ; Define a group for the terminals
 GroupAdd, Terminals, ahk_exe WindowsTerminal.exe
 GroupAdd, Terminals, ahk_exe wezterm-gui.exe

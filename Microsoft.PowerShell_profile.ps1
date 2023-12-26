@@ -329,10 +329,21 @@ function SafelyOpenPasswordsForEdit {
     Remove-Item -Path "$extractPath\$fileName"
 }
 
+function OpenNvimWithAhkFix() {
+	param([string] $fileName)	
+
+	$ahkScriptPath = "$env:LOCALAPPDATA\nvim\win-cmp-fix.ahk"
+	Start-Process $ahkScriptPath
+	& C:\tools\neovim\nvim-win64\bin\nvim.exe $fileName
+}
+
 Set-Alias psw SafelyOpenPasswordsForEdit
+Set-Alias vim OpenNvimWithAhkFix
+Set-Alias nvim OpenNvimWithAhkFix
 Set-Alias sudo gsudo
 
 gsudo config PowerShellLoadProfile true | Out-Null
+
 oh-my-posh init pwsh | Invoke-Expression
 
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
