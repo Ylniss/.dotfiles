@@ -1,6 +1,24 @@
+# --------------------------------
+#             PATHS
+# --------------------------------
+#
 $repoPath = "~/Stuff/Repo/"
 $gamesPath = "C:/Games/"
 $downloadsPath = "~/Downloads/"
+
+
+# --------------------------------
+#           APPEARANCE
+# --------------------------------
+
+$colors = $host.privatedata
+$colors.verbosebackgroundcolor = "Magenta"
+$colors.verboseforegroundcolor = "Green"
+$colors.warningbackgroundcolor = "Red"
+$colors.warningforegroundcolor = "white"
+$colors.ErrorBackgroundColor = "DarkCyan"
+$colors.ErrorForegroundColor = "Yellow"
+
 
 # --------------------------------
 #           NAVIGATION
@@ -345,3 +363,4 @@ $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
 	Import-Module "$ChocolateyProfile"
 }
+function clist { choco list }
