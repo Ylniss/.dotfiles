@@ -6,11 +6,6 @@ $downloadsPath = "~/Downloads/"
 #           NAVIGATION
 # --------------------------------
 
-function FindDirOrfilename() {
-	param([string]$path, [string]$dirOrfilename)
-	rg --files --hidden --glob "*$dirOrFilename*" --no-heading --no-line-number -g '!*.{git,node_modules}/*' -- "$path"
-}
-
 function ChangeDirToRepo() {
 	Set-Location $repoPath
 }

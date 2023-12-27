@@ -5,11 +5,24 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
+-- ============ BEHAVIOR ============
+
 local is_windows = wezterm.target_triple == 'x86_64-pc-windows-msvc'
 
 if is_windows then
   config.default_prog = { 'C:/Program Files/PowerShell/7/pwsh.exe' }
 end
+
+config.window_close_confirmation = 'NeverPrompt'
+
+config.show_new_tab_button_in_tab_bar = false
+config.switch_to_last_active_tab_when_closing_tab = true
+
+wezterm.on('window-config-reloaded', function(window, _)
+  wezterm.log_info 'the config was reloaded for this window!'
+  window:toast_notification('wezterm', 'configuration reloaded!', nil, 4000)
+end)
+
 
 -- =========== APPEARANCE ===========
 
@@ -21,8 +34,6 @@ config.font_size = 10.5
 config.window_background_opacity = 0.85
 
 local titlebar_color = '#0B0022'
-config.show_new_tab_button_in_tab_bar = false
-config.switch_to_last_active_tab_when_closing_tab = true
 
 config.window_frame = {
   -- The font used in the tab bar.
@@ -99,10 +110,10 @@ config.keys = {
   { key = "t", mods = "CTRL", action = wezterm.action { SpawnTab = "CurrentPaneDomain" }},
 
   -- Ctrl + Shift + v to split vertically
-  { key = "v", mods = "CTRL|SHIFT", action = wezterm.action { SplitVertical = { domain = "CurrentPaneDomain" }}},
+  { key = "v", mods = "CTRL|SHIFT", action = wezterm.action { SplitHorizontal = { domain = "CurrentPaneDomain" }}},
 
   -- Ctrl + Shift + h to split vertically
-  { key = "h", mods = "CTRL|SHIFT", action = wezterm.action { SplitHorizontal = { domain = "CurrentPaneDomain" }}},
+  { key = "h", mods = "CTRL|SHIFT", action = wezterm.action { SplitVertical = { domain = "CurrentPaneDomain" }}},
 
   -- Ctrl + Alt + Arrow to resize in arrow direction
   { key = "UpArrow", mods = "CTRL|ALT", action = wezterm.action { AdjustPaneSize = { "Up", 1 }}},

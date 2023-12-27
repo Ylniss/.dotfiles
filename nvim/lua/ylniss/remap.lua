@@ -11,6 +11,10 @@ vim.keymap.set({'n', 'v'}, 'K', '{' , { noremap = true, desc = 'move up by 1 par
 vim.keymap.set({'n', 'v'}, 'L', 'w' , { desc = 'move right by 1 word' })
 vim.keymap.set({'n', 'v'}, 'H', 'b' , { desc = 'move left by 1 word' })
 
+-- Go to next/previous buffer
+vim.keymap.set('n', '<leader><Tab>', vim.cmd.bnext, { desc = 'go to next buffer' })
+vim.keymap.set('n', '<leader><S-Tab>', vim.cmd.bprevious, { desc = 'go to previous buffer' })
+
 -- Move selected code
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
