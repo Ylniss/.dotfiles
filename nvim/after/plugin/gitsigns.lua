@@ -18,20 +18,20 @@ require('gitsigns').setup({
 
     -- Actions
     -- visual mode
-    keymap('v', '<leader>hs', function()
+    keymap('v', '<leader>ghs', function()
       gs.stage_hunk { vim.fn.line '.', vim.fn.line 'v' }
     end, { desc = 'stage git hunk' })
-    keymap('v', '<leader>hr', function()
+    keymap('v', '<leader>ghr', function()
       gs.reset_hunk { vim.fn.line '.', vim.fn.line 'v' }
     end, { desc = 'reset git hunk' })
     -- normal mode
-    keymap('n', '<leader>hs', gs.stage_hunk, { desc = 'git stage hunk' })
-    keymap('n', '<leader>hr', gs.reset_hunk, { desc = 'git reset hunk' })
-    keymap('n', '<leader>hS', gs.stage_buffer, { desc = 'git Stage buffer' })
-    keymap('n', '<leader>hu', gs.undo_stage_hunk, { desc = 'undo stage hunk' })
-    keymap('n', '<leader>hR', gs.reset_buffer, { desc = 'git Reset buffer' })
-    keymap('n', '<leader>hp', gs.preview_hunk, { desc = 'preview git hunk' })
-    keymap('n', '<leader>hb', function()
+    keymap('n', '<leader>ghs', gs.stage_hunk, { desc = 'git stage hunk' })
+    keymap('n', '<leader>ghr', gs.reset_hunk, { desc = 'git reset hunk' })
+    keymap('n', '<leader>ghS', gs.stage_buffer, { desc = 'git Stage buffer' })
+    keymap('n', '<leader>ghu', gs.undo_stage_hunk, { desc = 'undo stage hunk' })
+    keymap('n', '<leader>gR', gs.reset_buffer, { desc = 'git Reset buffer' })
+    keymap('n', '<leader>gp', gs.preview_hunk, { desc = 'preview git hunk' })
+    keymap('n', '<leader>gb', function()
       gs.blame_line { full = false }
     end, { desc = 'git blame line' })
     keymap('n', '<leader>gd', gs.diffthis, { desc = 'git diff against index' })

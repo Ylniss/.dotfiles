@@ -18,37 +18,67 @@ config.color_scheme = 'Banana Blueberry'
 config.font = wezterm.font 'JetBrainsMono NF'
 config.font_size = 10.5
 
-
--- ============= WINDOW =============
-
 config.window_background_opacity = 0.85
+
+local titlebar_color = '#0B0022'
+config.show_new_tab_button_in_tab_bar = false
+config.switch_to_last_active_tab_when_closing_tab = true
 
 config.window_frame = {
   -- The font used in the tab bar.
-  font = wezterm.font { family = 'Roboto', weight = 'Bold' },
+  font = wezterm.font { family = 'JetBrainsMono NF' },
 
   -- The size of the font in the tab bar.
-  font_size = 11.0,
+  font_size = 12.0,
 
-  active_titlebar_bg = '#333333',
-  inactive_titlebar_bg = '#333333',
+  active_titlebar_bg = titlebar_color,
+  inactive_titlebar_bg = titlebar_color,
 }
 
-local function get_current_working_dir(tab)
-  local current_dir = tab.active_pane.current_working_dir
-  local home_dir = string.format("file://%s", os.getenv("HOME"))
+local function tab_title(tab)
+  local title = tab.tab_title
 
-  return current_dir == home_dir and "." or string.gsub(current_dir, "(.*[/\\])(.*)", "%2")
+  -- if the tab title is explicitly set, take that
+  if title and #title > 0 then
+    return title
+  end
+  -- Otherwise, use the title from the active pane
+  -- in that tab
+  return tab.active_pane.title
 end
 
--- Set tab title as current working dir
-wezterm.on("format-tab-title", function(tab)
-  local title = string.format(" %s  %s ~ %s  ", "❯", get_current_working_dir(tab))
+wezterm.on(
+  'format-tab-title',
+  function(tab, tabs, panes, config, hover, max_width)
+    local edge_background = titlebar_color
+    local background = '#1b1032'
+    local foreground = '#808080'
+    local edge_foreground = background
 
-  return {
-    { Text = title },
-  }
-end)
+    if tab.is_active then
+      background = '#2B2042'
+      foreground = '#C0C0C0'
+      edge_foreground = background
+    elseif hover then
+      background = '#3b3052'
+      foreground = '#909090'
+    end
+
+    local title = tab_title(tab)
+
+    return {
+      { Background = { Color = edge_background } },
+      { Foreground = { Color = edge_foreground } },
+      { Text = wezterm.nerdfonts.pl_right_hard_divider },
+      { Background = { Color = background } },
+      { Foreground = { Color = foreground } },
+      { Text = " " .. title .. " " },
+      { Background = { Color = edge_background } },
+      { Foreground = { Color = edge_foreground } },
+      { Text = wezterm.nerdfonts.pl_left_hard_divider },
+    }
+  end
+)
 
 
 -- ========== KEY BINDINGS ==========

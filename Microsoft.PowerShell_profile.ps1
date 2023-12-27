@@ -8,7 +8,7 @@ $downloadsPath = "~/Downloads/"
 
 function FindDirOrfilename() {
 	param([string]$path, [string]$dirOrfilename)
-		Get-Childitem -Path "$path" -Include *$dirOrfilename* -Recurse -ErrorAction SilentlyContinue
+	rg --files --hidden --glob "*$dirOrFilename*" --no-heading --no-line-number -g '!*.{git,node_modules}/*' -- "$path"
 }
 
 function ChangeDirToRepo() {

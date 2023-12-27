@@ -55,3 +55,23 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
+
+-- Set custom terminal tab title
+local function get_last_segment_of_path(path)
+    return string.gsub(path, "(.*[/\\])(.*)", "%2")
+end
+
+local function setCustomTitle()
+    vim.opt.titlestring = "nvim in " .. get_last_segment_of_path(vim.fn.getcwd()) .. "|" .. vim.fn.expand("%:t")
+end
+
+-- Enable setting the terminal title
+vim.opt.title = true
+
+-- Set the custom title initially
+setCustomTitle()
+
+-- Update the title whenever the buffer changes or the directory changes
+vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter", "DirChanged"}, {
+    callback = setCustomTitle
+})

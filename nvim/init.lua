@@ -1,6 +1,6 @@
 require("ylniss")
 
--- Configure LSP 
+-- Configure LSP
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(_, bufnr)
   -- In this case, we create a function that lets us more easily define mappings specific
@@ -44,6 +44,8 @@ require('mason-lspconfig').setup()
 --  If you want to override the default filetypes that your language server will attach to you can
 --  define the property 'filetypes' to the map in question.
 local servers = {
+  dockerls = {},
+  jsonls = {},
   tsserver = {},
   html = { filetypes = { 'html' } },
   powershell_es = {},

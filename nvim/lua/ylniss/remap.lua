@@ -32,7 +32,10 @@ vim.keymap.set('n', '<C-k>', '<C-w>k' , { desc = 'move to bottom window' })
 vim.keymap.set('n', '<C-l>', '<C-w>l' , { desc = 'move to right window' })
 
 vim.keymap.set('n', '<leader>v', vim.cmd.vsplit , { desc = 'open new vertical split window' })
-vim.keymap.set('n', '<leader>q', vim.cmd.wq , { desc = 'close window' })
+vim.keymap.set('n', '<leader>h', vim.cmd.split , { desc = 'open new horizontal split window' })
+
+vim.keymap.set('n', '<leader>q', vim.cmd.wq , { desc = 'save and close window' })
+vim.keymap.set('n', '<leader>Q', vim.cmd.q , { desc = 'close window' })
 
 -- Commands
 vim.keymap.set('n', '<C-s>', vim.cmd.write, { desc = 'save file' })
@@ -76,7 +79,7 @@ require('which-key').register {
   ['<leader>c'] = { name = 'code', _ = 'which_key_ignore' },
   ['<leader>e'] = { name = 'explore', _ = 'which_key_ignore' },
   ['<leader>g'] = { name = 'git', _ = 'which_key_ignore' },
-  ['<leader>h'] = { name = 'git hunk', _ = 'which_key_ignore' },
+  ['<leader>gh'] = { name = 'git hunks', _ = 'which_key_ignore' },
   ['<leader>s'] = { name = 'search', _ = 'which_key_ignore' },
 }
 
