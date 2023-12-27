@@ -14,6 +14,9 @@ vim.o.scrolloff = 10
 -- Set highlight on search
 vim.o.hlsearch = false
 
+-- Highlight line with the cursor
+vim.o.cursorline = true
+
 -- Enable mouse mode
 vim.o.mouse = 'a'
 

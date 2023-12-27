@@ -52,6 +52,10 @@ vim.api.nvim_set_hl(0, "GitSignsDelete", { fg = color_red, bg = "none" })
 local light_orange = '#FFA500'
 vim.api.nvim_set_hl(0, "Cursor", { bg = light_orange })
 
+-- Set custom highlight for cursorline
+local color_purple = '#30184F'
+vim.api.nvim_set_hl(0, 'CursorLine', { bg = color_purple, fg = '', underline = false })
+
 -- Setup same text highlights
 require('illuminate').configure({
     under_cursor = false,
