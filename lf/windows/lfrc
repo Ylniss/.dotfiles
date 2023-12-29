@@ -25,27 +25,40 @@ set period 1
 
 # -------------- KEYMAPS --------------
 
-# reload config file using f5
-map <f-5> push :source<space>~/AppData/Local/lf/lfrc<enter>
+# f5 to reload config file 
+map <f-5> source ~\\AppData\\Local\\lf\\lfrc
 
-# use a to create file
+# a to create file
 map a %{{
   $file_name = Read-Host "File name"
   New-Item $file_name -ItemType File
 }}
 
-# use A to create directory
+# A to create directory
 map A %{{
   $dir_name = Read-Host "Directory Name"
   New-Item $dir_name -ItemType Directory
 }}
 
-# copy file path
-map Y &echo $Env:fx | clip
+# Y to copy file path
+map Y &echo $env:fx | clip
 
-# open file in nvim
-cmd open $nvim $Env:f
-map V $nvim $Env:f
+# default open command opens in vertical pane on right side
+cmd open %{{
+    wezterm cli split-pane --right -- nvim $env:f
+}}
+
+# V to open file in nvim
+map V $nvim $env:f
+
+# H to toggle hidden files
+map H set hidden!
+
+# x to execute current file (must be executable)
+map x $$env:f
+
+# X to execute current file and wait for user before closing
+map X !$env:f
 
 # navigation
 map gr cd ~/stuff/repo
