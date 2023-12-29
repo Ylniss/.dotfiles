@@ -1,0 +1,53 @@
+# docs:
+# https://github.com/gokcehan/lf/blob/master/doc.txt
+
+# -------------- OPTIONS --------------
+
+set shell pwsh
+
+set filesep " "
+
+# show hidden files
+set hidden true
+
+# number of items to scroll from cursor
+set scrolloff 10
+
+# turn on line numbers with relative position
+set number true
+set relativenumber true
+
+# search with patterns * ? .
+set globsearch true
+
+# time interval to refresh directories (when external prcesses update them)
+set period 1
+
+# -------------- KEYMAPS --------------
+
+# reload config file using f5
+map <f-5> push :source<space>~/AppData/Local/lf/lfrc<enter>
+
+# use a to create file
+map a %{{
+  $file_name = Read-Host "File name"
+  New-Item $file_name -ItemType File
+}}
+
+# use A to create directory
+map A %{{
+  $dir_name = Read-Host "Directory Name"
+  New-Item $dir_name -ItemType Directory
+}}
+
+# copy file path
+map Y &echo $Env:fx | clip
+
+# open file in nvim
+cmd open $nvim $Env:f
+map V $nvim $Env:f
+
+# navigation
+map gr cd ~/stuff/repo
+map gd cd ~/downloads
+map gs cd ~/stuff
