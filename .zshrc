@@ -39,10 +39,6 @@ repo() {
   cd $repo_dir
 }
 
-fnd() {
-  find $1 -name $2 2>/dev/null
-}
-
 ntpd() {
   /mnt/c/Program\ Files/Notepad++/Notepad++.exe $1
 }

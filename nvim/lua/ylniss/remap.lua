@@ -11,6 +11,9 @@ vim.keymap.set({'n', 'v'}, 'K', '{' , { noremap = true, desc = 'move up by 1 par
 vim.keymap.set({'n', 'v'}, 'L', 'w' , { desc = 'move right by 1 word' })
 vim.keymap.set({'n', 'v'}, 'H', 'b' , { desc = 'move left by 1 word' })
 
+vim.keymap.set({'n', 'v'}, '<C-d>', '<C-d>zz' , { desc = 'scroll half screen down' })
+vim.keymap.set({'n', 'v'}, '<C-u>', '<C-u>zz' , { desc = 'scroll half screen up' })
+
 -- Go to next/previous buffer
 vim.keymap.set('n', '<leader><Tab>', vim.cmd.bnext, { desc = 'go to next buffer' })
 vim.keymap.set('n', '<leader><S-Tab>', vim.cmd.bprevious, { desc = 'go to previous buffer' })
@@ -47,6 +50,8 @@ vim.keymap.set('n', '<C-S-s>', vim.cmd.wa, { noremap = true, desc = 'save all ch
 
 vim.keymap.set('n', 'wqa', vim.cmd.wqa, { noremap = true, desc = 'save all changes and quit vim' })
 vim.keymap.set('n', 'wqA', ':qa!<CR>', { noremap = true, desc = 'quit vim without saving changes' })
+
+vim.keymap.set('v', '<leader>r' ,'\"hy:%s/<C-r>h//gc<left><left><left>', { desc = 'find and replace' })
 
 -- Terminal
 vim.keymap.set('t', '<esc>', '<C-\\><C-n>', { noremap = true, desc = 'exit terminal mode' })

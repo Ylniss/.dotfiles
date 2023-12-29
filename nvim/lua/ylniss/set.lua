@@ -21,7 +21,7 @@ vim.o.cursorline = true
 vim.o.mouse = 'a'
 
 -- Set powershell as default shell
-vim.o.shell = "powershell"
+vim.o.shell = "pwsh"
 
 -- Sync clipboard between OS and Neovim.
 vim.o.clipboard = 'unnamedplus'
@@ -64,17 +64,19 @@ local function get_last_segment_of_path(path)
     return string.gsub(path, "(.*[/\\])(.*)", "%2")
 end
 
-local function setCustomTitle()
-    vim.opt.titlestring = "nvim in " .. get_last_segment_of_path(vim.fn.getcwd()) .. "|" .. vim.fn.expand("%:t")
+local function set_custom_title()
+    local current_file = vim.fn.expand("%:t")
+    local filename_segment = current_file ~= "" and "|" .. current_file or ""
+    vim.opt.titlestring = "nvim in " .. get_last_segment_of_path(vim.fn.getcwd()) .. filename_segment
 end
 
 -- Enable setting the terminal title
 vim.opt.title = true
 
 -- Set the custom title initially
-setCustomTitle()
+set_custom_title()
 
 -- Update the title whenever the buffer changes or the directory changes
 vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter", "DirChanged"}, {
-    callback = setCustomTitle
+    callback = set_custom_title
 })

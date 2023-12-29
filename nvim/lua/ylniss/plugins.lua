@@ -114,5 +114,9 @@ require('lazy').setup({
     build = ':TSUpdate',
   },
 
+  -- Change color of all words under cursor
   "RRethy/vim-illuminate",
+
+  -- Color codes colorizer
+  "uga-rosa/ccc.nvim"
 }, {})

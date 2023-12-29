@@ -10,7 +10,7 @@ end
 local is_windows = wezterm.target_triple == 'x86_64-pc-windows-msvc'
 
 if is_windows then
-  config.default_prog = { 'C:/Program Files/PowerShell/7/pwsh.exe' }
+  config.default_prog = 'pwsh'
 end
 
 config.window_decorations = "RESIZE"
@@ -18,11 +18,6 @@ config.window_close_confirmation = 'NeverPrompt'
 
 config.show_new_tab_button_in_tab_bar = false
 config.switch_to_last_active_tab_when_closing_tab = true
-
-wezterm.on('window-config-reloaded', function(window, _)
-  wezterm.log_info 'the config was reloaded for this window!'
-  window:toast_notification('wezterm', 'configuration reloaded!', nil, 4000)
-end)
 
 
 -- =========== APPEARANCE ===========
@@ -109,6 +104,12 @@ config.keys = {
 
   -- Ctrl + T to open a new tab
   { key = "t", mods = "CTRL",       action = wezterm.action { SpawnTab = "CurrentPaneDomain" } },
+
+  -- Ctrl + Shift + Q to close current tab
+  { key = "q", mods = "CTRL|SHIFT", action = wezterm.action { CloseCurrentTab = { confirm = false } } },
+
+  -- Ctrl + Shift + W to close current pane
+  { key = "w", mods = "CTRL|SHIFT", action = wezterm.action{ CloseCurrentPane = { confirm = false } } },
 
   -- Ctrl + Shift + v to split vertically
   { key = "v", mods = "CTRL|SHIFT", action = wezterm.action { SplitHorizontal = { domain = "CurrentPaneDomain" } } },

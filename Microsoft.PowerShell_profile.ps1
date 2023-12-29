@@ -1,7 +1,8 @@
+using namespace System.Management.Automation
 # --------------------------------
 #             PATHS
 # --------------------------------
-#
+
 $repoPath = "~/Stuff/Repo/"
 $gamesPath = "C:/Games/"
 $downloadsPath = "~/Downloads/"
@@ -11,14 +12,9 @@ $downloadsPath = "~/Downloads/"
 #           APPEARANCE
 # --------------------------------
 
-$colors = $host.privatedata
-$colors.verbosebackgroundcolor = "Magenta"
-$colors.verboseforegroundcolor = "Green"
-$colors.warningbackgroundcolor = "Red"
-$colors.warningforegroundcolor = "white"
-$colors.ErrorBackgroundColor = "DarkCyan"
-$colors.ErrorForegroundColor = "Yellow"
-
+Set-PSReadLineOption -Colors $ISETheme
+$PSStyle.FileInfo.Directory = $PSStyle.Background.FromRgb("#006bd1") +
+                              $PSStyle.Foreground.BrightWhite
 
 # --------------------------------
 #           NAVIGATION
@@ -342,25 +338,50 @@ function SafelyOpenPasswordsForEdit {
     Remove-Item -Path "$extractPath\$fileName"
 }
 
+Set-Alias psw SafelyOpenPasswordsForEdit
+
+
+# --------------------------------
+#	   APPLICATIONS
+# --------------------------------
+
+# ----- NVIM -----
 function OpenNvimWithAhkFix() {
 	param([string] $fileName)	
 
 	$ahkScriptPath = "$env:LOCALAPPDATA\nvim\win-cmp-fix.ahk"
 	Start-Process $ahkScriptPath
-	& C:\tools\neovim\nvim-win64\bin\nvim.exe $fileName
+
+
+	$originalNvim = (Get-Command -Name nvim -CommandType Application).Source
+	if(-not (Test-Path -Path $fileName)) {
+		& $originalNvim
+	} else {
+		& $originalNvim $fileName
+	}
 }
 
-Set-Alias psw SafelyOpenPasswordsForEdit
 Set-Alias vim OpenNvimWithAhkFix
 Set-Alias nvim OpenNvimWithAhkFix
-Set-Alias sudo gsudo
 
+# ----- GSUDO -----
+Set-Alias sudo gsudo
 gsudo config PowerShellLoadProfile true | Out-Null
 
+# ----- LF -----
+function OpenLf() {
+	$originalLf = (Get-Command -Name lf -CommandType Application).Source
+	& $originalLf -print-last-dir $args | Set-Location
+}
+
+Set-Alias lf OpenLf 
+
+# ----- OH MY POSH -----
 oh-my-posh init pwsh | Invoke-Expression
 
+# ----- CHOCOLATEY -----
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
 	Import-Module "$ChocolateyProfile"
 }
-function clist { choco list }
+function clist { choco list } # fix for winfetch

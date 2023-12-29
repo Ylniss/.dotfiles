@@ -4,7 +4,7 @@
 --line-number
 --hidden
 --follow
---max-columns=150
+--max-columns=200
 --max-columns-preview
 --colors=line:none
 --colors=path:fg:62

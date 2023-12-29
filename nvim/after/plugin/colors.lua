@@ -18,6 +18,7 @@ require("kanagawa").setup({
       -- Set themes for popular plugins
       LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
       MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
+
       TelescopeTitle = { fg = theme.ui.special, bold = true },
       TelescopePromptNormal = { bg = theme.ui.bg_p1 },
       TelescopePromptBorder = { fg = theme.ui.bg_p1, bg = theme.ui.bg_p1 },
@@ -59,6 +60,14 @@ vim.api.nvim_set_hl(0, 'CursorLine', { bg = color_purple, fg = '', underline = f
 -- Setup same text highlights
 require('illuminate').configure({
     under_cursor = false,
+})
+
+-- Coloize text color
+require("ccc").setup({
+  highlighter = {
+    auto_enable = true,
+    lsp = true,
+  },
 })
 
 local function set_custom_highlights()
