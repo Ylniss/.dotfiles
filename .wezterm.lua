@@ -10,7 +10,7 @@ end
 local is_windows = wezterm.target_triple == 'x86_64-pc-windows-msvc'
 
 if is_windows then
-  config.default_prog = 'pwsh'
+  config.default_prog = { 'pwsh' }
 end
 
 config.window_decorations = "RESIZE"
@@ -122,6 +122,10 @@ config.keys = {
   { key = "DownArrow",  mods = "CTRL|ALT", action = wezterm.action { AdjustPaneSize = { "Down", 1 } } },
   { key = "LeftArrow",  mods = "CTRL|ALT", action = wezterm.action { AdjustPaneSize = { "Left", 1 } } },
   { key = "RightArrow", mods = "CTRL|ALT", action = wezterm.action { AdjustPaneSize = { "Right", 1 } } },
+
+  -- Ctrl + e/y to scroll up or down
+  { key = 'e', mods = 'CTRL', action = wezterm.action.ScrollByLine(-1) },
+  { key = 'y', mods = 'CTRL', action = wezterm.action.ScrollByLine(1) },
 
   { key = 'F11', action = wezterm.action.ToggleFullScreen },
 

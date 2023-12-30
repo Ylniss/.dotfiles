@@ -339,6 +339,7 @@ function SafelyOpenPasswordsForEdit {
 }
 
 Set-Alias psw SafelyOpenPasswordsForEdit
+Set-Alias -Name crb -Value Clear-RecycleBin
 
 
 # --------------------------------

@@ -5,7 +5,11 @@
 
 set shell pwsh
 
-set filesep " "
+# file separator when many selected files are passed to a command
+set filesep "; "
+
+# turn on icons display
+set icons true
 
 # show hidden files
 set hidden true
@@ -23,30 +27,59 @@ set globsearch true
 # time interval to refresh directories (when external prcesses update them)
 set period 1
 
-# -------------- KEYMAPS --------------
+# -------------- COMMANDS --------------
+
+# default open command opens nvim in vertical pane on right side
+cmd open &{{
+    wezterm cli split-pane --right -- nvim $env:f
+}}
+
+# create new file
+cmd mkfile %{{
+  Write-Host "File name: "
+  $fileName = Read-Host #"File name"
+  New-Item $fileName -ItemType File
+}}
+
+# create new directory
+cmd mkdir %{{
+  $dirName = Read-Host "Directory Name"
+  New-Item $dirName -ItemType Directory
+}}
+
+# add to 7z archive
+cmd add-to-archive %{{
+    $files = if ($env:fx) { $env:fx -split '; ' } else { $env:f }
+    $archiveName = Read-Host "Enter archive name (without extension)"
+    & 7z a "$archiveName.7z" $files
+}}
+
+# extract archive
+cmd extract-archive &{{
+    $filesToExtract = if ($env:fx) { $env:fx -split '; ' } else { @($env:f) }
+    foreach ($file in $filesToExtract) {
+        $dirName = [System.IO.Path]::GetFileNameWithoutExtension($file)
+        New-Item -Path $dirName -ItemType Directory -ErrorAction SilentlyContinue
+        & 7z x "$file" -o"$dirName"
+    }
+}}
+
+# -------------- KEY BINDINGS --------------
 
 # f5 to reload config file 
 map <f-5> source ~\\AppData\\Local\\lf\\lfrc
 
-# a to create file
-map a %{{
-  $file_name = Read-Host "File name"
-  New-Item $file_name -ItemType File
-}}
+map a mkfile
+map A mkdir
 
-# A to create directory
-map A %{{
-  $dir_name = Read-Host "Directory Name"
-  New-Item $dir_name -ItemType Directory
-}}
+map zza add-to-archive 
+map zze extract-archive 
+
+# <delete> to delete selected items
+map <delete> delete
 
 # Y to copy file path
 map Y &echo $env:fx | clip
-
-# default open command opens in vertical pane on right side
-cmd open %{{
-    wezterm cli split-pane --right -- nvim $env:f
-}}
 
 # V to open file in nvim
 map V $nvim $env:f
@@ -60,7 +93,14 @@ map x $$env:f
 # X to execute current file and wait for user before closing
 map X !$env:f
 
+# space to select file under cursor
+map <space> :toggle
+
 # navigation
 map gr cd ~/stuff/repo
 map gd cd ~/downloads
 map gs cd ~/stuff
+
+map J half-down
+map K half-up
+
