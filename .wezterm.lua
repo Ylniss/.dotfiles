@@ -13,7 +13,6 @@ if is_windows then
   config.default_prog = { 'pwsh' }
 end
 
-config.window_decorations = "RESIZE"
 config.window_close_confirmation = 'NeverPrompt'
 
 config.show_new_tab_button_in_tab_bar = false
@@ -24,8 +23,13 @@ config.switch_to_last_active_tab_when_closing_tab = true
 
 config.color_scheme = 'Banana Blueberry'
 
+config.window_decorations = "RESIZE"
+config.initial_cols = 135
+config.initial_rows = 34
+
 config.font = wezterm.font 'JetBrainsMono NF'
 config.font_size = 10.5
+config.line_height = 0.9
 
 config.window_background_opacity = 0.85
 

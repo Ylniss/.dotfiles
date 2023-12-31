@@ -64,6 +64,15 @@ cmd extract-archive &{{
     }
 }}
 
+# change tab title on cd
+cmd on-cd &{{
+    $currentPath = $PWD.Path -replace [regex]::Escape($HOME), '~'
+    $host.ui.RawUI.WindowTitle = "lf in $currentPath"
+}}
+
+# also run at startup
+on-cd
+
 # -------------- KEY BINDINGS --------------
 
 # f5 to reload config file 

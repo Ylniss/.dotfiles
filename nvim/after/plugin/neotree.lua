@@ -2,6 +2,10 @@ require("neo-tree").setup({
   close_if_last_window = false,
   window = {
     width = 45,
+    mappings = {
+      ["l"] = "open",
+      ["h"] = "close_node",
+    },
   },
   filesystem = {
     follow_current_file = {
