@@ -21,17 +21,30 @@ set scrolloff 10
 set number true
 set relativenumber true
 
-# search with patterns * ? .
-set globsearch true
-
 # time interval to refresh directories (when external prcesses update them)
 set period 1
 
 # -------------- COMMANDS --------------
 
-# default open command opens nvim in vertical pane on right side
+# default open command opens text files in nvim in vertical pane on right side
+# or opens it with default associated application in Windows
 cmd open &{{
-    wezterm cli split-pane --right -- nvim $env:f
+    $mimeType = & file $env:f --mime-type
+
+    if ($mimeType -match "text/" -or $mimeType -match "application/json") {
+        wezterm cli split-pane --right -- nvim $env:f
+    }
+    else {
+        Invoke-Item $env:f
+    }
+}}
+
+cmd open-less &{{
+    $mimeType = & file $env:f --mime-type
+
+    if ($mimeType -match "text/" -or $mimeType -match "application/json") {
+        wezterm cli split-pane --right -- less $env:f
+    }
 }}
 
 # create new file
@@ -69,20 +82,27 @@ cmd on-cd &{{
     $currentPath = $PWD.Path -replace [regex]::Escape($HOME), '~'
     $host.ui.RawUI.WindowTitle = "lf in $currentPath"
 }}
-
-# also run at startup
-on-cd
+on-cd # also run at startup
 
 # -------------- KEY BINDINGS --------------
 
 # f5 to reload config file 
 map <f-5> source ~\\AppData\\Local\\lf\\lfrc
 
+
+# a to create a file in current directory
 map a mkfile
+
+# A to create a directory in current directory
 map A mkdir
 
+
+# zza to add selected files to 7z archive
 map zza add-to-archive 
+
+# zze to extract selected files to directories named like archives
 map zze extract-archive 
+
 
 # <delete> to delete selected items
 map <delete> delete
@@ -96,14 +116,20 @@ map V $nvim $env:f
 # H to toggle hidden files
 map H set hidden!
 
+# open in less preview
+map i open-less
+
+
 # x to execute current file (must be executable)
 map x $$env:f
 
 # X to execute current file and wait for user before closing
 map X !$env:f
 
+
 # space to select file under cursor
 map <space> :toggle
+
 
 # navigation
 map gr cd ~/stuff/repo

@@ -20,8 +20,10 @@ vim.o.cursorline = true
 -- Enable mouse mode
 vim.o.mouse = 'a'
 
--- Set powershell as default shell
-vim.o.shell = "pwsh"
+-- Set powershell as default shell on Windows
+if vim.fn.has("win32") == 1 then
+    vim.o.shell = "pwsh"
+end
 
 -- Sync clipboard between OS and Neovim.
 vim.o.clipboard = 'unnamedplus'

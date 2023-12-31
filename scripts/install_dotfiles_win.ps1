@@ -23,3 +23,4 @@ setx RIPGREP_CONFIG_PATH "$dotfilesRepoDir\.ripgreprc"
 
 Write-Host "Creating symbolic link for lf"
 New-Item -ItemType SymbolicLink -Path "$env:LOCALAPPDATA\lf\lfrc" -Target "$dotfilesRepoDir\lf\windows\lfrc"
+New-Item -ItemType SymbolicLink -Path "$env:LOCALAPPDATA\lf\icons" -Target "$dotfilesRepoDir\lf\windows\icons"

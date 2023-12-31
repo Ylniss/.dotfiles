@@ -1,9 +1,16 @@
+local actions = require('telescope.actions')
+
 require('telescope').setup {
   defaults = {
     mappings = {
       i = {
         ['<C-u>'] = false,
         ['<C-d>'] = false,
+      },
+      n = {
+        ["l"] = actions.select_default + actions.center,
+        ["h"] = actions.select_horizontal,
+        ["v"] = actions.select_vertical,
       },
     },
   },
