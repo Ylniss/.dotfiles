@@ -39,6 +39,7 @@ cmd open &{{
     }
 }}
 
+# open in less in vertical pane on right side
 cmd open-less &{{
     $mimeType = & file $env:f --mime-type
 

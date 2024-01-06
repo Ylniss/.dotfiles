@@ -20,9 +20,6 @@ require('lazy').setup({
   -- Adds git related signs, as well as utilities for managing changes
   'lewis6991/gitsigns.nvim',
 
-  -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
-
   { -- Tree file explorer
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",

@@ -14,7 +14,7 @@ $downloadsPath = "~/Downloads/"
 
 Set-PSReadLineOption -Colors $ISETheme
 $PSStyle.FileInfo.Directory = $PSStyle.Background.FromRgb("#006bd1") +
-                              $PSStyle.Foreground.BrightWhite
+$PSStyle.Foreground.BrightWhite
 
 # --------------------------------
 #           NAVIGATION
@@ -41,6 +41,15 @@ function NewDirectoryAndEnter {
 		Set-Location -Path $newPath
 }
 
+function ChangeDirWithFzf {
+    # $filePath = Get-ChildItem -Recurse -File | Select-Object -ExpandProperty FullName | fzf
+    $filePath = fzf
+    if ($filePath) {
+        $dir = Split-Path $filePath
+        Set-Location $dir
+    }
+}
+
 function OpenExplorer() {
 	param([string] $path)
 		if($path) {
@@ -51,7 +60,7 @@ function OpenExplorer() {
 }
 
 
-Set-Alias -Name fnd   -Value FindDirOrfilename
+Set-Alias -Name fcd   -Value ChangeDirWithFzf
 
 Set-Alias -Name repo  	-Value ChangeDirToRepo
 Set-Alias -Name games 	-Value ChangeDirToGames
@@ -87,7 +96,7 @@ function StartDevTools {
 					@{Path = $dockerDesktopPath; Name = "Docker Desktop"},
 					@{Path = $githubDesktopPath; Name = "GitHub Desktop"},
 					@{Path = $postmanPath; Name = "Postman"}
-					)) {
+				  )) {
 			if ($app.Path -and (Test-Path $app.Path)) {
 				Start-Process $app.Path
 			} else {
@@ -156,7 +165,7 @@ function GitBranch {
 			[Parameter(Mandatory=$false)] [switch]$a, # list all branches
 			[Parameter(Mandatory=$false)] [switch]$d, # delete branch
 			[Parameter(Mandatory=$false)] [string]$branchNameToDelete
-			)
+	     )
 
 		if ($a) {
 			git branch -a
@@ -186,7 +195,7 @@ function GitBranchCheckout {
 function SafeGitRebase {
 	param(
 			[Parameter(Mandatory=$true)] [string]$targetBranch
-			)
+	     )
 
 		$currentBranch = git rev-parse --abbrev-ref HEAD
 
@@ -290,52 +299,52 @@ function symlink () {
 }
 
 function SafelyOpenPasswordsForEdit {
-    param(
-        [string] $archivePath = "$HOME\stuff\sec\accounts.7z",
-        [string] $extractPath = "$HOME\stuff\sec",
-        [string] $fileName = "accounts.txt"
-    )
+	param(
+			[string] $archivePath = "$HOME\stuff\sec\accounts.7z",
+			[string] $extractPath = "$HOME\stuff\sec",
+			[string] $fileName = "accounts.txt"
+	     )
 
-    # Ensure the temporary directory exists
-    if (-not (Test-Path -Path $extractPath)) {
-        New-Item -ItemType Directory -Path $extractPath
-    }
+# Ensure the temporary directory exists
+		if (-not (Test-Path -Path $extractPath)) {
+			New-Item -ItemType Directory -Path $extractPath
+		}
 
-    $password = Read-Host -AsSecureString "Enter archive password"
+	$password = Read-Host -AsSecureString "Enter archive password"
 
-    # Convert the SecureString password to plain text
-    $passwordText = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($password))
+# Convert the SecureString password to plain text
+		$passwordText = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($password))
 
-    # Unzip the file
-    $7zPath = "C:\Program Files\7-Zip\7z.exe"
-    if (-not (Test-Path -Path $7zPath)) {
-        Write-Error "7-Zip executable not found at path: $7zPath"
-        return
-    }
+# Unzip the file
+		$7zPath = "C:\Program Files\7-Zip\7z.exe"
+		if (-not (Test-Path -Path $7zPath)) {
+			Write-Error "7-Zip executable not found at path: $7zPath"
+				return
+		}
 
-    $unzipArgs = "x `"$archivePath`" -o`"$extractPath`" -p`"$passwordText`" -y"
-    $unzipProcess = Start-Process -FilePath $7zPath -ArgumentList $unzipArgs -Wait -PassThru -WindowStyle Hidden
+	$unzipArgs = "x `"$archivePath`" -o`"$extractPath`" -p`"$passwordText`" -y"
+		$unzipProcess = Start-Process -FilePath $7zPath -ArgumentList $unzipArgs -Wait -PassThru -WindowStyle Hidden
 
-    if ($unzipProcess.ExitCode -ne 0) {
-        Write-Error "Failed to unzip file. Exit Code: $($unzipProcess.ExitCode)"
-        return
-    }
+		if ($unzipProcess.ExitCode -ne 0) {
+			Write-Error "Failed to unzip file. Exit Code: $($unzipProcess.ExitCode)"
+				return
+		}
 
-    nvim "$extractPath\$fileName"
+	nvim "$extractPath\$fileName"
 
-    # Check if the file exists before attempting to re-zip
-    if (-not (Test-Path "$extractPath\$fileName")) {
-        Write-Error "The file to be re-zipped does not exist: $extractPath\$fileName"
-        return
-    }
+# Check if the file exists before attempting to re-zip
+		if (-not (Test-Path "$extractPath\$fileName")) {
+			Write-Error "The file to be re-zipped does not exist: $extractPath\$fileName"
+				return
+		}
 
-    # Re-zip the file with encryption
-    $zipArgs = "a -t7z -p$passwordText -mx0 `"$archivePath`" `"$extractPath\$fileName`""
-    Write-Host $zipArgs
-    Start-Process -FilePath $7zPath -ArgumentList $zipArgs -Wait -NoNewWindow
+# Re-zip the file with encryption
+	$zipArgs = "a -t7z -p$passwordText -mx0 `"$archivePath`" `"$extractPath\$fileName`""
+		Write-Host $zipArgs
+		Start-Process -FilePath $7zPath -ArgumentList $zipArgs -Wait -NoNewWindow
 
-    # Remove the temporary files
-    Remove-Item -Path "$extractPath\$fileName"
+# Remove the temporary files
+		Remove-Item -Path "$extractPath\$fileName"
 }
 
 Set-Alias psw SafelyOpenPasswordsForEdit
@@ -350,16 +359,16 @@ Set-Alias -Name crb -Value Clear-RecycleBin
 function OpenNvimWithAhkFix() {
 	param([string] $fileName)	
 
-	$ahkScriptPath = "$env:LOCALAPPDATA\nvim\win-cmp-fix.ahk"
-	Start-Process $ahkScriptPath
+		$ahkScriptPath = "$env:LOCALAPPDATA\nvim\win-cmp-fix.ahk"
+		Start-Process $ahkScriptPath
 
 
-	$originalNvim = (Get-Command -Name nvim -CommandType Application).Source
-	if(-not (Test-Path -Path $fileName)) {
-		& $originalNvim
-	} else {
-		& $originalNvim $fileName
-	}
+		$originalNvim = (Get-Command -Name nvim -CommandType Application).Source
+		if(-not (Test-Path -Path $fileName)) {
+			& $originalNvim
+		} else {
+			& $originalNvim $fileName
+		}
 }
 
 Set-Alias vim OpenNvimWithAhkFix
@@ -372,7 +381,7 @@ gsudo config PowerShellLoadProfile true | Out-Null
 # ----- LF -----
 function OpenLf() {
 	$originalLf = (Get-Command -Name lf -CommandType Application).Source
-	& $originalLf -print-last-dir $args | Set-Location
+		& $originalLf -print-last-dir $args | Set-Location
 }
 
 Set-Alias lf OpenLf 

@@ -77,10 +77,15 @@ Plug 'machakann/vim-highlightedyank'
 
 " Open solution explorer
 map <leader>e <Action>(ActivateProjectToolWindow)
+
+map gi <Action>(GotoImplementation)
+
+map <leader>r <Action>(RenameElement)
 map <leader>b <Action>(ToggleLineBreakpoint)
 map <leader>k <Action>(ShowHoverInfo)
 map <leader>t <Action>(ActivateTerminalToolWindow)
 map <leader>ss <Action>(GotoFile)
+map <leader>sf <Action>(GotoFile)
 map <leader>sg <Action>(SearchEverywhere)
 
 
