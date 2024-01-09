@@ -83,3 +83,19 @@ vim.api.nvim_create_autocmd({ "ColorScheme" }, {
   pattern = { "*" },
   callback = set_custom_highlights
 })
+
+require('nvim-treesitter.configs').setup {
+  ensure_installed = {
+    'c_sharp',
+    'javascript', 'typescript',
+    'html', 'scss',
+    'vimdoc', 'vim',
+    'lua', 'bash',
+    'gitignore',
+  },
+
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+}

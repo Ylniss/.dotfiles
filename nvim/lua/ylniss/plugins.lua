@@ -13,6 +13,12 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
+  -- Greetings dashboard screen
+  {
+    'goolord/alpha-nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+  },
+
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
@@ -61,6 +67,9 @@ require('lazy').setup({
       'rafamadriz/friendly-snippets',
     },
   },
+
+  -- Lightbult indicating code actions
+  { 'kosayoda/nvim-lightbulb' },
 
   { -- Add autopaired brackets
     'windwp/nvim-autopairs',
