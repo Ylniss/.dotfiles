@@ -49,7 +49,7 @@ vim.keymap.set('n', '<C-s>', vim.cmd.write, { desc = 'save file' })
 vim.keymap.set('n', '<C-S-s>', vim.cmd.wa, { noremap = true, desc = 'save all changes' })
 
 vim.keymap.set('n', 'wqa', vim.cmd.wqa, { noremap = true, desc = 'save all changes and quit vim' })
-vim.keymap.set('n', 'wqA', ':qa!<CR>', { noremap = true, desc = 'quit vim without saving changes' })
+vim.keymap.set('n', 'qA', ':qa!<CR>', { noremap = true, desc = 'quit vim without saving changes' })
 
 vim.keymap.set('v', '<leader>r' ,'\"hy:%s/<C-r>h//gc<left><left><left>', { desc = 'find and replace' })
 

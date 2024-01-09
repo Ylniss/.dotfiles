@@ -33,15 +33,15 @@ local logo = [[
 dashboard.section.header.val = vim.split(logo, "\n")
 
  dashboard.section.buttons.val = {
-   dashboard.button("f", "  Find file", ":Telescope find_files <CR>"),
-   dashboard.button("g", "  Find text with grep", ":Telescope live_grep <CR>"),
-   dashboard.button("r", "  Recently used files", ":Telescope oldfiles <CR>"),
-   dashboard.button("n", "  New file", ":ene <BAR> startinsert <CR>"),
-   dashboard.button("e", "  Explorer", ":Neotree toggle reveal_force_cwd<CR>"),
-   dashboard.button("c", "  Nvim config", ":e ~/stuff/repo/.dotfiles/nvim/ylniss/plugins.lua<CR>"),
-   dashboard.button("l", "󰚥  Lazy config", ":Lazy<CR>"),
-   dashboard.button("m", "󱌣  Mason config", ":Mason<CR>"),
-   dashboard.button("q", "  Quit Neovim", ":qa<CR>"),
+   dashboard.button("space s f", "  Find file"),
+   dashboard.button("space s g", "  Find text with grep"),
+   dashboard.button("space ?",   "  Recently used files"),
+   dashboard.button("n",         "  New file", ":ene <BAR> startinsert <CR>"),
+   dashboard.button("space e",   "  Explorer"),
+   dashboard.button("c",         "  Nvim config", ":e ~/stuff/repo/.dotfiles/nvim/ylniss/plugins.lua<CR>"),
+   dashboard.button("l",         "󰚥  Lazy config", ":Lazy<CR>"),
+   dashboard.button("m",         "󱌣  Mason config", ":Mason<CR>"),
+   dashboard.button("q",         "  Quit Neovim", ":qa<CR>"),
 }
 
 local function footer()
