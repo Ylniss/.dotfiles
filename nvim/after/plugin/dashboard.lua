@@ -33,8 +33,9 @@ local logo = [[
 dashboard.section.header.val = vim.split(logo, "\n")
 
  dashboard.section.buttons.val = {
-   dashboard.button("space s f", "  Find file"),
-   dashboard.button("space s g", "  Find text with grep"),
+   dashboard.button("space s f", "  Search file"),
+   dashboard.button("space s g", "  Search text with grep"),
+   dashboard.button("space s b", "  Search bookmarks"),
    dashboard.button("space ?",   "  Recently used files"),
    dashboard.button("n",         "  New file", ":ene <BAR> startinsert <CR>"),
    dashboard.button("space e",   "  Explorer"),
