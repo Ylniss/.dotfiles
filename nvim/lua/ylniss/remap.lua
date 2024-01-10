@@ -67,7 +67,28 @@ vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = tr
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- NeoTree
-vim.keymap.set('n', '<leader>e', ':Neotree toggle reveal_force_cwd<CR>' , { noremap = true, desc = 'open/close explorer' })
+local function open_neotree_git_root_or_file_dir()
+  -- Get the full path of the current file
+  local file_path = vim.fn.expand('%:p:h')
+
+  -- Change to the directory of the current file
+  vim.cmd('lcd ' .. file_path)
+
+  -- Try to find the Git root directory relative to the current file
+  local git_root = vim.fn.system("git rev-parse --show-toplevel")
+
+  -- Check if the git command was successful
+  if vim.v.shell_error == 0 and git_root and #git_root > 0 then
+    vim.cmd('lcd ' .. git_root)
+    -- Open Neotree at the Git root
+    vim.cmd("Neotree toggle dir=" .. git_root)
+  else
+    -- Open Neotree at the current file's directory
+    vim.cmd("Neotree toggle reveal_force_cwd")
+  end
+end
+
+vim.keymap.set('n', '<leader>e', open_neotree_git_root_or_file_dir, { noremap = true, desc = 'open/close explorer' })
 
 -- Git actions in Fugitive
 vim.keymap.set('n', '<leader>gs', function()
