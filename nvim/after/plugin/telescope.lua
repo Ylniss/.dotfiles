@@ -71,6 +71,7 @@ vim.keymap.set('n', '<leader>s/', telescope_live_grep_open_files, { desc = 'sear
 vim.keymap.set('n', '<leader>st', telescope.builtin, { desc = 'search select Telescope' })
 vim.keymap.set('n', '<leader>ss', telescope.git_files, { desc = 'search git files' })
 vim.keymap.set('n', '<leader>sf', telescope.find_files, { desc = 'search files' })
+vim.keymap.set('n', '<leader>sp', ":Telescope find_files cwd=~/stuff/repo/<CR>", { desc = 'search repo' })
 vim.keymap.set('n', '<leader>sh', telescope.help_tags, { desc = 'search help' })
 vim.keymap.set('n', '<leader>sw', telescope.grep_string, { desc = 'search current word' })
 vim.keymap.set('n', '<leader>sg', telescope_live_grep_git_root, { desc = 'search by grep on git root' })
