@@ -32,6 +32,11 @@ local logo = [[
 
 dashboard.section.header.val = vim.split(logo, "\n")
 
+function openNvimConfig()
+    vim.cmd('lcd ~/stuff/repo/.dotfiles')
+    vim.cmd('e ~/stuff/repo/.dotfiles/nvim/lua/ylniss/plugins.lua')
+end
+
 dashboard.section.buttons.val = {
   dashboard.button("space s f", " > Search file"),
   dashboard.button("space s p", " > Search repo"),
@@ -39,11 +44,11 @@ dashboard.section.buttons.val = {
   dashboard.button("space s b", " > Search bookmarks"),
   dashboard.button("space ?",   " > Recently used files"),
   dashboard.button("space e",   " > Explorer"),
-  dashboard.button("n",         " > New file", ":ene <BAR> startinsert <CR>"),
-  dashboard.button("c",         " > Nvim config", ":e ~/stuff/repo/.dotfiles/nvim/lua/ylniss/plugins.lua<CR>"),
-  dashboard.button("l",         "󰚥 > Lazy config", ":Lazy<CR>"),
-  dashboard.button("m",         "󱌣 > Mason config", ":Mason<CR>"),
-  dashboard.button("q",         " > Quit Neovim", ":qa<CR>"),
+  dashboard.button("n",         " > New file", "<cmd>ene <BAR> startinsert <CR>"),
+  dashboard.button("c",         " > Nvim config", "<cmd>lua openNvimConfig()<CR>"),
+  dashboard.button("l",         "󰚥 > Lazy config", "<cmd>Lazy<CR>"),
+  dashboard.button("m",         "󱌣 > Mason config", "<cmd>Mason<CR>"),
+  dashboard.button("q",         " > Quit Neovim", "<cmd>qa<CR>"),
 }
 
 local function footer()
