@@ -80,6 +80,16 @@ require('lazy').setup({
   -- Show pending keybinds.
   { 'folke/which-key.nvim', opts = {} },
 
+  { -- Friendly cmdline
+    "folke/noice.nvim",
+    event = "VeryLazy",
+    opts = {},
+    dependencies = {
+      "MunifTanjim/nui.nvim",
+      "rcarriga/nvim-notify",
+    }
+  },
+
   -- Set colorscheme
   { "rebelot/kanagawa.nvim", name = "kanagawa", priority = 1000 },
 
