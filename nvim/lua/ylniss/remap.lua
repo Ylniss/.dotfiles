@@ -1,4 +1,4 @@
--- Basic navigation
+-- ================================== Basic navigation ================================== 
 vim.keymap.set({'n', 'v'}, 'Z', '^' , { desc = 'move to the first character in line' })
 vim.keymap.set({'n', 'v'}, 'X', '$' , { desc = 'move to the end of line' })
 vim.keymap.set({'n', 'v'}, '<C-b>', '%' , { desc = 'jump to matching bracket' })
@@ -14,15 +14,27 @@ vim.keymap.set({'n', 'v'}, 'H', 'b' , { desc = 'move left by 1 word' })
 vim.keymap.set({'n', 'v'}, '<C-d>', '<C-d>zz' , { desc = 'scroll half screen down' })
 vim.keymap.set({'n', 'v'}, '<C-u>', '<C-u>zz' , { desc = 'scroll half screen up' })
 
--- Go to next/previous buffer
+
+-- ============================= Go to next/previous buffer ============================= 
 vim.keymap.set('n', '<leader><Tab>', vim.cmd.bnext, { desc = 'go to next buffer' })
 vim.keymap.set('n', '<leader><S-Tab>', vim.cmd.bprevious, { desc = 'go to previous buffer' })
 
--- Move selected code
-vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
 
--- Window management
+-- ================================= Move selected code ================================= 
+vim.keymap.set("v", "<A-j>", "<cmd>m '>+1<CR>gv=gv")
+vim.keymap.set("v", "<A-k>", "<cmd>m '<-2<CR>gv=gv")
+
+
+-- ================= Remove space functions because it is a leader key ================== 
+vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+
+
+-- =============================== Dealing with word wrap =============================== 
+vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+
+-- ================================= Window management ================================= 
 vim.keymap.set('n', '<C-Left>', '<C-w><' , { desc = 'decrese window width' })
 vim.keymap.set('n', '<C-Right>', '<C-w>>' , { desc = 'increase window width' })
 vim.keymap.set('n', '<C-Down>', '<C-w>-' , { desc = 'decrese window height' })
@@ -41,10 +53,19 @@ vim.keymap.set('n', '<C-l>', '<C-w>l' , { desc = 'move to right window' })
 vim.keymap.set('n', '<leader>v', vim.cmd.vsplit , { desc = 'open new vertical split window' })
 vim.keymap.set('n', '<leader>h', vim.cmd.split , { desc = 'open new horizontal split window' })
 
-vim.keymap.set('n', '<leader>q', vim.cmd.wq , { desc = 'save and close window' })
-vim.keymap.set('n', '<leader>Q', vim.cmd.q , { desc = 'close window' })
+local function saveAndClose()
+    -- Try to write and quit
+    local status, _ = pcall(vim.cmd.wq)
+    if not status then
+        -- If wq fails, just quit
+        vim.cmd('q')
+    end
+end
 
--- Commands
+vim.keymap.set('n', '<leader>q', saveAndClose, { desc = 'save and close window' })
+
+
+-- ===================================== Commands ===================================== 
 local function smart_save()
     local current_file = vim.fn.expand('%:p')
     if current_file == '' or current_file == nil then
@@ -61,24 +82,21 @@ vim.keymap.set('n', '<C-s>', smart_save, { desc = 'save file' })
 vim.keymap.set('n', '<C-S-s>', vim.cmd.wa, { noremap = true, desc = 'save all changes' })
 
 vim.keymap.set('n', 'wqa', vim.cmd.wqa, { noremap = true, desc = 'save all changes and quit vim' })
-vim.keymap.set('n', 'wqA', ':qa!<CR>', { noremap = true, desc = 'quit vim without saving changes' })
+vim.keymap.set('n', 'wqA', '<cmd>qa!<CR>', { noremap = true, desc = 'quit vim without saving changes' })
 
 vim.keymap.set('v', '<leader>r' ,'\"hy:%s/<C-r>h//gc<left><left><left>', { desc = 'find and replace' })
 
--- Terminal
+vim.keymap.set('n', '<leader>m', '<cmd>Noice<CR>', { noremap = true, desc = 'open messages' })
+
+-- ===================================== Terminal ===================================== 
 vim.keymap.set('t', '<esc>', '<C-\\><C-n>', { noremap = true, desc = 'exit terminal mode' })
 
--- LSP
+
+-- ======================================= LSP ======================================== 
 vim.keymap.set('n', '<leader>k', vim.lsp.buf.hover , { desc = 'hover documentation' })
 
--- Remove space functions because it is a leader key
-vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
--- Dealing with word wrap
-vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-
--- NeoTree
+-- ===================================== NeoTree ====================================== 
 local function open_neotree_git_root_or_file_dir()
   -- Get the full path of the current file
   local file_path = vim.fn.expand('%:p:h')
@@ -102,7 +120,8 @@ end
 
 vim.keymap.set('n', '<leader>e', open_neotree_git_root_or_file_dir, { noremap = true, desc = 'open/close explorer' })
 
--- Git actions in Fugitive
+
+-- ============================ Git actions in Fugitive ============================= 
 vim.keymap.set('n', '<leader>gs', function()
   vim.cmd.Git()
   vim.cmd.wincmd('L')
@@ -110,14 +129,17 @@ end, { desc = 'git status' })
 vim.keymap.set('n', '<leader>g>', '<cmd>Git push<CR>' , { noremap = true, desc = 'git push' })
 vim.keymap.set('n', '<leader>g<', '<cmd>Git pull<CR>' , { noremap = true, desc = 'git pull' })
 
--- Comment.nvim
+
+-- ================================== Comment.nvim ================================== 
 vim.keymap.set('n', '<C-_>', 'gcc' , { remap = true, desc = 'make inline comment' })
 vim.keymap.set('v', '<C-_>', 'gc' , { remap = true, desc = 'make inline comment' })
 vim.keymap.set('n', '<C-A-_>', 'gbc' , { remap = true, desc = 'make block comment' })
 vim.keymap.set('v', '<C-A-_>', 'gb' , { remap = true, desc = 'make block comment' })
 
--- Document existing key chains
-require('which-key').register {
+
+-- ========================== Document existing key chains ========================== 
+local whichKey = require('which-key')
+whichKey.register {
   ['<leader>c'] = { name = 'code', _ = 'which_key_ignore' },
   ['<leader>e'] = { name = 'explore', _ = 'which_key_ignore' },
   ['<leader>g'] = { name = 'git', _ = 'which_key_ignore' },
@@ -126,7 +148,7 @@ require('which-key').register {
 }
 
 -- Required for visual <leader>hs (hunk stage) to work
-require('which-key').register({
+whichKey.register({
   ['<leader>'] = { name = 'VISUAL <leader>' },
   ['<leader>h'] = { 'git hunk' },
 }, { mode = 'v' })
