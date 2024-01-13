@@ -45,7 +45,19 @@ vim.keymap.set('n', '<leader>q', vim.cmd.wq , { desc = 'save and close window' }
 vim.keymap.set('n', '<leader>Q', vim.cmd.q , { desc = 'close window' })
 
 -- Commands
-vim.keymap.set('n', '<C-s>', vim.cmd.write, { desc = 'save file' })
+local function smart_save()
+    local current_file = vim.fn.expand('%:p')
+    if current_file == '' or current_file == nil then
+        -- File has no name, open command line with saveas and current directory
+        local current_dir = vim.fn.expand('%:p:h') .. '/'
+        local saveas_cmd = ':saveas ' .. current_dir
+        vim.api.nvim_feedkeys(saveas_cmd, 'n', true)
+    else
+        -- File already has a name, just write
+        vim.cmd.write()
+    end
+end
+vim.keymap.set('n', '<C-s>', smart_save, { desc = 'save file' })
 vim.keymap.set('n', '<C-S-s>', vim.cmd.wa, { noremap = true, desc = 'save all changes' })
 
 vim.keymap.set('n', 'wqa', vim.cmd.wqa, { noremap = true, desc = 'save all changes and quit vim' })
