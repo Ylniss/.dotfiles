@@ -107,8 +107,8 @@ vim.keymap.set('n', '<leader>gs', function()
   vim.cmd.Git()
   vim.cmd.wincmd('L')
 end, { desc = 'git status' })
-vim.keymap.set('n', '<leader>g>', ':Git push<CR>' , { noremap = true, desc = 'git push' })
-vim.keymap.set('n', '<leader>g<', ':Git pull<CR>' , { noremap = true, desc = 'git pull' })
+vim.keymap.set('n', '<leader>g>', '<cmd>Git push<CR>' , { noremap = true, desc = 'git push' })
+vim.keymap.set('n', '<leader>g<', '<cmd>Git pull<CR>' , { noremap = true, desc = 'git pull' })
 
 -- Comment.nvim
 vim.keymap.set('n', '<C-_>', 'gcc' , { remap = true, desc = 'make inline comment' })
