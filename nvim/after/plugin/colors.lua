@@ -89,8 +89,13 @@ require('nvim-treesitter.configs').setup {
     'c_sharp',
     'javascript', 'typescript',
     'html', 'scss',
+    'jsonc',
+    'dockerfile',
+    'terraform',
     'vimdoc', 'vim',
     'lua', 'bash',
+    'sql',
+    'markdown',
     'gitignore',
   },
 
