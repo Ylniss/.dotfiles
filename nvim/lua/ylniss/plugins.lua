@@ -96,6 +96,13 @@ require("lazy").setup({
 		opts = {},
 	},
 
+	{ -- Surround text with brackets etc.
+		"kylechui/nvim-surround",
+		version = "*",
+		event = "VeryLazy",
+		opts = {},
+	},
+
 	-- Show pending keybinds.
 	{ "folke/which-key.nvim", opts = {} },
 
