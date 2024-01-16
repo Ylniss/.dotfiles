@@ -95,7 +95,7 @@ require('nvim-treesitter.configs').setup {
     'vimdoc', 'vim',
     'lua', 'bash',
     'sql',
-    'markdown',
+    'markdown', 'markdown_inline',
     'gitignore',
   },
 
