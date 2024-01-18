@@ -18,6 +18,10 @@ vim.keymap.set({ "n", "v" }, "<C-u>", "<C-u>zz", { desc = "scroll half screen up
 vim.keymap.set("n", "<leader><Tab>", vim.cmd.bnext, { desc = "go to next buffer" })
 vim.keymap.set("n", "<leader><S-Tab>", vim.cmd.bprevious, { desc = "go to previous buffer" })
 
+-- =========================== Reverse paste p and P commands ===========================
+vim.keymap.set({ "n", "v" }, "p", "P", { desc = "paste without overwriting clipboard" })
+vim.keymap.set({ "n", "v" }, "P", "p", { desc = "paste with overwriting clipboard" })
+
 -- ================================= Move selected code =================================
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
@@ -82,6 +86,8 @@ vim.keymap.set("n", "<C-S-s>", vim.cmd.wa, { noremap = true, desc = "save all ch
 vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc = "find and replace" })
 
 vim.keymap.set("n", "<leader>m", "<cmd>Noice<CR>", { noremap = true, desc = "open messages" })
+
+vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole file" })
 
 -- ===================================== Terminal =====================================
 vim.keymap.set("t", "<esc>", "<C-\\><C-n>", { noremap = true, desc = "exit terminal mode" })
