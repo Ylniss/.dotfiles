@@ -15,8 +15,8 @@ vim.keymap.set({ "n", "v" }, "<C-d>", "<C-d>zz", { desc = "scroll half screen do
 vim.keymap.set({ "n", "v" }, "<C-u>", "<C-u>zz", { desc = "scroll half screen up" })
 
 -- ============================= Go to next/previous buffer =============================
-vim.keymap.set("n", "<leader><Tab>", vim.cmd.bnext, { desc = "go to next buffer" })
-vim.keymap.set("n", "<leader><S-Tab>", vim.cmd.bprevious, { desc = "go to previous buffer" })
+vim.keymap.set("n", "]", vim.cmd.bnext, { desc = "go to next buffer" })
+vim.keymap.set("n", "[", vim.cmd.bprevious, { desc = "go to previous buffer" })
 
 -- =========================== Reverse paste p and P commands ===========================
 vim.keymap.set({ "n", "v" }, "p", "P", { desc = "paste without overwriting clipboard" })
