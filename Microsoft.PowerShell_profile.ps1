@@ -437,7 +437,11 @@ function OpenLf()
 Set-Alias lf OpenLf 
 
 # ----- OH MY POSH -----
-oh-my-posh init pwsh | Invoke-Expression
+# oh-my-posh init pwsh | Invoke-Expression
+
+# ----- STARSHIP -----
+starship init powershell | Invoke-Expression
+
 
 # ----- CHOCOLATEY -----
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
@@ -448,3 +452,5 @@ if (Test-Path($ChocolateyProfile))
 function clist
 { choco list 
 } # fix for winfetch
+
+

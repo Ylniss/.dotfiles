@@ -34,6 +34,7 @@ local servers = {
 	powershell_es = {},
 	omnisharp = {},
 	yamlls = {},
+	taplo = {},
 	terraformls = {},
 	lua_ls = {
 		Lua = {
@@ -82,5 +83,6 @@ require("mason-tool-installer").setup({
 		"prettierd",
 		"mdformat",
 		"csharpier",
+		"taplo",
 	},
 })

@@ -10,7 +10,8 @@ end
 local is_windows = wezterm.target_triple == "x86_64-pc-windows-msvc"
 
 if is_windows then
-	config.default_prog = { "pwsh" }
+	-- config.default_prog = { "pwsh" }
+	config.default_prog = { "nu" }
 end
 
 config.window_close_confirmation = "NeverPrompt"
@@ -58,18 +59,11 @@ local function tab_title(tab)
 	if fg_process_name then
 		-- Extracts only the program name without the extension and path
 		fg_process_name = fg_process_name:match("([^\\/]*)$")
-		-- Optionally remove the file extension if present
 		fg_process_name = fg_process_name:match("(.+)%..+") or fg_process_name
 	end
 
 	-- If a foreground process is running, use its name and the last part of the current path
-	if
-		fg_process_name
-		and #fg_process_name > 0
-		and fg_process_name ~= "nvim"
-		and fg_process_name ~= "lf"
-		and fg_process_name ~= "pwsh"
-	then
+	if fg_process_name and #fg_process_name > 0 and (fg_process_name == "lazydocker" or fg_process_name == "nu") then
 		--Bug on Windows so commented out: https://github.com/wez/wezterm/issues/3841
 		-- local cwd = pane:get_current_working_dir()
 		-- if cwd then
@@ -87,17 +81,6 @@ local function tab_title(tab)
 	-- Otherwise, use the title from the active pane in that tab
 	return pane.title
 end
-
--- local function tab_title(tab)
--- 	local title = tab.tab_title
---
--- 	-- if the tab title is explicitly set, take that
--- 	if title and #title > 0 then
--- 		return title
--- 	end
--- 	-- Otherwise, use the title from the active pane in that tab
--- 	return tab.active_pane.title
--- end
 
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
 	local edge_background = titlebar_color

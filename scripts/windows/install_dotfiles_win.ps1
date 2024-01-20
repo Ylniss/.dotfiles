@@ -1,6 +1,6 @@
 $dotfilesRepoDir = "$HOME/stuff/repo/.dotfiles"
 
-function CreateSymbolicLink($linkPath, $targetPath, $description)
+function CreateSymbolicLink($target, $linkPath, $description)
 {
     if (Test-Path $linkPath)
     {
@@ -8,23 +8,27 @@ function CreateSymbolicLink($linkPath, $targetPath, $description)
     } else
     {
         Write-Host "Creating symbolic link for $description"
-        New-Item -ItemType SymbolicLink -Path $linkPath -Target $targetPath
+        New-Item -ItemType SymbolicLink -Path $linkPath -Target $target
     }
 }
 
-CreateSymbolicLink "$env:LOCALAPPDATA\nvim" "$dotfilesRepoDir\nvim" "nvim"
-CreateSymbolicLink "$HOME\.ideavimrc" "$dotfilesRepoDir\.ideavimrc" ".ideavimrc"
-CreateSymbolicLink "$HOME\.wezterm.lua" "$dotfilesRepoDir\.wezterm.lua" ".wezterm.lua"
-CreateSymbolicLink "$HOME\.zshrc" "$dotfilesRepoDir\.zshrc" ".zshrc"
-CreateSymbolicLink "$env:LOCALAPPDATA\lf\lfrc" "$dotfilesRepoDir\lf\windows\lfrc" "lf (lfrc)"
-CreateSymbolicLink "$env:LOCALAPPDATA\lf\icons" "$dotfilesRepoDir\lf\windows\icons" "lf (icons)"
+CreateSymbolicLink "$dotfilesRepoDir\nvim" "$env:LOCALAPPDATA\nvim" "nvim"
+CreateSymbolicLink "$dotfilesRepoDir\.ideavimrc" "$HOME\.ideavimrc"  ".ideavimrc"
+CreateSymbolicLink "$dotfilesRepoDir\.wezterm.lua" "$HOME\.wezterm.lua" ".wezterm.lua"
+CreateSymbolicLink "$dotfilesRepoDir\.zshrc" "$HOME\.zshrc" ".zshrc"
+CreateSymbolicLink "$dotfilesRepoDir\lf\windows\lfrc" "$env:LOCALAPPDATA\lf\lfrc" "lf (lfrc)"
+CreateSymbolicLink "$dotfilesRepoDir\lf\windows\icons" "$env:LOCALAPPDATA\lf\icons" "lf (icons)"
+CreateSymbolicLink "$dotfilesRepoDir\starship.toml" "$HOME\.config\starship.toml" "starship.toml"
 
 Write-Host "Creating symbolic link for Microsoft.PowerShell_profile.ps1"
-if (Test-Path $PROFILE) {
+if (Test-Path $PROFILE)
+{
     Remove-Item $PROFILE
 }
-New-Item -ItemType SymbolicLink -Path $PROFILE -Target "$dotfilesRepoDir\Microsoft.PowerShell_profile.ps1"
+CreateSymbolicLink "$dotfilesRepoDir\Microsoft.PowerShell_profile.ps1" "$PROFILE" "lf (icons)"
 
 Write-Host "Setting environment variable for .ripgreprc"
 setx RIPGREP_CONFIG_PATH "$dotfilesRepoDir\.ripgreprc"
+
+
 
