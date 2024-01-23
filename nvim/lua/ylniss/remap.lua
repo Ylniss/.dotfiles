@@ -80,8 +80,8 @@ local function smart_save()
 	end
 end
 
-vim.keymap.set("n", "<C-s>", smart_save, { desc = "save file" })
-vim.keymap.set("n", "<C-S-s>", vim.cmd.wa, { noremap = true, desc = "save all changes" })
+vim.keymap.set({ "n", "v" }, "<C-s>", smart_save, { desc = "save file" })
+vim.keymap.set({ "n", "v" }, "<C-S-s>", vim.cmd.wa, { noremap = true, desc = "save all changes" })
 
 vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc = "find and replace" })
 

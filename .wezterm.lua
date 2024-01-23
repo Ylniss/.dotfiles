@@ -10,7 +10,6 @@ end
 local is_windows = wezterm.target_triple == "x86_64-pc-windows-msvc"
 
 if is_windows then
-	-- config.default_prog = { "pwsh" }
 	config.default_prog = { "nu" }
 end
 
@@ -146,10 +145,10 @@ config.keys = {
 	-- Ctrl + Shift + W to close current pane
 	{ key = "w", mods = "CTRL|SHIFT", action = wezterm.action({ CloseCurrentPane = { confirm = false } }) },
 
-	-- Ctrl + Shift + v to split vertically
+	-- Ctrl + Shift + V to split vertically
 	{ key = "v", mods = "CTRL|SHIFT", action = wezterm.action({ SplitHorizontal = { domain = "CurrentPaneDomain" } }) },
 
-	-- Ctrl + Shift + h to split vertically
+	-- Ctrl + Shift + H to split vertically
 	{ key = "h", mods = "CTRL|SHIFT", action = wezterm.action({ SplitVertical = { domain = "CurrentPaneDomain" } }) },
 
 	-- Ctrl + Alt + Arrow to resize in arrow direction
@@ -164,8 +163,8 @@ config.keys = {
 
 	{ key = "F11", action = wezterm.action.ToggleFullScreen },
 
-	-- Alt + l to show launcher opetions
-	{ key = "l", mods = "ALT", action = wezterm.action.ShowLauncher },
+	-- Alt + Shift + L to show launcher opetions
+	{ key = "l", mods = "SHIFT|ALT", action = wezterm.action.ShowLauncher },
 }
 
 return config
