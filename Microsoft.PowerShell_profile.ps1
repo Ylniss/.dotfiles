@@ -436,9 +436,6 @@ function OpenLf()
 
 Set-Alias lf OpenLf 
 
-# ----- OH MY POSH -----
-# oh-my-posh init pwsh | Invoke-Expression
-
 # ----- STARSHIP -----
 starship init powershell | Invoke-Expression
 
@@ -449,8 +446,4 @@ if (Test-Path($ChocolateyProfile))
 {
     Import-Module "$ChocolateyProfile"
 }
-function clist
-{ choco list 
-} # fix for winfetch
-
 

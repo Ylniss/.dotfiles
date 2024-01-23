@@ -20,6 +20,10 @@ CreateSymbolicLink "$dotfilesRepoDir\lf\windows\lfrc" "$env:LOCALAPPDATA\lf\lfrc
 CreateSymbolicLink "$dotfilesRepoDir\lf\windows\icons" "$env:LOCALAPPDATA\lf\icons" "lf (icons)"
 CreateSymbolicLink "$dotfilesRepoDir\starship.toml" "$HOME\.config\starship.toml" "starship.toml"
 
+CreateSymbolicLink "$dotfilesRepoDir\nushell\config.nu" "$env:APPDATA\nushell\config.nu" " nushell config.nu"
+CreateSymbolicLink "$dotfilesRepoDir\nushell\env.nu" "$env:APPDATA\nushell\env.nu" "nushell env.nu"
+CreateSymbolicLink "$dotfilesRepoDir\nushell\scripts" "$env:APPDATA\nushell\scripts" "nushell scripts"
+
 Write-Host "Creating symbolic link for Microsoft.PowerShell_profile.ps1"
 if (Test-Path $PROFILE)
 {
@@ -29,6 +33,4 @@ CreateSymbolicLink "$dotfilesRepoDir\Microsoft.PowerShell_profile.ps1" "$PROFILE
 
 Write-Host "Setting environment variable for .ripgreprc"
 setx RIPGREP_CONFIG_PATH "$dotfilesRepoDir\.ripgreprc"
-
-
 
