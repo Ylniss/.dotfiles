@@ -33,6 +33,7 @@ local servers = {
 	html = { filetypes = { "html" } },
 	powershell_es = {},
 	omnisharp = {},
+	gopls = {},
 	yamlls = {},
 	taplo = {},
 	terraformls = {},
@@ -84,5 +85,7 @@ require("mason-tool-installer").setup({
 		"mdformat",
 		"csharpier",
 		"taplo",
+		"goimports",
+		"golines",
 	},
 })

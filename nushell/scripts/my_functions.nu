@@ -16,6 +16,16 @@ def fcd --env [] {
     }
 }
 
+def wthr [city?: string] {
+  if $city == null {
+    finger $'(curl "ifconfig.co/city")@graph.no' 
+  } else {
+    finger $"($city)@graph.no" 
+  }
+
+  (curl wttr.in)
+}
+
 # -------------- GIT -------------- 
 
 # Git Status: Shows the working tree status.

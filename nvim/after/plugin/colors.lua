@@ -87,6 +87,7 @@ vim.api.nvim_create_autocmd({ "ColorScheme" }, {
 require("nvim-treesitter.configs").setup({
 	ensure_installed = {
 		"c_sharp",
+		"go",
 		"javascript",
 		"typescript",
 		"html",
