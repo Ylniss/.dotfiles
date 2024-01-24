@@ -68,7 +68,7 @@ def gita [path?: string] {
 
 # Show Git Graph: Displays a graphical representation of the git commit history.
 def gitg [] {
-  git log --all --decorate --oneline --graph --pretty=format:'%C(auto)%h %<(12,trunc)%an %<(16,trunc)%ar %s %d' 
+  git log --pretty=%h»¦«%s»¦«%aN»¦«%aE»¦«%aD | lines | split column "»¦«" commit message name email date | upsert date {|d| $d.date | into datetime} | sort-by date
 }
 
 # Git Diff: Displays unstaged and staged changes with appropriate messages.
