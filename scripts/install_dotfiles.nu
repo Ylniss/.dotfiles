@@ -11,7 +11,7 @@ def create-symbolic-link [target, linkPath, description] {
     echo $'($description) symbolic link already exists.'
   } else {
 
-    let parentDir = (path dirname $linkPath)
+    let parentDir = ($linkPath | path dirname)
     if (not ($parentDir | path exists)) {
       mkdir $parentDir
     }
