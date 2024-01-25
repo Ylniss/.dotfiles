@@ -165,6 +165,9 @@ config.keys = {
 
 	-- Alt + Shift + L to show launcher opetions
 	{ key = "l", mods = "SHIFT|ALT", action = wezterm.action.ShowLauncher },
+
+	-- Ctrl + V to paste
+	{ key = "v", mods = "CTRL", action = wezterm.action.PasteFrom("Clipboard") },
 }
 
 return config

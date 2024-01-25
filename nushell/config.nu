@@ -580,4 +580,5 @@ $env.config = {
 }
 
 source my_functions.nu
+source android.nu
 use ~/.cache/starship/init.nu

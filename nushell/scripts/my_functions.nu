@@ -53,6 +53,11 @@ def wthr [city?: string] {
   null
 }
 
+# SSH into mobile phone
+def 'ssh mob' [] {
+  ssh u0_a344@192.168.1.100 -p 8022 -i ~/.ssh/personal 
+}
+
 # -------------- GIT -------------- 
 
 # Git Status: Shows the working tree status.
@@ -128,4 +133,3 @@ def lfcd --env [] {
 }
 
 alias lf = lfcd
-

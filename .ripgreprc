@@ -3,7 +3,7 @@
 --line-number
 --hidden
 --follow
---max-columns=200
+--max-columns=400
 --max-columns-preview
 --colors=line:none
 --colors=path:fg:62
