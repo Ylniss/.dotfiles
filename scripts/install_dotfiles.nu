@@ -10,6 +10,12 @@ def create-symbolic-link [target, linkPath, description] {
   if ($linkPath | path exists) {
     echo $'($description) symbolic link already exists.'
   } else {
+
+    let parentDir = (path dirname $linkPath)
+    if (not ($parentDir | path exists)) {
+      mkdir $parentDir
+    }
+
     echo $'Creating symbolic link for ($description)'
     if ($nu.os-info.family =~ windows) {
       ^pwsh -c "New-Item -ItemType SymbolicLink -Path $linkPath -Target $target"
