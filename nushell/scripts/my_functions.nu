@@ -125,7 +125,7 @@ def lfcd --env [] {
     let target_dir = (open --raw $tmp)
     rm -f $tmp
     try {
-        if ($target_dir != $env.PWD) { cd $target_dir }
+      if ($target_dir != $env.PWD) { cd $target_dir }
     } catch { |e| print -e $'lfcd: Can not change to ($target_dir): ($e | get debug)' }
   } catch {
     |e| print -e $'lfcd: Reading ($tmp) returned an error: ($e | get debug)'

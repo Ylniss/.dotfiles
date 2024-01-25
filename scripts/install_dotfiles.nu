@@ -36,8 +36,6 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)\nushell\config.nu' $'($env.APPDATA)\nushell\config.nu' 'nushell config.nu'
   create-symbolic-link $'($dotfilesRepoDir)\nushell\env.nu' $'($env.APPDATA)\nushell\env.nu' 'nushell env.nu'
   create-symbolic-link $'($dotfilesRepoDir)\nushell\scripts' $'($env.APPDATA)\nushell\scripts' 'nushell scripts'
-
-  ^setx RIPGREP_CONFIG_PATH $'($dotfilesRepoDir)\.ripgreprc'
 } else {
   # For Linux/Android
   create-symbolic-link $'($dotfilesRepoDir)/nvim' $'($env.HOME)/.config/nvim' 'nvim'
@@ -50,6 +48,4 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)/nushell/config.nu' $'($env.HOME)/.config/nushell/config.nu' 'nushell config.nu'
   create-symbolic-link $'($dotfilesRepoDir)/nushell/env.nu' $'($env.HOME)/.config/nushell/env.nu' 'nushell env.nu'
   create-symbolic-link $'($dotfilesRepoDir)/nushell/scripts' $'($env.HOME)/.config/nushell/scripts' 'nushell scripts'
-
-  ^export RIPGREP_CONFIG_PATH=$'($dotfilesRepoDir)/.ripgreprc'
 }
