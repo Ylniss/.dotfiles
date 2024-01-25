@@ -7,7 +7,7 @@ let dotfilesRepoDir = if $nu.os-info.family =~ windows {
 }
 
 def create-symbolic-link [target, linkPath, description] {
-    if ($linkPath | path exists?) {
+    if ($linkPath | path exists) {
         echo "$description symbolic link already exists."
     } else {
         echo "Creating symbolic link for $description"
