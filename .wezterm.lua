@@ -117,7 +117,7 @@ local act = wezterm.action
 
 config.keys = {
 	-- Ctrl + number to focus on <number> tab
-	{ key = "0", mods = "CTRL", action = act({ ActivateTab = 0 }) },
+	{ key = "1", mods = "CTRL", action = act({ ActivateTab = 0 }) },
 	{ key = "2", mods = "CTRL", action = act({ ActivateTab = 1 }) },
 	{ key = "3", mods = "CTRL", action = act({ ActivateTab = 2 }) },
 	{ key = "4", mods = "CTRL", action = act({ ActivateTab = 3 }) },
@@ -125,7 +125,8 @@ config.keys = {
 	{ key = "6", mods = "CTRL", action = act({ ActivateTab = 5 }) },
 	{ key = "7", mods = "CTRL", action = act({ ActivateTab = 6 }) },
 	{ key = "8", mods = "CTRL", action = act({ ActivateTab = 7 }) },
-	{ key = "9", mods = "CTRL", action = act({ ActivateTab = -1 }) },
+	{ key = "9", mods = "CTRL", action = act({ ActivateTab = 8 }) },
+	{ key = "0", mods = "CTRL", action = act({ ActivateTab = -1 }) },
 
 	-- Ctrl + T to open a new tab
 	{ key = "t", mods = "CTRL", action = act({ SpawnTab = "CurrentPaneDomain" }) },
