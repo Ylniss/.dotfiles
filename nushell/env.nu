@@ -1,6 +1,6 @@
 $env.repo = "~/stuff/repo/"
 $env.games = "~/stuff/games/"
-$env.downloads = "~/downloads/"
+$env.downloads = "~/stuff/downloads/"
 
 # Specifies how environment variables are:
 # - converted from a string to a value on Nushell startup (from_string)

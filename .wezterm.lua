@@ -113,61 +113,80 @@ end)
 
 -- ========== KEY BINDINGS ==========
 
+local act = wezterm.action
+
 config.keys = {
 	-- Ctrl + number to focus on <number> tab
-	{ key = "1", mods = "CTRL", action = wezterm.action({ ActivateTab = 0 }) },
-	{ key = "2", mods = "CTRL", action = wezterm.action({ ActivateTab = 1 }) },
-	{ key = "3", mods = "CTRL", action = wezterm.action({ ActivateTab = 2 }) },
-	{ key = "4", mods = "CTRL", action = wezterm.action({ ActivateTab = 3 }) },
-	{ key = "5", mods = "CTRL", action = wezterm.action({ ActivateTab = 4 }) },
-	{ key = "6", mods = "CTRL", action = wezterm.action({ ActivateTab = 5 }) },
-	{ key = "7", mods = "CTRL", action = wezterm.action({ ActivateTab = 6 }) },
-	{ key = "8", mods = "CTRL", action = wezterm.action({ ActivateTab = 7 }) },
-	{ key = "9", mods = "CTRL", action = wezterm.action({ ActivateTab = -1 }) },
+	{ key = "0", mods = "CTRL", action = act({ ActivateTab = 0 }) },
+	{ key = "2", mods = "CTRL", action = act({ ActivateTab = 1 }) },
+	{ key = "3", mods = "CTRL", action = act({ ActivateTab = 2 }) },
+	{ key = "4", mods = "CTRL", action = act({ ActivateTab = 3 }) },
+	{ key = "5", mods = "CTRL", action = act({ ActivateTab = 4 }) },
+	{ key = "6", mods = "CTRL", action = act({ ActivateTab = 5 }) },
+	{ key = "7", mods = "CTRL", action = act({ ActivateTab = 6 }) },
+	{ key = "8", mods = "CTRL", action = act({ ActivateTab = 7 }) },
+	{ key = "9", mods = "CTRL", action = act({ ActivateTab = -1 }) },
 
 	-- Ctrl + T to open a new tab
-	{ key = "t", mods = "CTRL", action = wezterm.action({ SpawnTab = "CurrentPaneDomain" }) },
+	{ key = "t", mods = "CTRL", action = act({ SpawnTab = "CurrentPaneDomain" }) },
 
-	-- Ctrl + Shift + T to close current tab
+	-- Ctrl + Shift + T to create small pane on the bottom (terminal)
 	{
 		key = "t",
 		mods = "CTRL|SHIFT",
 		action = wezterm.action_callback(function(window, pane)
-			window:perform_action(wezterm.action({ SplitVertical = { domain = "CurrentPaneDomain" } }), pane)
-			window:perform_action(wezterm.action({ ActivatePaneDirection = "Down" }), pane)
-			window:perform_action(wezterm.action({ AdjustPaneSize = { "Down", 20 } }), pane)
+			window:perform_action(act({ SplitVertical = { domain = "CurrentPaneDomain" } }), pane)
+			window:perform_action(act({ ActivatePaneDirection = "Down" }), pane)
+			window:perform_action(act({ AdjustPaneSize = { "Down", 20 } }), pane)
 		end),
 	},
 
 	-- Ctrl + Shift + Q to close current tab
-	{ key = "q", mods = "CTRL|SHIFT", action = wezterm.action({ CloseCurrentTab = { confirm = false } }) },
+	{ key = "q", mods = "CTRL|SHIFT", action = act({ CloseCurrentTab = { confirm = false } }) },
 
 	-- Ctrl + Shift + W to close current pane
-	{ key = "w", mods = "CTRL|SHIFT", action = wezterm.action({ CloseCurrentPane = { confirm = false } }) },
+	{ key = "w", mods = "CTRL|SHIFT", action = act({ CloseCurrentPane = { confirm = false } }) },
 
 	-- Ctrl + Shift + V to split vertically
-	{ key = "v", mods = "CTRL|SHIFT", action = wezterm.action({ SplitHorizontal = { domain = "CurrentPaneDomain" } }) },
+	{ key = "v", mods = "CTRL|SHIFT", action = act({ SplitHorizontal = { domain = "CurrentPaneDomain" } }) },
 
 	-- Ctrl + Shift + H to split vertically
-	{ key = "h", mods = "CTRL|SHIFT", action = wezterm.action({ SplitVertical = { domain = "CurrentPaneDomain" } }) },
+	{ key = "h", mods = "CTRL|SHIFT", action = act({ SplitVertical = { domain = "CurrentPaneDomain" } }) },
 
 	-- Ctrl + Alt + Arrow to resize in arrow direction
-	{ key = "UpArrow", mods = "CTRL|ALT", action = wezterm.action({ AdjustPaneSize = { "Up", 1 } }) },
-	{ key = "DownArrow", mods = "CTRL|ALT", action = wezterm.action({ AdjustPaneSize = { "Down", 1 } }) },
-	{ key = "LeftArrow", mods = "CTRL|ALT", action = wezterm.action({ AdjustPaneSize = { "Left", 1 } }) },
-	{ key = "RightArrow", mods = "CTRL|ALT", action = wezterm.action({ AdjustPaneSize = { "Right", 1 } }) },
+	{ key = "UpArrow", mods = "CTRL|ALT", action = act({ AdjustPaneSize = { "Up", 1 } }) },
+	{ key = "DownArrow", mods = "CTRL|ALT", action = act({ AdjustPaneSize = { "Down", 1 } }) },
+	{ key = "LeftArrow", mods = "CTRL|ALT", action = act({ AdjustPaneSize = { "Left", 1 } }) },
+	{ key = "RightArrow", mods = "CTRL|ALT", action = act({ AdjustPaneSize = { "Right", 1 } }) },
 
 	-- Ctrl + e/y to scroll up or down
-	{ key = "e", mods = "CTRL", action = wezterm.action.ScrollByLine(-1) },
-	{ key = "y", mods = "CTRL", action = wezterm.action.ScrollByLine(1) },
+	{ key = "e", mods = "CTRL", action = act.ScrollByLine(-1) },
+	{ key = "y", mods = "CTRL", action = act.ScrollByLine(1) },
 
-	{ key = "F11", action = wezterm.action.ToggleFullScreen },
+	{ key = "F11", action = act.ToggleFullScreen },
 
 	-- Alt + Shift + L to show launcher opetions
-	{ key = "l", mods = "SHIFT|ALT", action = wezterm.action.ShowLauncher },
+	{ key = "l", mods = "SHIFT|ALT", action = act.ShowLauncher },
 
 	-- Ctrl + V to paste
-	{ key = "v", mods = "CTRL", action = wezterm.action.PasteFrom("Clipboard") },
+	{ key = "v", mods = "CTRL", action = act.PasteFrom("Clipboard") },
+}
+
+local copy_mode = nil
+if wezterm.gui then
+	copy_mode = wezterm.gui.default_key_tables().copy_mode
+	local keybindings = {
+		{ key = "l", mods = "SHIFT", action = wezterm.action.CopyMode("MoveForwardWord") },
+		{ key = "h", mods = "SHIFT", action = wezterm.action.CopyMode("MoveBackwardWord") },
+	}
+
+	for _, keybinding in ipairs(keybindings) do
+		table.insert(copy_mode, keybinding)
+	end
+end
+
+config.key_tables = {
+	copy_mode = copy_mode,
 }
 
 return config
