@@ -53,9 +53,17 @@ def wthr [city?: string] {
   null
 }
 
+# -------------- SSH -------------- 
+
 # SSH into mobile phone
 def 'ssh mob' [] {
   ssh u0_a344@192.168.1.100 -p 8022 -i ~/.ssh/personal 
+}
+
+# Copy to clipboard file contents from mobile phone
+def 'ssh mob clip' [file_path: string] {
+    let clipboard_cmd = if $nu.os_info.family == 'windows' { 'clip' } else { 'pbcopy' }
+    ssh u0_a344@192.168.1.100 -p 8022 -i ~/.ssh/personal "cat $file_path" | $clipboard_cmd
 }
 
 # -------------- GIT -------------- 

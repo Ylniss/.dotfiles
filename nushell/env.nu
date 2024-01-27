@@ -1,6 +1,12 @@
-$env.repo = "~/stuff/repo/"
-$env.games = "~/stuff/games/"
-$env.downloads = "~/stuff/downloads/"
+if $nu.os-info.family =~ windows {
+  $env.repo = $"($env.USERPROFILE)/stuff/repo"
+  $env.games = $"($env.USERPROFILE)/stuff/games"
+  $env.downloads = $"($env.USERPROFILE)/stuff/downloads"
+} else {
+  $env.repo = $"($env.HOME)/stuff/repo"
+  $env.games = $"($env.HOME)/stuff/games"
+  $env.downloads = $"($env.HOME)/stuff/downloads"
+}
 
 # Specifies how environment variables are:
 # - converted from a string to a value on Nushell startup (from_string)
@@ -35,7 +41,7 @@ $env.RIPGREP_CONFIG_PATH = $'($env.repo)/.dotfiles/.ripgreprc'
 # Setup Android env
 if $nu.os-info.name =~ android {
   $env.storage = "~/storage"
-  $env.camera = "~/storage/dcim/camera/"
+  $env.camera = "~/storage/dcim/camera"
 }
 
 # Setup custom prompt - Starship
