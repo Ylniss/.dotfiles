@@ -45,7 +45,11 @@ if $nu.os-info.name =~ android {
 }
 
 # Start ssh-agent
-let sshAgentFilePath = $"/tmp/ssh-agent-($env.USER).nuon"
+let sshAgentFilePath = if $nu.os-info.family == 'windows' {
+    $"($env.TEMP)/ssh-agent-($env.USERNAME).nuon"
+} else {
+    $"/tmp/ssh-agent-($env.USER).nuon"
+}
 
 if ($sshAgentFilePath | path exists) and ($"/proc/((open $sshAgentFilePath).SSH_AGENT_PID)" | path exists) {
   # loading it
