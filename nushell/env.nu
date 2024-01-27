@@ -44,6 +44,24 @@ if $nu.os-info.name =~ android {
   $env.camera = "~/storage/dcim/camera"
 }
 
+# Start ssh-agent
+let sshAgentFilePath = $"/tmp/ssh-agent-($env.USER).nuon"
+
+if ($sshAgentFilePath | path exists) and ($"/proc/((open $sshAgentFilePath).SSH_AGENT_PID)" | path exists) {
+  # loading it
+  load-env (open $sshAgentFilePath)
+} else {
+  # creating it
+  ^ssh-agent -c
+    | lines
+    | first 2
+    | parse "setenv {name} {value};"
+    | transpose -r
+    | into record
+    | save --force $sshAgentFilePath
+    load-env (open $sshAgentFilePath)
+}
+
 # Setup custom prompt - Starship
 mkdir ~/.cache/starship
 starship init nu | save -f ~/.cache/starship/init.nu
