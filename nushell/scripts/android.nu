@@ -33,13 +33,11 @@ def 'ssh mob clip' [file_path: string] {
 
 # Copy file from mobile phone to current machine
 def 'ssh mob cp' [file_path: string target_path: string] {
-  let ssh_output = (ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/personal $"cat ($file_path)")
-
   let parentDir = ($target_path | path dirname)
-  if (not ($parentDir | path exists)) {
-    mkdir $parentDir
-  }
+    if (not ($parentDir | path exists)) {
+      mkdir $parentDir
+    }
 
-  cp $ssh_output $target_path
+  (ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/personal $"cp ($file_path) ($target_path)")
 }
 

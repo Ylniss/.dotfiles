@@ -134,7 +134,7 @@ map <space> :toggle
 
 # navigation
 map gr cd ~/stuff/repo
-map gd cd ~/downloads
+map gd cd ~/stuff/downloads
 map gs cd ~/stuff
 
 map J half-down
