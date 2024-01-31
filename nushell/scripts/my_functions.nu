@@ -13,7 +13,7 @@ def fcd --env [] {
   let path = (fd | fzf)
   let type = file $path
   if ($path | path exists) {
-    if $type =~ 'directory' {
+    if $type =~ 'directory' or $type =~ 'symbolic link' {
       cd $path
     } else {
       cd ($path | path dirname)
