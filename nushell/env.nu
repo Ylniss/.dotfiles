@@ -45,36 +45,13 @@ if $nu.os-info.name =~ android {
 }
 
 # Start ssh-agent
-def start_ssh_agent [file_path: string] {
-  if ($file_path | path exists) and ($"/proc/((open $file_path).SSH_AGENT_PID)" | path exists) {
-  # loading it
-    load-env (open $file_path)
-  } else {
-  # creating it
-    ^ssh-agent -c
-      | lines
-      | first 2
-      | parse "setenv {name} {value};"
-      | transpose -r
-      | into record
-      | save --force $file_path
-      load-env (open $file_path)
-  }
-}
-
-if $nu.os-info.name == 'android' {
-  let current_user = whoami
-  let ssh_agent_path = $"($env.HOME)/.ssh/tmp/ssh-agent-($current_user).nuon"
-
-  if not ($ssh_agent_path | path exists) {
-    mkdir ($ssh_agent_path | path dirname)
-  }
-
-  start_ssh_agent $ssh_agent_path
-} else if $nu.os-info.family == 'unix' {
-  let ssh_agent_path = $"/tmp/ssh-agent-($env.USER).nuon"
-  start_ssh_agent $ssh_agent_path
-} 
+^ssh-agent -c
+    | lines
+    | first 2
+    | parse "setenv {name} {value};"
+    | transpose -r
+    | into record
+    | load-env
 
 # Setup custom prompt - Starship
 mkdir ~/.cache/starship
