@@ -45,38 +45,36 @@ if $nu.os-info.name =~ android {
 }
 
 # Start ssh-agent
-let sshAgentFilePath = if $nu.os-info.family == 'windows' {
-  $"($env.TEMP)/ssh-agent-($env.USERNAME).nuon"
-} else {
-  # let ssh_tmp_path = $"($env.HOME)/.ssh/tmp/ssh-agent-(whoami).nuon" 
-  #   if not ($ssh_tmp_path | path exists) {
-  #     touch $ssh_tmp_path
-  #   }
-  # print $ssh_tmp_path 
-  # $ssh_tmp_path
-let current_user = whoami
-let ssh_tmp_path = $"($env.HOME)/.ssh/tmp/ssh-agent-($current_user).nuon"
-
-if not ($ssh_tmp_path | path exists) {
-    mkdir ($ssh_tmp_path | path dirname)
-    touch $ssh_tmp_path
-}
-}
-
-if ($sshAgentFilePath | path exists) and ($"/proc/((open $sshAgentFilePath).SSH_AGENT_PID)" | path exists) {
+def start_ssh_agent [file_path: string] {
+  if ($file_path | path exists) and ($"/proc/((open $file_path).SSH_AGENT_PID)" | path exists) {
   # loading it
-  load-env (open $sshAgentFilePath)
-} else {
+    load-env (open $file_path)
+  } else {
   # creating it
-  ^ssh-agent -c
-    | lines
-    | first 2
-    | parse "setenv {name} {value};"
-    | transpose -r
-    | into record
-    | save --force $sshAgentFilePath
-    load-env (open $sshAgentFilePath)
+    ^ssh-agent -c
+      | lines
+      | first 2
+      | parse "setenv {name} {value};"
+      | transpose -r
+      | into record
+      | save --force $file_path
+      load-env (open $file_path)
+  }
 }
+
+if $nu.os-info.name == 'android' {
+  let current_user = whoami
+    let ssh_agent_path = $"($env.HOME)/.ssh/tmp/ssh-agent-($current_user).nuon"
+
+    if not ($ssh_agent_path | path exists) {
+      mkdir ($ssh_agent_path | path dirname)
+      touch $ssh_agent_path
+    }
+  start_ssh_agent $ssh_agent_path
+} else if $nu.os-info.family == 'unix' {
+  let ssh_agent_path = $"/tmp/ssh-agent-($env.USER).nuon"
+  start_ssh_agent $ssh_agent_path
+} 
 
 # Setup custom prompt - Starship
 mkdir ~/.cache/starship
