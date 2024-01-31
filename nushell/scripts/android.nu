@@ -9,11 +9,6 @@
 alias strg = cd $env.storage
 alias cam = cd $env.camera
 
-# Open predefined tree view with depth of 4
-def treep [] {
-  ^tree -lL 4 -C
-}
-
 # -------------- APT -------------- 
 
 # Update apt db and all installed packages
