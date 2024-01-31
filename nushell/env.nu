@@ -53,6 +53,10 @@ if $nu.os-info.name =~ android {
     | into record
     | load-env
 
+if $nu.os-info.name == 'android' {
+  do { ^ssh-add ~/.ssh/andrd } | ignore
+}
+
 # Setup custom prompt - Starship
 mkdir ~/.cache/starship
 starship init nu | save -f ~/.cache/starship/init.nu
