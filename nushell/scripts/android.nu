@@ -9,6 +9,19 @@
 alias strg = cd $env.storage
 alias cam = cd $env.camera
 
+
+def 'tree dir' [] {
+  ^tree -lL 4 -C
+}
+
+# -------------- APT -------------- 
+
+# Update apt db and all installed packages
+def 'apt up' [] {
+  apt update
+  apt upgrade
+}
+
 # -------------- SSH -------------- 
 
 let username = 'u0_a344'
