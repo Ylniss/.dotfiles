@@ -46,9 +46,21 @@ if $nu.os-info.name =~ android {
 
 # Start ssh-agent
 let sshAgentFilePath = if $nu.os-info.family == 'windows' {
-    $"($env.TEMP)/ssh-agent-($env.USERNAME).nuon"
+  $"($env.TEMP)/ssh-agent-($env.USERNAME).nuon"
 } else {
-    $"/tmp/ssh-agent-($env.USER).nuon"
+  # let ssh_tmp_path = $"($env.HOME)/.ssh/tmp/ssh-agent-(whoami).nuon" 
+  #   if not ($ssh_tmp_path | path exists) {
+  #     touch $ssh_tmp_path
+  #   }
+  # print $ssh_tmp_path 
+  # $ssh_tmp_path
+let current_user = whoami
+let ssh_tmp_path = $"($env.HOME)/.ssh/tmp/ssh-agent-($current_user).nuon"
+
+if not ($ssh_tmp_path | path exists) {
+    mkdir ($ssh_tmp_path | path dirname)
+    touch $ssh_tmp_path
+}
 }
 
 if ($sshAgentFilePath | path exists) and ($"/proc/((open $sshAgentFilePath).SSH_AGENT_PID)" | path exists) {
