@@ -9,8 +9,8 @@
 alias strg = cd $env.storage
 alias cam = cd $env.camera
 
-
-def 'tree dir' [] {
+# Open predefined tree view with depth of 4
+def treep [] {
   ^tree -lL 4 -C
 }
 
