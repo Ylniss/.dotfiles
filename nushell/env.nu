@@ -37,6 +37,7 @@ $env.NU_PLUGIN_DIRS = [
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 
 $env.RIPGREP_CONFIG_PATH = $'($env.repo)/.dotfiles/.ripgreprc' 
+$env.FZF_DEFAULT_COMMAND = 'fd -H'
 
 # Setup Android env
 if $nu.os-info.name =~ android {

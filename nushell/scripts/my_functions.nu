@@ -10,7 +10,7 @@ def mkdircd --env [dirName: string] {
 
 # Change dir with fzf
 def fcd --env [] {
-  let path = (fd | fzf)
+  let path = fzf
   let type = file $path
   if ($path | path exists) {
     if $type =~ 'directory' or $type =~ 'symbolic link' {
