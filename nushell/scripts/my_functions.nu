@@ -10,15 +10,15 @@ def mkdircd --env [dirName: string] {
 
 # Change dir with fzf
 def fcd --env [] {
-  let path = fzf
-  let type = file $path
-  if ($path | path exists) {
-    if $type =~ 'directory' or $type =~ 'symbolic link' {
-      cd $path
-    } else {
-      cd ($path | path dirname)
-    }
+  let filePath = fzf
+  if ($filePath | path exists) {
+    cd ($filePath | path dirname)
   }
+}
+
+# Open file in nvim with fzf
+def fvi [] {
+  nvim (fzf) 
 }
 
 # Get weather information for specified city or current location city if not specified
