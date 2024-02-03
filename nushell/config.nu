@@ -579,8 +579,10 @@ $env.config = {
     ]
 }
 
-source my_functions.nu
 source android.nu
 source docker.nu
+source general.nu
+source git.nu
+source weather.nu
 
 use ~/.cache/starship/init.nu
