@@ -123,6 +123,7 @@ def gitp [branchName?: string] {
 alias dockercu = docker compose up
 alias dockercub = docker compose up --build
 
+# Run docker contiainer with postgres and set environment variables for psql session
 def "docker psqls" --env [
   container_name: string,
   db_user: string,
@@ -144,6 +145,25 @@ def "docker psql" [command: string] {
     docker exec -it $env.docker_psql_container_name psql -U $env.docker_psql_db_user -d $env.docker_psql_db_name -c $"($command)"
   } else {
     "Set the Docker PostgreSQL environment variables first using 'docker psqls'."
+  }
+}
+
+# Stops all running containers
+def "docker stop all" [] { 
+  docker ps | from ssv | get names | each { |it| docker stop $it }
+}
+
+# List all containers within a compose
+def "docker cps" --wrapped [...args] {
+  if ($args | length) == 1 {
+    let project_name = $args.0
+    let filter_arg = $'-f label=com.docker.compose.project=($project_name)' 
+    docker ps $filter_arg
+  } else {
+    let project_name = $args | last
+    let options = $args | drop 
+    let filter_arg = $'-f label=com.docker.compose.project=($project_name)' 
+    docker ps ...$options $filter_arg
   }
 }
 
