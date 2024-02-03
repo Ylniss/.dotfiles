@@ -31,8 +31,12 @@ def gitd --wrapped [...opts] {
 }
 
 # Git Commit Message: Commits changes with a given commit message.
-def gitc --wrapped [message: string, ...opts] {
-  git commit ...$opts -m $message 
+def gitc --wrapped [...opts, message?: string] {
+  if not ($message | is-empty) {
+    git commit ...$opts -m $message 
+  } else {
+    git commit ...$opts
+  }
 }
 
 # Git Push Origin: Pushes the current branch to the origin remote, setting upstream if specified.

@@ -38,6 +38,7 @@ $env.NU_PLUGIN_DIRS = [
 
 $env.RIPGREP_CONFIG_PATH = $'($env.repo)/.dotfiles/.ripgreprc' 
 $env.FZF_DEFAULT_COMMAND = 'fd -H'
+$env.GIT_EDITOR = 'nvim'
 
 # Setup Android env
 if $nu.os-info.name =~ android {
