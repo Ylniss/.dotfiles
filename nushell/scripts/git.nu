@@ -69,25 +69,14 @@ def gitbch [branch: string] {
   git checkout -b $branch
 }
 
-# Merge with latest target branch
 def gitmrg [branch: string] {
   let currentBranch = git rev-parse --abbrev-ref HEAD
-  
-  # Ensure the target branch is up to date
-  git fetch origin $branch
-  git checkout $branch
-  git pull origin $branch
-  
-  # Switch back to the original branch
-  git checkout $currentBranch
-  
+  git fetch --all
+
   # Check if the current branch has an upstream set, if not, set it to origin/currentBranch
   if (git rev-parse --abbrev-ref --symbolic-full-name @{u} | is-empty) {
     git branch $'--set-upstream-to=origin/($currentBranch)' $currentBranch
   }
-  git pull --all
-  
-  # Merge the target branch into the current branch
-  git merge $branch --allow-unrelated-histories
-  git checkout $currentBranch
+
+  git merge $"origin/($branch)" --allow-unrelated-histories
 }

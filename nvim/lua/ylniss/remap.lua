@@ -128,6 +128,9 @@ end, { desc = "git status" })
 vim.keymap.set("n", "<leader>g>", "<cmd>Git push<CR>", { noremap = true, desc = "git push" })
 vim.keymap.set("n", "<leader>g<", "<cmd>Git pull<CR>", { noremap = true, desc = "git pull" })
 
+vim.keymap.set("n", "<leader>ch", "<cmd>diffget //2<CR>", { desc = "get diff from left" })
+vim.keymap.set("n", "<leader>cl", "<cmd>diffget //3<CR>", { desc = "get diff from right" })
+
 -- ================================== Comment.nvim ==================================
 vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "make inline comment" })
 vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "make inline comment" })
