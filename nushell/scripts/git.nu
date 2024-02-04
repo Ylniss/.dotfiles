@@ -1,8 +1,6 @@
-# Git Status: Shows the working tree status.
-# def gits --wrapped [...opts] { git status ...$opts }
 alias gits = git status
 
-# Git Add All: Adds all changes in a specified path, or the current directory if no path is given.
+# Git Add changes in a specified path, or the current directory if no path is given.
 def gita --wrapped [path?: string, ...opts] {
   if ((not ($path | is-empty)) and ($path | path exists)) {
     git add ...$opts $path  
@@ -12,8 +10,12 @@ def gita --wrapped [path?: string, ...opts] {
 }
 
 # Show Git Log: Displays a graphical representation of the git commit history.
-def gitl [] {
-  git log --pretty=%h»¦«%s»¦«%aN»¦«%aE»¦«%aD | lines | split column "»¦«" commit message name email date | upsert date {|d| $d.date | into datetime} | sort-by date
+def gitl [--grph (-g)] {
+  if $grph { 
+    git log --all --decorate --oneline --graph --pretty=format:'%C(auto)%h %<(12,trunc)%an %<(16,trunc)%ar %s %d'
+  } else { 
+    git log $"--pretty=(ansi yellow)%h(ansi reset)»¦«%s»¦«%aN»¦«%aE»¦«%aD" | lines | split column "»¦«" commit message name email date | upsert date {|d| $d.date | into datetime} | sort-by date
+  }  
 }
 
 # Git Diff: Displays unstaged and staged changes with appropriate messages.
@@ -40,11 +42,52 @@ def gitc --wrapped [...opts, message?: string] {
 }
 
 # Git Push Origin: Pushes the current branch to the origin remote, setting upstream if specified.
-def gitp [branchName?: string, ...opts] {
+def gitp --wrapped [branchName?: string, ...opts] {
+  let currentBranch = git rev-parse --abbrev-ref HEAD
+  
+  # Check if the current branch has an upstream set
+  let res = do { git rev-parse --abbrev-ref @{upstream} } | complete
+  let upstream = $res.stderr | is-empty 
+
+  if $upstream == false {
+    # If there's no upstream, set it automatically
+    git branch $"--set-upstream-to=origin/($currentBranch)" $currentBranch
+    echo $"Upstream set to origin/($currentBranch) for branch ($currentBranch)."
+  }
+
   if not ($branchName | is-empty) {
     git push -u origin $branchName ...$opts
   } else {
-    git push -u origin ...$opts 
+    let currentBranch = git rev-parse --abbrev-ref HEAD
+    git push -u origin $currentBranch ...$opts 
   } 
 }
 
+alias gitch = git checkout
+alias gitb = git branch
+def gitbch [branch: string] {
+  git checkout -b $branch
+}
+
+# Merge with latest target branch
+def gitmrg [branch: string] {
+  let currentBranch = git rev-parse --abbrev-ref HEAD
+  
+  # Ensure the target branch is up to date
+  git fetch origin $branch
+  git checkout $branch
+  git pull origin $branch
+  
+  # Switch back to the original branch
+  git checkout $currentBranch
+  
+  # Check if the current branch has an upstream set, if not, set it to origin/currentBranch
+  if (git rev-parse --abbrev-ref --symbolic-full-name @{u} | is-empty) {
+    git branch $'--set-upstream-to=origin/($currentBranch)' $currentBranch
+  }
+  git pull --all
+  
+  # Merge the target branch into the current branch
+  git merge $branch --allow-unrelated-histories
+  git checkout $currentBranch
+}
