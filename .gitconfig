@@ -1,0 +1,23 @@
+[core]
+	autocrlf = true
+	pager = delta
+[user]
+	name = Ylniss
+	email = zupqa0@gmail.com
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+[merge]
+	conflictstyle = diff3
+[diff]
+	colorMoved = default
+[credential "helperselector"]
+	selected = wincred
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[safe]
+	directory = *

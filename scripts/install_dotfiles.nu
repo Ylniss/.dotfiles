@@ -27,6 +27,7 @@ def create-symbolic-link [target, linkPath, description] {
 
 if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)\nvim' $'($env.LOCALAPPDATA)\nvim' 'nvim'
+  create-symbolic-link $'($dotfilesRepoDir)\.gitconfig' $'($env.USERPROFILE)\.gitconfig' '.gitconfig'
   create-symbolic-link $'($dotfilesRepoDir)\.ideavimrc' $'($env.USERPROFILE)\.ideavimrc' '.ideavimrc'
   create-symbolic-link $'($dotfilesRepoDir)\.wezterm.lua' $'($env.USERPROFILE)\.wezterm.lua' '.wezterm.lua'
   create-symbolic-link $'($dotfilesRepoDir)\.zshrc' $'($env.USERPROFILE)\.zshrc' '.zshrc'
@@ -39,6 +40,7 @@ if ($nu.os-info.family =~ windows) {
 } else {
   # For Linux/Android
   create-symbolic-link $'($dotfilesRepoDir)/nvim' $'($env.HOME)/.config/nvim' 'nvim'
+  create-symbolic-link $'($dotfilesRepoDir)/.gitconfig' $'($env.HOME)/.gitconfig' '.gitconfig'
   create-symbolic-link $'($dotfilesRepoDir)/.ideavimrc' $'($env.HOME)/.ideavimrc' '.ideavimrc'
   create-symbolic-link $'($dotfilesRepoDir)/.wezterm.lua' $'($env.HOME)/.wezterm.lua' '.wezterm.lua'
   create-symbolic-link $'($dotfilesRepoDir)/.zshrc' $'($env.HOME)/.zshrc' '.zshrc'

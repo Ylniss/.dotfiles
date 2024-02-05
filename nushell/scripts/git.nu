@@ -51,6 +51,7 @@ def gitp --wrapped [branchName?: string, ...opts] {
 
   if $upstream == false {
     # If there's no upstream, set it automatically
+    git pull origin $currentBranch --allow-unrelated-histories
     git branch $"--set-upstream-to=origin/($currentBranch)" $currentBranch
     echo $"Upstream set to origin/($currentBranch) for branch ($currentBranch)."
   }
