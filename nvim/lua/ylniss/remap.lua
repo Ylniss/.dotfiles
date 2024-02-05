@@ -34,20 +34,21 @@ vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = tr
 vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- ================================= Window management =================================
-vim.keymap.set("n", "<C-Left>", "<C-w><", { desc = "decrese window width" })
-vim.keymap.set("n", "<C-Right>", "<C-w>>", { desc = "increase window width" })
-vim.keymap.set("n", "<C-Down>", "<C-w>-", { desc = "decrese window height" })
-vim.keymap.set("n", "<C-Up>", "<C-w>+", { desc = "increase window height" })
+local smart_splits = require("smart-splits")
+vim.keymap.set("n", "<A-h>", smart_splits.resize_left)
+vim.keymap.set("n", "<A-j>", smart_splits.resize_down)
+vim.keymap.set("n", "<A-k>", smart_splits.resize_up)
+vim.keymap.set("n", "<A-l>", smart_splits.resize_right)
+
+vim.keymap.set("n", "<C-h>", smart_splits.move_cursor_left)
+vim.keymap.set("n", "<C-j>", smart_splits.move_cursor_down)
+vim.keymap.set("n", "<C-k>", smart_splits.move_cursor_up)
+vim.keymap.set("n", "<C-l>", smart_splits.move_cursor_right)
 
 vim.keymap.set("n", "<A-Left>", "<C-w>H", { desc = "move window left" })
 vim.keymap.set("n", "<A-Right>", "<C-w>L", { desc = "move window right" })
 vim.keymap.set("n", "<A-Down>", "<C-w>J", { desc = "move window down" })
 vim.keymap.set("n", "<A-Up>", "<C-w>K", { desc = "move window up" })
-
-vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "move to left window" })
-vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "move to upper window" })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "move to bottom window" })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "move to right window" })
 
 vim.keymap.set("n", "<leader>v", vim.cmd.vsplit, { desc = "open new vertical split window" })
 vim.keymap.set("n", "<leader>h", vim.cmd.split, { desc = "open new horizontal split window" })

@@ -80,6 +80,9 @@ require("lazy").setup({
 		},
 	},
 
+	-- Smart splits navigation with terminal
+	{ "mrjones2014/smart-splits.nvim" },
+
 	{ -- Friendly cmdline
 		"folke/noice.nvim",
 		event = "VeryLazy",
