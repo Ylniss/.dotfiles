@@ -55,7 +55,6 @@ end
 
 config.color_scheme = "Banana Blueberry"
 
-config.window_decorations = "RESIZE"
 config.initial_cols = 135
 config.initial_rows = 34
 
@@ -63,10 +62,21 @@ config.font = wezterm.font("JetBrainsMono NF")
 config.font_size = 10.5
 config.line_height = 0.9
 
-config.window_background_opacity = 0.85
+config.window_decorations = "RESIZE"
+config.window_background_opacity = 0.88
 if is_windows then
 	config.win32_system_backdrop = "Acrylic"
 end
+
+config.window_background_gradient = {
+	colors = {
+		"#0b0014",
+		"#17003e",
+		"#0b0014",
+	},
+	blend = "Hsv",
+	orientation = "Vertical",
+}
 
 local titlebar_color = "#0B0022"
 
