@@ -64,6 +64,9 @@ config.font_size = 10.5
 config.line_height = 0.9
 
 config.window_background_opacity = 0.85
+if is_windows then
+	config.win32_system_backdrop = "Acrylic"
+end
 
 local titlebar_color = "#0B0022"
 

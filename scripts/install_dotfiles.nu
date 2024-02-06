@@ -18,7 +18,7 @@ def create-symbolic-link [target, linkPath, description] {
 
     echo $'Creating symbolic link for ($description)'
     if ($nu.os-info.family =~ windows) {
-      ^pwsh -c "New-Item -ItemType SymbolicLink -Path $linkPath -Target $target"
+      ^pwsh -c $"New-Item -ItemType SymbolicLink -Path ($linkPath) -Target ($target)"
     } else {
       ^ln -s $target $linkPath
     }
