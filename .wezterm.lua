@@ -55,6 +55,11 @@ end
 
 config.color_scheme = "Banana Blueberry"
 
+config.colors = {
+	selection_fg = "black",
+	selection_bg = "#fe965b",
+}
+
 config.initial_cols = 135
 config.initial_rows = 34
 
