@@ -30,6 +30,10 @@ def gitd --wrapped [...opts] {
     echo $"(ansi green)\n --------------------- Staged Changes --------------------- (ansi reset)"
     git diff --staged ...$opts
   }
+
+  if $gitDiffOutput == "" and $gitDiffStagedOutput == "" {
+    git diff ...$opts
+  }
 }
 
 # Git Commit Message: Commits changes with a given commit message.
