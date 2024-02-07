@@ -97,6 +97,23 @@ vim.keymap.set("t", "<esc>", "<C-\\><C-n>", { noremap = true, desc = "exit termi
 vim.keymap.set("n", "<leader>k", "<cmd>Lspsaga hover_doc<CR>", { desc = "hover docs" })
 vim.keymap.set({ "n", "v" }, "ga", "<cmd>Lspsaga finder def+ref<CR>", { desc = "find definitions and references" })
 
+-- ===================================== Trouble ======================================
+local trouble = require("trouble")
+
+vim.keymap.set("n", "<leader>xx", trouble.toggle)
+vim.keymap.set("n", "<leader>xw", function()
+	trouble.toggle("workspace_diagnostics")
+end)
+vim.keymap.set("n", "<leader>xd", function()
+	trouble.toggle("document_diagnostics")
+end)
+vim.keymap.set("n", "<leader>xq", function()
+	trouble.toggle("quickfix")
+end)
+vim.keymap.set("n", "<leader>xl", function()
+	trouble.toggle("loclist")
+end)
+
 -- ===================================== NeoTree ======================================
 local function open_neotree_git_root_or_file_dir()
 	-- Get the full path of the current file

@@ -61,6 +61,12 @@ require("lazy").setup({
 		},
 	},
 
+	{
+		"folke/trouble.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+		opts = {},
+	},
+
 	-- Formatter
 	"stevearc/conform.nvim",
 
