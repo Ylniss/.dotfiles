@@ -87,5 +87,7 @@ require("mason-tool-installer").setup({
 		"taplo",
 		"goimports",
 		"golines",
+		"golangci-lint",
+		"delve",
 	},
 })

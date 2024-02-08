@@ -65,8 +65,8 @@ end
 
 vim.keymap.set("n", "<leader>q", saveAndClose, { desc = "save and close window" })
 vim.keymap.set("n", "<leader>Q", "<cmd>q!<CR>", { desc = "close window without saving" })
-vim.keymap.set("n", "wqa", vim.cmd.wqa, { noremap = true, desc = "save all changes and quit vim" })
-vim.keymap.set("n", "wqA", "<cmd>qa!<CR>", { noremap = true, desc = "quit vim without saving changes" })
+vim.keymap.set("n", "<leader>wqa", vim.cmd.wqa, { desc = "save all changes and quit vim" })
+vim.keymap.set("n", "<leader>wqA", "<cmd>qa!<CR>", { desc = "quit vim without saving changes" })
 
 local function smart_save()
 	local current_file = vim.fn.expand("%:p")
@@ -113,6 +113,14 @@ end)
 vim.keymap.set("n", "<leader>xl", function()
 	trouble.toggle("loclist")
 end)
+
+-- ====================================== DAP ========================================
+local dap = require("dap")
+vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "toggle breakpoint" })
+vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "continue" })
+vim.keymap.set("n", "<leader>di", dap.step_over, { desc = "step over" })
+vim.keymap.set("n", "<leader>do", dap.step_into, { desc = "step into" })
+vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "open REPL" })
 
 -- ===================================== NeoTree ======================================
 local function open_neotree_git_root_or_file_dir()

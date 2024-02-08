@@ -61,6 +61,7 @@ require("lazy").setup({
 		},
 	},
 
+	-- Show diagnostic messages in separate window
 	{
 		"folke/trouble.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -69,6 +70,15 @@ require("lazy").setup({
 
 	-- Formatter
 	"stevearc/conform.nvim",
+	"mfussenegger/nvim-lint",
+
+	{ -- Debugger via DAP
+		"theHamsta/nvim-dap-virtual-text",
+		dependencies = {
+			"rcarriga/nvim-dap-ui",
+			"mfussenegger/nvim-dap",
+		},
+	},
 
 	{ -- Autocompletion
 		"hrsh7th/nvim-cmp",
