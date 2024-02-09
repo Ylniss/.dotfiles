@@ -35,6 +35,10 @@ $env.NU_PLUGIN_DIRS = [
 
 # To add entries to PATH (on Windows you might use Path), you can use the following pattern:
 # $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
+if $nu.os-info.family =~ windows {
+  $env.Path = ($env.Path | split row (char esep) | prepend $'$($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')
+}
+
 
 $env.RIPGREP_CONFIG_PATH = $'($env.repo)/.dotfiles/.ripgreprc' 
 $env.FZF_DEFAULT_COMMAND = 'fd -H'

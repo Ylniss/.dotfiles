@@ -88,6 +88,9 @@ require("mason-tool-installer").setup({
 		"goimports",
 		"golines",
 		"golangci-lint",
-		"delve",
 	},
+})
+
+require("mason-nvim-dap").setup({
+	ensure_installed = { "delve" },
 })

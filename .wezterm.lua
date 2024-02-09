@@ -205,10 +205,10 @@ config.keys = {
 	},
 
 	-- Ctrl + Shift + Q to close current tab
-	{ key = "q", mods = "CTRL|SHIFT", action = act({ CloseCurrentTab = { confirm = false } }) },
+	{ key = "q", mods = "CTRL|SHIFT", action = act({ CloseCurrentPane = { confirm = false } }) },
 
 	-- Ctrl + Shift + W to close current pane
-	{ key = "w", mods = "CTRL|SHIFT", action = act({ CloseCurrentPane = { confirm = false } }) },
+	{ key = "w", mods = "CTRL|SHIFT", action = act({ CloseCurrentTab = { confirm = false } }) },
 
 	-- Ctrl + Shift + V to split vertically
 	{ key = "v", mods = "CTRL|SHIFT", action = act({ SplitHorizontal = { domain = "CurrentPaneDomain" } }) },

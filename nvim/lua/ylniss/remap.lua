@@ -171,6 +171,7 @@ whichKey.register({
 	["<leader>g"] = { name = "git", _ = "which_key_ignore" },
 	["<leader>gh"] = { name = "git hunks", _ = "which_key_ignore" },
 	["<leader>s"] = { name = "search", _ = "which_key_ignore" },
+	["<leader>d"] = { name = "debug", _ = "which_key_ignore" },
 })
 
 -- Required for visual <leader>hs (hunk stage) to work
