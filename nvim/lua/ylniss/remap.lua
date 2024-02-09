@@ -116,7 +116,10 @@ end)
 
 -- ====================================== DAP ========================================
 local dap = require("dap")
+local dapui = require("dapui")
+
 vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "toggle breakpoint" })
+vim.keymap.set("n", "<leader>dt", dapui.toggle, { desc = "toggle dap ui" })
 vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "continue" })
 vim.keymap.set("n", "<leader>di", dap.step_over, { desc = "step over" })
 vim.keymap.set("n", "<leader>do", dap.step_into, { desc = "step into" })
