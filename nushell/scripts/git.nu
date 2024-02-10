@@ -48,24 +48,32 @@ def gitc --wrapped [...opts, message?: string] {
 # Git Push Origin: Pushes the current branch to the origin remote, setting upstream if specified.
 def gitp --wrapped [branchName?: string, ...opts] {
   let currentBranch = git rev-parse --abbrev-ref HEAD
+
+  def git-push [] {
+    if not ($branchName | is-empty) {
+      git push -u origin $branchName ...$opts
+    } else {
+      git push -u origin $currentBranch ...$opts
+    } 
+  }
   
   # Check if the current branch has an upstream set
-  let res = do { git rev-parse --abbrev-ref @{upstream} } | complete
+  let res = do -i { git rev-parse --abbrev-ref @{upstream} } | complete
   let upstream = $res.stderr | is-empty 
 
   if $upstream == false {
     # If there's no upstream, set it automatically
-    git pull origin $currentBranch --allow-unrelated-histories
-    git branch $"--set-upstream-to=origin/($currentBranch)" $currentBranch
+    let resGitBranch = do { git branch $"--set-upstream-to=origin/($currentBranch)" $currentBranch } | complete
+    let noBranch = not ($resGitBranch.stderr | is-empty)
+    if $noBranch {
+      git-push     
+    }
+
     echo $"Upstream set to origin/($currentBranch) for branch ($currentBranch)."
+    git pull origin $currentBranch --allow-unrelated-histories
   }
 
-  if not ($branchName | is-empty) {
-    git push -u origin $branchName ...$opts
-  } else {
-    let currentBranch = git rev-parse --abbrev-ref HEAD
-    git push -u origin $currentBranch ...$opts 
-  } 
+  git-push
 }
 
 alias gitch = git checkout
@@ -84,4 +92,28 @@ def gitmrg [branch: string] {
   }
 
   git merge $"origin/($branch)" --allow-unrelated-histories
+}
+
+# Initialize new git repo
+def giti [
+  repoName?: string # New repo name, if not specified it will be created in current working dir
+  --github (-g) # Create repo also on github
+] {
+  let currentDir = pwd | path basename
+  print "currentdir: " $currentDir
+  if ($repoName | is-empty) {
+    git init
+
+    if $github {
+      gh auth login
+      gh repo create $currentDir --private --source=. 
+    }
+  } else {
+    git init $repoName
+
+    if $github {
+      gh auth login
+      gh repo create $repoName --private $"--source=(pwd)/($repoName)"
+    }
+  }
 }
