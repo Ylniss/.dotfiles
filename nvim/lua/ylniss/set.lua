@@ -1,6 +1,6 @@
 -- Set <space> as the leader key
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
 -- Set relative and absolute line numbers
 vim.o.relativenumber = true
@@ -18,20 +18,18 @@ vim.o.hlsearch = false
 vim.o.cursorline = true
 
 -- Enable mouse mode
-vim.o.mouse = 'a'
+vim.o.mouse = "a"
 
--- Set powershell as default shell on Windows
-if vim.fn.has("win32") == 1 then
-  vim.o.shell = "pwsh"
-  vim.o.shellxquote = ''
-  vim.o.shellcmdflag = '-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command '
-  vim.o.shellquote = ''
-  vim.o.shellpipe = '| Out-File -Encoding UTF8 %s'
-  vim.o.shellredir = '| Out-File -Encoding UTF8 %s'
-end
+-- Set nushell as default shell
+vim.o.shell = "nu"
+vim.o.shellcmdflag = "-c"
+vim.o.shellquote = ""
+vim.o.shellxquote = ""
+vim.o.shellpipe = "| save %s"
+vim.o.shellredir = "| save %s"
 
 -- Sync clipboard between OS and Neovim.
-vim.o.clipboard = 'unnamedplus'
+vim.o.clipboard = "unnamedplus"
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -44,37 +42,37 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Keep signcolumn on by default
-vim.wo.signcolumn = 'yes'
+vim.wo.signcolumn = "yes"
 
 -- Decrease update time
 vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 
 -- Set completeopt to have a better completion experience
-vim.o.completeopt = 'menuone,noselect'
+vim.o.completeopt = "menuone,noselect"
 
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
 
 -- Highlight on yank
-local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
-vim.api.nvim_create_autocmd('TextYankPost', {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-  group = highlight_group,
-  pattern = '*',
+local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
+vim.api.nvim_create_autocmd("TextYankPost", {
+	callback = function()
+		vim.highlight.on_yank()
+	end,
+	group = highlight_group,
+	pattern = "*",
 })
 
 -- Set custom terminal tab title
 local function get_last_segment_of_path(path)
-  return string.gsub(path, "(.*[/\\])(.*)", "%2")
+	return string.gsub(path, "(.*[/\\])(.*)", "%2")
 end
 
 local function set_custom_title()
-  local current_file = vim.fn.expand("%:t")
-  local filename_segment = current_file ~= "" and "|" .. current_file or ""
-  vim.opt.titlestring = "nvim in " .. get_last_segment_of_path(vim.fn.getcwd()) .. filename_segment
+	local current_file = vim.fn.expand("%:t")
+	local filename_segment = current_file ~= "" and "|" .. current_file or ""
+	vim.opt.titlestring = "nvim in " .. get_last_segment_of_path(vim.fn.getcwd()) .. filename_segment
 end
 
 -- Enable setting the terminal title
@@ -84,6 +82,6 @@ vim.opt.title = true
 set_custom_title()
 
 -- Update the title whenever the buffer changes or the directory changes
-vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter", "DirChanged"}, {
-  callback = set_custom_title
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "DirChanged" }, {
+	callback = set_custom_title,
 })

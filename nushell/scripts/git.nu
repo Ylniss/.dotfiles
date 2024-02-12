@@ -108,6 +108,7 @@ def giti [
       gh auth login
       gh repo create $currentDir --private --source=. 
     }
+    touch .gitignore
   } else {
     git init $repoName
 
@@ -115,5 +116,6 @@ def giti [
       gh auth login
       gh repo create $repoName --private $"--source=(pwd)/($repoName)"
     }
+    touch $"(pwd)/($repoName)/.gitignore"
   }
 }
