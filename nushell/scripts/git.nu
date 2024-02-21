@@ -100,7 +100,6 @@ def giti [
   --github (-g) # Create repo also on github
 ] {
   let currentDir = pwd | path basename
-  print "currentdir: " $currentDir
   if ($repoName | is-empty) {
     git init
 

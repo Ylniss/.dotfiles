@@ -9,7 +9,7 @@ require("conform").setup({
 
 	formatters_by_ft = {
 		cs = { "csharpier" },
-		go = { "gomimports", "golines" },
+		go = { "gomimports", "gofumpt" },
 		lua = { "stylua" },
 		markdown = { { "mdformat", "prettierd", "prettier" } },
 		javascript = { { "prettierd", "prettier" } },

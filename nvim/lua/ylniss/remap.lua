@@ -77,7 +77,7 @@ local function smart_save()
 		vim.api.nvim_feedkeys(saveas_cmd, "n", true)
 	else
 		-- File already has a name, just write
-		vim.cmd.write()
+		vim.cmd.update()
 	end
 end
 

@@ -85,8 +85,7 @@ require("mason-tool-installer").setup({
 		"mdformat",
 		"csharpier",
 		"taplo",
-		"goimports",
-		"golines",
+		"gofumpt",
 		"golangci-lint",
 	},
 })
