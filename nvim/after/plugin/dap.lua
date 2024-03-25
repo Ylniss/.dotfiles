@@ -4,6 +4,7 @@ dapui.setup()
 
 require("nvim-dap-virtual-text").setup()
 require("dap-go").setup()
+dap.adapters.go.executable.detached = false
 
 dap.listeners.before.attach.dapui_config = function()
 	dapui.open()

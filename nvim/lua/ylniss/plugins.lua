@@ -26,6 +26,16 @@ require("lazy").setup({
 	-- Adds git related signs, as well as utilities for managing changes
 	"lewis6991/gitsigns.nvim",
 
+	-- AI autocomplete
+	{
+		"Exafunction/codeium.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"hrsh7th/nvim-cmp",
+		},
+		opts = {},
+	},
+
 	{ -- Tree file explorer
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
