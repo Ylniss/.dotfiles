@@ -115,15 +115,7 @@ vim.keymap.set("n", "<leader>xl", function()
 end)
 
 -- ====================================== DAP ========================================
-local dap = require("dap")
-local dapui = require("dapui")
-
-vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "toggle breakpoint" })
-vim.keymap.set("n", "<leader>dt", dapui.toggle, { desc = "toggle dap ui" })
-vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "continue" })
-vim.keymap.set("n", "<leader>di", dap.step_over, { desc = "step over" })
-vim.keymap.set("n", "<leader>do", dap.step_into, { desc = "step into" })
-vim.keymap.set("n", "<leader>dr", dap.repl.open, { desc = "open REPL" })
+-- todo: add some debugger cause previous one crashed XD
 
 -- ===================================== NeoTree ======================================
 local function open_neotree_git_root_or_file_dir()
@@ -168,17 +160,23 @@ vim.keymap.set("v", "<C-A-_>", "gb", { remap = true, desc = "make block comment"
 
 -- ========================== Document existing key chains ==========================
 local whichKey = require("which-key")
-whichKey.register({
-	["<leader>c"] = { name = "code", _ = "which_key_ignore" },
-	["<leader>e"] = { name = "explore", _ = "which_key_ignore" },
-	["<leader>g"] = { name = "git", _ = "which_key_ignore" },
-	["<leader>gh"] = { name = "git hunks", _ = "which_key_ignore" },
-	["<leader>s"] = { name = "search", _ = "which_key_ignore" },
-	["<leader>d"] = { name = "debug", _ = "which_key_ignore" },
+whichKey.add({
+	{ "<leader>c", group = "code" },
+	{ "<leader>c_", hidden = true },
+	{ "<leader>e", group = "explore" },
+	{ "<leader>e_", hidden = true },
+	{ "<leader>g", group = "git" },
+	{ "<leader>g_", hidden = true },
+	{ "<leader>gh", group = "git hunks" },
+	{ "<leader>gh_", hidden = true },
+	{ "<leader>s", group = "search" },
+	{ "<leader>s_", hidden = true },
+	{ "<leader>d", group = "debug" },
+	{ "<leader>d_", hidden = true },
 })
 
 -- Required for visual <leader>hs (hunk stage) to work
-whichKey.register({
-	["<leader>"] = { name = "VISUAL <leader>" },
-	["<leader>h"] = { "git hunk" },
-}, { mode = "v" })
+whichKey.add({
+	{ "<leader>", group = "VISUAL <leader>", mode = "v" },
+	{ "<leader>h", desc = "git hunk", mode = "v" },
+})

@@ -29,7 +29,6 @@ require("mason-lspconfig").setup()
 local servers = {
 	dockerls = {},
 	jsonls = {},
-	tsserver = {},
 	html = { filetypes = { "html" } },
 	powershell_es = {},
 	omnisharp = {},
@@ -88,8 +87,4 @@ require("mason-tool-installer").setup({
 		"gofumpt",
 		"golangci-lint",
 	},
-})
-
-require("mason-nvim-dap").setup({
-	ensure_installed = { "delve" },
 })

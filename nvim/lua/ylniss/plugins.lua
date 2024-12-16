@@ -72,16 +72,6 @@ require("lazy").setup({
 	"stevearc/conform.nvim",
 	"mfussenegger/nvim-lint",
 
-	{ -- Debugger via DAP
-		"theHamsta/nvim-dap-virtual-text",
-		dependencies = {
-			"rcarriga/nvim-dap-ui",
-			"mfussenegger/nvim-dap",
-			"jay-babu/mason-nvim-dap.nvim",
-			"leoluz/nvim-dap-go",
-		},
-	},
-
 	{ -- Autocompletion
 		"hrsh7th/nvim-cmp",
 		dependencies = {
