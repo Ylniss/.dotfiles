@@ -166,20 +166,6 @@ vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "make inline comment" 
 vim.keymap.set("n", "<C-A-_>", "gbc", { remap = true, desc = "make block comment" })
 vim.keymap.set("v", "<C-A-_>", "gb", { remap = true, desc = "make block comment" })
 
--- ================================== Codeium ==================================
-vim.keymap.set("i", "<C-g>", function()
-	return vim.fn["codeium#Accept"]()
-end, { expr = true, silent = true })
-vim.keymap.set("i", "<c-;>", function()
-	return vim.fn["codeium#CycleCompletions"](1)
-end, { expr = true, silent = true })
-vim.keymap.set("i", "<c-,>", function()
-	return vim.fn["codeium#CycleCompletions"](-1)
-end, { expr = true, silent = true })
-vim.keymap.set("i", "<c-x>", function()
-	return vim.fn["codeium#Clear"]()
-end, { expr = true, silent = true })
-
 -- ========================== Document existing key chains ==========================
 local whichKey = require("which-key")
 whichKey.register({
