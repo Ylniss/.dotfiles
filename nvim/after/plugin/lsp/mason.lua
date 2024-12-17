@@ -11,7 +11,7 @@ local on_attach = function(_, bufnr)
 	end
 
 	lsp_keymap("<leader>r", "<cmd>Lspsaga rename<CR>", "rename")
-	lsp_keymap("<A-h>", "<cmd>Lspsaga code_action<CR>", "code action") -- with .ahk script it is also <C-.> (powershell fix)
+	lsp_keymap("<C-.>", "<cmd>Lspsaga code_action<CR>", "code action") -- with .ahk script it is also <C-.> (powershell fix)
 
 	local telescope = require("telescope.builtin")
 
