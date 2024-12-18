@@ -11,6 +11,13 @@
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  
+  # cleanup older than 30d system generations every week
+  nix.gc {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d"
+  }
 
   # Bootloader.
   boot.loader.grub.enable = true;
