@@ -7,17 +7,17 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
+      ./hardware-configuration.nix
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   
   # cleanup older than 30d system generations every week
-  nix.gc {
+  nix.gc = {
     automatic = true;
     dates = "weekly";
-    options = "--delete-older-than 30d"
-  }
+    options = "--delete-older-than 30d";
+  };
 
   # Bootloader.
   boot.loader.grub.enable = true;
