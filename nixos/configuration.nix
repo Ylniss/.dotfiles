@@ -91,65 +91,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-let
-  # Current user's home directory
-  userHome = config.users.users.your_user.home;
-  dotfilesRepo = "${userHome}/stuff/repo/.dotfiles";
-in {
-  fileSystems = {
-    # Bind nvim configuration
-    "${userHome}/.config/nvim" = {
-      device = "${dotfilesRepo}/nvim";
-      fsType = "none";
-      options = [ "bind" ];
-    };
-
-    # Bind .gitconfig
-    "${userHome}/.gitconfig" = {
-      device = "${dotfilesRepo}/.gitconfig";
-      fsType = "none";
-      options = [ "bind" ];
-    };
-
-    # Bind .zshrc
-    "${userHome}/.zshrc" = {
-      device = "${dotfilesRepo}/.zshrc";
-      fsType = "none";
-      options = [ "bind" ];
-    };
-
-    # Bind starship configuration
-    "${userHome}/.config/starship.toml" = {
-      device = "${dotfilesRepo}/starship.toml";
-      fsType = "none";
-      options = [ "bind" ];
-    };
-
-    # Bind nushell configs
-    "${userHome}/.config/nushell/config.nu" = {
-      device = "${dotfilesRepo}/nushell/config.nu";
-      fsType = "none";
-      options = [ "bind" ];
-    };
-
-    "${userHome}/.config/nushell/env.nu" = {
-      device = "${dotfilesRepo}/nushell/env.nu";
-      fsType = "none";
-      options = [ "bind" ];
-    };
-
-    "${userHome}/.config/nushell/scripts" = {
-      device = "${dotfilesRepo}/nushell/scripts";
-      fsType = "none";
-      options = [ "bind" ];
-    };
-    fileSystems."/etc/nixos/configuration.nix" = {
-      device = "${dotfilesRepo}/nixos/configuration.nix";
-      fsType = "none";
-      options = [ "bind" ];
-  };
-  };
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.yolan = {
     isNormalUser = true;
@@ -157,7 +98,6 @@ in {
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
       kdePackages.kate
-    #  thunderbird
     ];
   };
 
@@ -184,7 +124,6 @@ in {
     p7zip
     #nerdfonts
     open-vm-tools
-  #  wget
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
