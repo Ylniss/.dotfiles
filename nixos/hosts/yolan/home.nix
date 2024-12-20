@@ -10,14 +10,13 @@
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
+  home.packages = with pkgs; [
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
-    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
-    # # fonts?
-    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
-
+    # # parentheses.
+    nerd-fonts.jetbrains-mono
+    
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
     # # environment:
@@ -56,13 +55,13 @@
   # or
   #
   #  /etc/profiles/per-user/yolan/etc/profile.d/hm-session-vars.sh
-  #
+
   home.sessionVariables = {
     EDITOR = "nvim";
   };
 
   imports = [
     ../../packages/nushell
-
+    ../../packages/starship.nix
   ];
 }

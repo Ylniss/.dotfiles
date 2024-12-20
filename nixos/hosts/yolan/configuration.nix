@@ -99,13 +99,11 @@
     gcc
     lf
     git
-    starship
     ripgrep
     fzf
     fastfetch
     #gimp
     #gimpPlugins.gmic
-    #nerdfonts
     open-vm-tools
   ];
 

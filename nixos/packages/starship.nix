@@ -1,0 +1,146 @@
+{lib, ...} :
+
+{
+  programs.starship = {
+    enable = true;
+    enableNushellIntegration = true;
+    settings = {
+      right_format = "in $shell$time";
+
+      username = {
+        style_user = "#fbee60 bold";
+        style_root = "red bold";
+        format = "[$user]($style)";
+        disabled = false;
+        show_always = true;
+      };
+
+      hostname = {
+        ssh_only = false;
+        format = "[@$hostname](bold purple) ";
+        trim_at = ".";
+        disabled = false;
+      };
+
+      character = {
+        success_symbol = "[➜](bold green)";
+        error_symbol = "[✗](bold red)";
+      };
+
+      time = {
+        disabled = false;
+        time_format = "%T";
+      };
+
+      directory = {
+        read_only = " ";
+        format = '[in ](red #ff4f58)[$path]($style)[$read_only]($read_only_style) ';
+        truncate_to_repo = true;
+        use_os_path_sep = false;
+        style = "bold italic #fbee60";
+      };
+
+      cmd_duration = {
+        min_time = 500;
+        show_milliseconds = false;
+        disabled = false;
+        style = "bold italic red";
+      };
+
+      shell = {
+        unknown_indicator = "unknown";
+        disabled = false;
+      };
+
+      aws = {
+        symbol = "  ";
+      };
+
+      azure = {
+        format = "on [$symbol($subscription)]($style) ";
+        symbol = "󰠅 ";
+        style = "blue bold";
+      };
+
+      docker_context = {
+        symbol = " ";
+        format = "via [$symbol$context]($style) ";
+        style = "blue bold";
+        only_with_files = true;
+        detect_files = [ "docker-compose.yml" "docker-compose.yaml" "Dockerfile" ];
+        detect_folders = [];
+        disabled = false;
+      };
+
+      git_branch = {
+        symbol = " ";
+        format = "[$symbol$branch(:$remote_branch)]($style) ";
+      };
+
+      git_status = {
+        ahead = "⇡${count} ";
+        diverged = "⇕⇡${ahead_count}⇣${behind_count} ";
+        behind = "⇣${count} ";
+        staged = "[+${count} ](green)";
+        untracked = "[?${count} ](#c1c1c1)";
+        stashed = "[\$${count} ](#fbee60)";
+        modified = "[*${count} ](#fdc634)";
+        renamed = "[»${count} ](blue)";
+        conflicted = "󰓥${count} ";
+        deleted = "[${count} ](bold #ff1c12)";
+        format = "[$all_status$ahead_behind]($style)";
+      };
+
+      dotnet = {
+        detect_extensions = [ "sln" "csproj" "fsproj" "xproj" ];
+      };
+
+      golang = {
+        symbol = " ";
+      };
+
+      java = {
+        symbol = " ";
+      };
+
+      memory_usage = {
+        symbol = " ";
+      };
+
+      package = {
+        symbol = " ";
+      };
+
+      python = {
+        symbol = " ";
+        format = "via [${symbol}python (${version} )(\($virtualenv\) )]($style)";
+        style = "bold yellow";
+        pyenv_prefix = "venv ";
+        python_binary = [ "./venv/bin/python" "python" "python3" "python2" ];
+        detect_extensions = [ "py" ];
+        version_format = "v${raw}";
+      };
+
+      ruby = {
+        symbol = " ";
+      };
+
+      rust = {
+        symbol = " ";
+      };
+
+      lua = {
+        symbol = " ";
+        style = "blue";
+      };
+
+      terraform = {
+        symbol = "󱁢 ";
+      };
+
+      nodejs = {
+        format = "via [${symbol}Node.js $version](bold green) ";
+      };
+    };
+  };
+}
