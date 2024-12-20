@@ -61,8 +61,8 @@
     EDITOR = "nvim";
   };
 
-  # imports = [
-  #   ../../packages/nushell.nix
-  #
-  # ];
+  imports = [
+    ../../packages/nushell
+
+  ];
 }
