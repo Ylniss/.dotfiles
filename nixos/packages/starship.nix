@@ -34,7 +34,7 @@
 
       directory = {
         read_only = " ";
-        format = '[in ](red #ff4f58)[$path]($style)[$read_only]($read_only_style) ';
+        format = "[in ](red #ff4f58)[$path]($style)[$read_only]($read_only_style) ";
         truncate_to_repo = true;
         use_os_path_sep = false;
         style = "bold italic #fbee60";
@@ -78,16 +78,16 @@
       };
 
       git_status = {
-        ahead = "⇡${count} ";
-        diverged = "⇕⇡${ahead_count}⇣${behind_count} ";
-        behind = "⇣${count} ";
-        staged = "[+${count} ](green)";
-        untracked = "[?${count} ](#c1c1c1)";
-        stashed = "[\$${count} ](#fbee60)";
-        modified = "[*${count} ](#fdc634)";
-        renamed = "[»${count} ](blue)";
-        conflicted = "󰓥${count} ";
-        deleted = "[${count} ](bold #ff1c12)";
+        ahead = "⇡$count ";
+        diverged = "⇕⇡$ahead_count⇣$behind_count ";
+        behind = "⇣$count ";
+        staged = "[+$count ](green)";
+        untracked = "[?$count ](#c1c1c1)";
+        stashed = "[\$$count ](#fbee60)";
+        modified = "[*$count ](#fdc634)";
+        renamed = "[»$count ](blue)";
+        conflicted = "󰓥$count ";
+        deleted = "[$count ](bold #ff1c12)";
         format = "[$all_status$ahead_behind]($style)";
       };
 
@@ -113,12 +113,12 @@
 
       python = {
         symbol = " ";
-        format = "via [${symbol}python (${version} )(\($virtualenv\) )]($style)";
+        format = "via [$symbol python ($version )(\($virtualenv\) )]($style)";
         style = "bold yellow";
         pyenv_prefix = "venv ";
         python_binary = [ "./venv/bin/python" "python" "python3" "python2" ];
         detect_extensions = [ "py" ];
-        version_format = "v${raw}";
+        version_format = "v$raw";
       };
 
       ruby = {
@@ -139,7 +139,7 @@
       };
 
       nodejs = {
-        format = "via [${symbol}Node.js $version](bold green) ";
+        format = "via [$symbol Node.js $version](bold green) ";
       };
     };
   };
