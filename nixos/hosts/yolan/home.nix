@@ -9,8 +9,6 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
-    nerd-fonts.jetbrains-mono
-    
     # # You can also create simple shell scripts directly inside your
     # # configuration. For example, this adds a command 'my-hello' to your
     # # environment:
@@ -19,15 +17,12 @@
     # '')
   ];
 
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
   home.file = {
+    # Setup symlinks
     ".config/nvim".source = ../../../nvim;
     ".config/nvim".recursive = true;
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
+    
+    ".ideavimrc".source = ../../../.ideavimrc;
 
     # # You can also set the file content immediately.
     # ".gradle/gradle.properties".text = ''
@@ -41,13 +36,22 @@
   };
 
   imports = [
+    ../../packages/nerdfonts/jetbrains-mono.nix
+
+    # CLI
     ../../packages/nushell
     ../../packages/starship.nix
-    ../../packages/git.nix
-    ../../packages/fzf.nix
-    ../../packages/ripgrep.nix
-    ../../packages/brave.nix
     ../../packages/wezterm.nix
     ../../packages/neovim.nix
+    ../../packages/git.nix
+    ../../packages/fzf.nix
+    ../../packages/tree.nix
+    ../../packages/dust.nix
+    ../../packages/ripgrep.nix
+
+    # Web
+    ../../packages/brave.nix
+
+    # Graphics
   ];
 }
