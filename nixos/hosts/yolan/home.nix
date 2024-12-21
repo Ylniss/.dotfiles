@@ -48,10 +48,12 @@
     ../../packages/tree.nix
     ../../packages/dust.nix
     ../../packages/ripgrep.nix
+    ../../packages/fastfetch.nix
 
     # Web
     ../../packages/brave.nix
 
     # Graphics
+    ../../packages/inkscape.nix
   ];
 }
