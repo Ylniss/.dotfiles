@@ -60,5 +60,6 @@
     ../../packages/git.nix
     ../../packages/fzf.nix
     ../../packages/ripgrep.nix
+    ../../packages/brave.nix
   ];
 }

@@ -82,8 +82,6 @@
     isNormalUser = true;
     description = "yolan";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-    ];
   };
 
   # Install firefox.
@@ -98,8 +96,6 @@
     neovim
     gcc
     lf
-    ripgrep
-    fzf
     fastfetch
     #gimp
     #gimpPlugins.gmic
