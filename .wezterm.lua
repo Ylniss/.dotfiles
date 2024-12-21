@@ -9,9 +9,7 @@ end
 
 local is_windows = wezterm.target_triple == "x86_64-pc-windows-msvc"
 
--- if is_windows then
-	config.default_prog = { "nu" }
--- end
+config.default_prog = { "nu" }
 
 config.window_close_confirmation = "NeverPrompt"
 
@@ -114,18 +112,18 @@ local function tab_title(tab)
 
 	-- If a foreground process is running, use its name and the last part of the current path
 	if fg_process_name and #fg_process_name > 0 and (fg_process_name == "lazydocker" or fg_process_name == "nu") then
-		--Bug on Windows so commented out: https://github.com/wez/wezterm/issues/3841
-		-- local cwd = pane:get_current_working_dir()
-		-- if cwd then
-		-- 	local path_segments = {}
-		-- 	for segment in string.gmatch(cwd.path, "[^/]+") do
-		-- 		table.insert(path_segments, segment)
-		-- 	end
-		-- 	local last_part_of_path = path_segments[#path_segments] or ""
-		-- 	return fg_process_name .. " in " .. last_part_of_path
-		-- else
+		if not is_windows then
+			local cwd = pane:get_current_working_dir()
+			if cwd then
+				local path_segments = {}
+				for segment in string.gmatch(cwd.path, "[^/]+") do
+					table.insert(path_segments, segment)
+				end
+				local last_part_of_path = path_segments[#path_segments] or ""
+				return fg_process_name .. " in " .. last_part_of_path
+			end
+		end
 		return fg_process_name
-		-- end
 	end
 
 	-- Otherwise, use the title from the active pane in that tab
