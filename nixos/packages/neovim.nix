@@ -1,8 +1,21 @@
-{ lib, ... } :
+{ lib, pkgs, ... } :
 
 {
-programs.neovim = {
-  enable = true;
-  extraConfig = lib.fileContents ../../nvim/init.lua;
-};	
+  programs.neovim = {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
+    extraConfig = lib.fileContents ../../nvim/init.lua;
+    extraPackages = with pkgs; [
+      gcc
+      lua-language-server
+      typescript-language-server
+      bash-language-server
+      prettierd
+      eslint
+      nix-linter
+      stylua
+      gofumpt
+    ];
+  };	
 }

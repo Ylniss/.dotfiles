@@ -46,5 +46,6 @@
     ../../packages/ripgrep.nix
     ../../packages/brave.nix
     ../../packages/wezterm.nix
+    ../../packages/neovim.nix
   ];
 }
