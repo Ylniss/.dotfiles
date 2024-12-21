@@ -98,7 +98,6 @@
     neovim
     gcc
     lf
-    git
     ripgrep
     fzf
     fastfetch
