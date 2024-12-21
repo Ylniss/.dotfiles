@@ -58,5 +58,7 @@
     ../../packages/nushell
     ../../packages/starship.nix
     ../../packages/git.nix
+    ../../packages/fzf.nix
+    ../../packages/ripgrep.nix
   ];
 }

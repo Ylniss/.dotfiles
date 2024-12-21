@@ -1,0 +1,36 @@
+{ lib, ... } : 
+
+{
+  programs.ripgrep = {
+    enable = true;
+    arguments = [
+      # config
+      "--smart-case"
+      "--line-number"
+      "--hidden"
+      "--follow"
+      "--max-columns=600"
+      "--max-columns-preview"
+      "--colors=line:none"
+      "--colors=path:fg:62"
+      "--colors=match:fg:205"
+
+      # ignores
+      "--glob=!.git/*"
+      "--glob=!node_modules"
+      "--glob=!package-lock.json"
+      "--glob=!*.min.js"
+      "--glob=!*.min.css"
+      "--glob=!_build"
+      "--glob=!tags"
+      "--glob=!tmp"
+      "--glob=!coverage"
+      "--glob=!public"
+      "--glob=!*.cache"
+      "--glob=!.Trash"
+      "--glob=!.licenses"
+      "--glob=!target"
+      "--glob=!coverage.out"
+    ];
+  };
+}
