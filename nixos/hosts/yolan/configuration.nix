@@ -74,6 +74,7 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfreePredicate = _: true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -82,6 +83,7 @@
   ];
 
   home-manager = {
+    useGlobalPkgs = true;
     extraSpecialArgs = { inherit inputs;};
     users = {
       "yolan" = import ./home.nix;

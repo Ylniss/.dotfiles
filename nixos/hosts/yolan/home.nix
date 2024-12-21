@@ -55,5 +55,8 @@
 
     # Graphics
     ../../packages/inkscape.nix
+
+    # Media
+    ../../packages/spotify.nix
   ];
 }
