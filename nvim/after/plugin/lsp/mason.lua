@@ -59,32 +59,39 @@ capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 -- Ensure the servers above are installed
 local mason_lspconfig = require("mason-lspconfig")
 
-mason_lspconfig.setup({
-	ensure_installed = vim.tbl_keys(servers),
-})
+local uname = vim.loop.os_uname()
 
-mason_lspconfig.setup_handlers({
-	function(server_name)
-		require("lspconfig")[server_name].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-			settings = servers[server_name],
-			filetypes = (servers[server_name] or {}).filetypes,
-		})
-	end,
-})
+-- Check if the OS is NixOS - it has to handle lsp and formatters installation itslef
+local is_nixos = uname.sysname == "Linux" and uname.version:match("NixOS")
 
-require("mason-tool-installer").setup({
-	ensure_installed = {
-		-- formatters
-		"stylua",
-		"yamlfmt",
-		"prettier",
-		"prettierd",
-		"mdformat",
-		"csharpier",
-		"taplo",
-		"gofumpt",
-		"golangci-lint",
-	},
-})
+if not is_nixos then
+	mason_lspconfig.setup({
+		ensure_installed = vim.tbl_keys(servers),
+	})
+
+	mason_lspconfig.setup_handlers({
+		function(server_name)
+			require("lspconfig")[server_name].setup({
+				capabilities = capabilities,
+				on_attach = on_attach,
+				settings = servers[server_name],
+				filetypes = (servers[server_name] or {}).filetypes,
+			})
+		end,
+	})
+
+	require("mason-tool-installer").setup({
+		ensure_installed = {
+			-- formatters
+			"stylua",
+			"yamlfmt",
+			"prettier",
+			"prettierd",
+			"mdformat",
+			"csharpier",
+			"taplo",
+			"gofumpt",
+			"golangci-lint",
+		},
+	})
+end
