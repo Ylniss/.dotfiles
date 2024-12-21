@@ -13,7 +13,6 @@
       bash-language-server
       prettierd
       eslint
-      nix-linter
       stylua
       gofumpt
     ];
