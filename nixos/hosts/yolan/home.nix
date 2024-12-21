@@ -31,10 +31,6 @@
     # '';
   };
 
-  home.sessionVariables = {
-    EDITOR = "nvim";
-  };
-
   imports = [
     ../../packages/nerdfonts/jetbrains-mono.nix
 
