@@ -9,9 +9,9 @@ end
 
 local is_windows = wezterm.target_triple == "x86_64-pc-windows-msvc"
 
-if is_windows then
+-- if is_windows then
 	config.default_prog = { "nu" }
-end
+-- end
 
 config.window_close_confirmation = "NeverPrompt"
 
