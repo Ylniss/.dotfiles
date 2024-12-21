@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../../system/desktop/plasma6.nix
       ../../system/audio.nix
       inputs.home-manager.nixosModules.default
     ];
@@ -54,19 +55,6 @@
     LC_TIME = "pl_PL.UTF-8";
   };
 
-  # Enable the X11 windowing system.
-  # You can disable this if you're only using the Wayland session.
-  services.xserver.enable = true;
-
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
-
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "pl";
-    variant = "";
-  };
 
   # Configure console keymap
   console.keyMap = "pl2";
@@ -83,9 +71,6 @@
     description = "yolan";
     extraGroups = [ "networkmanager" "wheel" ];
   };
-
-  # Install firefox.
-  programs.firefox.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
