@@ -226,7 +226,7 @@ config.keys = {
 
 	{ key = "F11", action = act.ToggleFullScreen },
 
-	-- Alt + Shift + L to show launcher opetions
+	-- Alt + Shift + L to show launcher options
 	{ key = "l", mods = "SHIFT|ALT", action = act.ShowLauncher },
 
 	-- Ctrl + V to paste

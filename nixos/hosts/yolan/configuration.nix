@@ -55,7 +55,6 @@
     LC_TIME = "pl_PL.UTF-8";
   };
 
-
   # Configure console keymap
   console.keyMap = "pl2";
 

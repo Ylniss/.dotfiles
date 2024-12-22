@@ -14,6 +14,8 @@ vim.keymap.set({ "n", "v" }, "H", "b", { desc = "move left by 1 word" })
 vim.keymap.set({ "n", "v" }, "<C-d>", "<C-d>zz", { desc = "scroll half screen down" })
 vim.keymap.set({ "n", "v" }, "<C-u>", "<C-u>zz", { desc = "scroll half screen up" })
 
+vim.keymap.set({ "n", "v" }, "<C-x>", "<C-v>", { desc = "enter block mode" })
+
 -- ============================= Go to next/previous buffer =============================
 vim.keymap.set("n", "]", vim.cmd.bnext, { desc = "go to next buffer" })
 vim.keymap.set("n", "[", vim.cmd.bprevious, { desc = "go to previous buffer" })
