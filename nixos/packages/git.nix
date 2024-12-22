@@ -12,4 +12,12 @@
       };
     };
   };
+
+  # GitHub CLI tool
+  programs.gh = {
+    enable = true;
+    settings = {
+      git_protocol = "ssh";
+    };
+  };
 }

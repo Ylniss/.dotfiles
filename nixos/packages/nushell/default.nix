@@ -1,4 +1,4 @@
-{ pkgs, config, ... } :
+{ lib, pkgs, config, ... } :
 
 {
   programs.nushell = {
@@ -12,9 +12,12 @@
       downloads = "cd ~/Downloads/";
     };
 
-   environmentVariables = {
+    environmentVariables = {
       RIPGREP_CONFIG_PATH = "${config.home.homeDirectory}/.ripgreprc";
       EDITOR = "nvim";
+      NU_LIB_DIRS = "${config.home.homeDirectory}/stuff/repo/.dotfiles/nixos/packages/nushell/scripts";
+      NU_PLUGIN_DIRS = "${config.home.homeDirectory}/stuff/repo/.dotfiles/nixos/packages/nushell/plugins";
     }; 
+
   };
 }
