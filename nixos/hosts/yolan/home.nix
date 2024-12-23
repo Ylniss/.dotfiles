@@ -66,5 +66,8 @@
 
     # Communicators
     ../../packages/discord.nix
+
+    # Windows compatibility
+    ../../packages/bottles.nix
   ];
 }
