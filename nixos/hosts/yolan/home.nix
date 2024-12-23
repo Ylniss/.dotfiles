@@ -34,6 +34,8 @@
   };
 
   imports = [
+    ../../packages/hyprland.nix
+
     # Fonts
     ../../packages/nerdfonts/jetbrains-mono.nix
 
