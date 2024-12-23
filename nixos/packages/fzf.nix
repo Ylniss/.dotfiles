@@ -1,6 +1,4 @@
-{ lib, ... } :
-
-{
+{lib, ...}: {
   programs.fzf = {
     enable = true;
   };

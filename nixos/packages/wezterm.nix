@@ -1,6 +1,9 @@
-{ lib, inputs, pkgs, ... } : 
-
 {
+  lib,
+  inputs,
+  pkgs,
+  ...
+}: {
   programs.wezterm = {
     enable = true;
     enableZshIntegration = true;

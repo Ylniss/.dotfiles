@@ -11,6 +11,7 @@ require("conform").setup({
 		cs = { "csharpier" },
 		go = { "gomimports", "gofumpt" },
 		lua = { "stylua" },
+		nix = { "alejandra" },
 		markdown = { { "mdformat", "prettierd", "prettier" } },
 		javascript = { { "prettierd", "prettier" } },
 		typescript = { "prettier" },

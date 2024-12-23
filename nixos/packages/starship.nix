@@ -1,6 +1,4 @@
-{lib, ...} :
-
-{
+{lib, ...}: {
   programs.starship = {
     enable = true;
     enableNushellIntegration = true;
@@ -67,7 +65,7 @@
         format = "via [$symbol$context]($style) ";
         style = "blue bold";
         only_with_files = true;
-        detect_files = [ "docker-compose.yml" "docker-compose.yaml" "Dockerfile" ];
+        detect_files = ["docker-compose.yml" "docker-compose.yaml" "Dockerfile"];
         detect_folders = [];
         disabled = false;
       };
@@ -92,7 +90,7 @@
       };
 
       dotnet = {
-        detect_extensions = [ "sln" "csproj" "fsproj" "xproj" ];
+        detect_extensions = ["sln" "csproj" "fsproj" "xproj"];
       };
 
       golang = {
@@ -116,8 +114,8 @@
         format = "via [$symbol python ($version )(\($virtualenv\) )]($style)";
         style = "bold yellow";
         pyenv_prefix = "venv ";
-        python_binary = [ "./venv/bin/python" "python" "python3" "python2" ];
-        detect_extensions = [ "py" ];
+        python_binary = ["./venv/bin/python" "python" "python3" "python2"];
+        detect_extensions = ["py"];
         version_format = "v$raw";
       };
 

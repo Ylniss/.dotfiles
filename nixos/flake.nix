@@ -15,18 +15,21 @@
     };
   };
 
-  outputs = { self, nixpkgs, ... } @inputs:
-  let
+  outputs = {
+    self,
+    nixpkgs,
+    ...
+  } @ inputs: let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
-  in { 
+  in {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit inputs; };
+      specialArgs = {inherit inputs;};
       modules = [
-          # Import your main NixOS configuration
-          ./hosts/yolan/configuration.nix
-          inputs.home-manager.nixosModules.default
-        ];
+        # Import your main NixOS configuration
+        ./hosts/yolan/configuration.nix
+        inputs.home-manager.nixosModules.default
+      ];
     };
   };
 }

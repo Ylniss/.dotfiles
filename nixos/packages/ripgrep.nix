@@ -1,6 +1,8 @@
-{ lib, config, ... } : 
-
 {
+  lib,
+  config,
+  ...
+}: {
   programs.ripgrep = {
     enable = true;
   };

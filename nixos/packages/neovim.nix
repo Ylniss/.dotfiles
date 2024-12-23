@@ -1,6 +1,8 @@
-{ lib, pkgs, ... } :
-
 {
+  lib,
+  pkgs,
+  ...
+}: {
   programs.neovim = {
     enable = true;
     viAlias = true;
@@ -8,14 +10,19 @@
     extraConfig = lib.fileContents ../../nvim/init.lua;
     extraPackages = with pkgs; [
       gcc
-      xclip
+      xclip # copy paste out of nvim
+
+      # LSPs
       lua-language-server
       typescript-language-server
       bash-language-server
+
+      # Formatters
       prettierd
       eslint
       stylua
       gofumpt
+      alejandra # nix formatter
     ];
-  };	
+  };
 }

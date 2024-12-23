@@ -1,6 +1,9 @@
-{ lib, pkgs, config, ... } :
-
 {
+  lib,
+  pkgs,
+  config,
+  ...
+}: {
   programs.nushell = {
     enable = true;
 
@@ -20,7 +23,6 @@
       NU_PLUGIN_DIRS = "${config.home.homeDirectory}/stuff/repo/.dotfiles/nixos/packages/nushell/plugins";
       PROMPT_INDICATOR_VI_INSERT = "";
       PROMPT_INDICATOR_VI_NORMAL = "";
-    }; 
-
+    };
   };
 }

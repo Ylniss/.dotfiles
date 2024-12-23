@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   home.username = "yolan";
   home.homeDirectory = "/home/yolan";
 
@@ -21,7 +23,7 @@
     # Setup symlinks
     ".config/nvim".source = ../../../nvim;
     ".config/nvim".recursive = true;
-    
+
     ".ideavimrc".source = ../../../.ideavimrc;
 
     # # You can also set the file content immediately.
