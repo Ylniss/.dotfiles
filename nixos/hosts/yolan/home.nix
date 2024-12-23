@@ -34,6 +34,7 @@
   };
 
   imports = [
+    # Fonts
     ../../packages/nerdfonts/jetbrains-mono.nix
 
     # CLI
@@ -48,6 +49,10 @@
     ../../packages/ripgrep.nix
     ../../packages/fastfetch.nix
 
+    # Dev
+    ../../packages/dotnet9.nix
+    ../../packages/nodejs23.nix
+
     # Web
     ../../packages/brave.nix
 
@@ -57,5 +62,9 @@
 
     # Media
     ../../packages/spotify.nix
+    ../../packages/vlc.nix
+
+    # Communicators
+    ../../packages/discord.nix
   ];
 }
