@@ -61,7 +61,7 @@ config.colors = {
 config.initial_cols = 135
 config.initial_rows = 34
 
-config.font = wezterm.font("JetBrainsMono NF")
+config.font = wezterm.font("JetBrains Mono")
 config.font_size = 10.5
 config.line_height = 0.9
 
