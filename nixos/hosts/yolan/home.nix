@@ -53,6 +53,7 @@
 
     # Graphics
     ../../packages/inkscape.nix
+    ../../packages/gimp.nix
 
     # Media
     ../../packages/spotify.nix

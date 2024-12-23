@@ -26,6 +26,28 @@ require("kanagawa").setup({
 			TelescopeResultsBorder = { fg = theme.ui.bg_m1, bg = theme.ui.bg_m1 },
 			TelescopePreviewNormal = { bg = theme.ui.bg_dim },
 			TelescopePreviewBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
+
+			-- Set themes for notifications
+			NotifyERRORBorder = { fg = "#8A1F1F", bg = "none" },
+			NotifyWARNBorder = { fg = "#79491D", bg = "none" },
+			NotifyINFOBorder = { fg = "#4F6752", bg = "none" },
+			NotifyDEBUGBorder = { fg = "#8B8B8B", bg = "none" },
+			NotifyTRACEBorder = { fg = "#4F3552", bg = "none" },
+			NotifyERRORIcon = { fg = "#F70067", bg = "none" },
+			NotifyWARNIcon = { fg = "#F79000", bg = "none" },
+			NotifyINFOIcon = { fg = "#A9FF68", bg = "none" },
+			NotifyDEBUGIcon = { fg = "#8B8B8B", bg = "none" },
+			NotifyTRACEIcon = { fg = "#D484FF", bg = "none" },
+			NotifyERRORTitle = { fg = "#F70067", bg = "none" },
+			NotifyWARNTitle = { fg = "#F79000", bg = "none" },
+			NotifyINFOTitle = { fg = "#A9FF68", bg = "none" },
+			NotifyDEBUGTitle = { fg = "#8B8B8B", bg = "none" },
+			NotifyTRACETitle = { fg = "#D484FF", bg = "none" },
+			NotifyERRORBody = { link = "Normal" },
+			NotifyWARNBody = { link = "Normal" },
+			NotifyINFOBody = { link = "Normal" },
+			NotifyDEBUGBody = { link = "Normal" },
+			NotifyTRACEBody = { link = "Normal" },
 		}
 	end,
 })
