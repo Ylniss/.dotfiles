@@ -19,8 +19,8 @@
     environmentVariables = {
       RIPGREP_CONFIG_PATH = "${config.home.homeDirectory}/.ripgreprc";
       EDITOR = "nvim";
-      NU_LIB_DIRS = "${config.home.homeDirectory}/stuff/repo/.dotfiles/nixos/packages/nushell/scripts";
-      NU_PLUGIN_DIRS = "${config.home.homeDirectory}/stuff/repo/.dotfiles/nixos/packages/nushell/plugins";
+      NU_LIB_DIRS = "${config.home.homeDirectory}/stuff/repo/.dotfiles/nixos/packages/terminal/nushell/scripts";
+      NU_PLUGIN_DIRS = "${config.home.homeDirectory}/stuff/repo/.dotfiles/nixos/packages/terminal/nushell/plugins";
       PROMPT_INDICATOR_VI_INSERT = "";
       PROMPT_INDICATOR_VI_NORMAL = "";
     };

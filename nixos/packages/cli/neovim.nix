@@ -3,11 +3,17 @@
   pkgs,
   ...
 }: {
+  home.file = {
+    # Setup symlinks to nvim config
+    ".config/nvim".source = ../../../nvim;
+    ".config/nvim".recursive = true;
+  };
+
   programs.neovim = {
     enable = true;
     viAlias = true;
     vimAlias = true;
-    extraConfig = lib.fileContents ../../nvim/init.lua;
+    extraConfig = lib.fileContents ../../../nvim/init.lua;
     extraPackages = with pkgs; [
       gcc
       xclip # copy paste out of nvim
@@ -20,8 +26,8 @@
       # Formatters
       prettierd
       eslint
-      stylua
-      gofumpt
+      stylua # lua formatter
+      gofumpt # go formatter
       alejandra # nix formatter
     ];
   };
