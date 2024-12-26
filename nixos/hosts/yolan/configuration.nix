@@ -21,7 +21,6 @@
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
-  # Set your time zone.
   time.timeZone = "Europe/Warsaw";
 
   # Configure console keymap

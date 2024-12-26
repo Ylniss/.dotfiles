@@ -27,6 +27,7 @@
     ../../packages/cli/dust.nix
     ../../packages/cli/ripgrep.nix
     ../../packages/cli/fastfetch.nix
+    ../../packages/cli/lf
 
     # Dev
     ../../packages/dev/dotnet9.nix
