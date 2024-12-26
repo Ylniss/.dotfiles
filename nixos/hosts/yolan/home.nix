@@ -32,6 +32,7 @@
     # Dev
     ../../packages/dev/dotnet9.nix
     ../../packages/dev/nodejs23.nix
+    ../../packages/dev/go.nix
 
     # IDEs
     ../../packages/dev/ides/jetbrains.nix
