@@ -24,6 +24,10 @@
       drawbox = true;
       icons = true;
       ignorecase = true;
+      scrolloff = 10;
+      number = true;
+      relativenumber = true;
+      period = 1;
       sixel = true;
     };
 
@@ -34,6 +38,7 @@
     keybindings = {
       gr = "cd ~/stuff/repo";
       "g/" = "/";
+      "." = "set hidden!";
     };
 
     previewer = {
