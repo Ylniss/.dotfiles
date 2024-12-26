@@ -12,6 +12,9 @@
     ./hardware-configuration.nix
     #../../system/desktop/plasma6.nix
     ../../system/desktop/hyprland.nix
+    ../../system/cleanup.nix
+    ../../system/boot.nix
+    ../../system/localization.nix
     ../../system/audio.nix
     ../../system/networking.nix
     inputs.home-manager.nixosModules.default
