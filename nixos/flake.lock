@@ -125,9 +125,7 @@
     },
     "home-manager": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs-stable"
-        ]
+        "nixpkgs": ["nixpkgs-stable"]
       },
       "locked": {
         "lastModified": 1734366194,
@@ -480,10 +478,7 @@
     },
     "rust-overlay": {
       "inputs": {
-        "nixpkgs": [
-          "wezterm",
-          "nixpkgs"
-        ]
+        "nixpkgs": ["wezterm", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1729477859,
@@ -535,9 +530,7 @@
         "freetype2": "freetype2",
         "harfbuzz": "harfbuzz",
         "libpng": "libpng",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
+        "nixpkgs": ["nixpkgs"],
         "rust-overlay": "rust-overlay",
         "zlib": "zlib"
       },

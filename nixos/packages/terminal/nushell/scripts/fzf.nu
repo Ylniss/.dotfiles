@@ -3,7 +3,7 @@ def fcd --env [] {
   let path = fzf
   let type = $path | path type
   if ($path | path exists) {
-    if $type =~ 'dir' or $type =~ 'symlink' {
+    if $type =~ 'dir' {
       cd $path
     } else {
       cd ($path | path dirname)

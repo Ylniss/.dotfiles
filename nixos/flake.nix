@@ -30,7 +30,10 @@
   in {
     # using stable version of nixos
     nixosConfigurations.nixos = nixpkgs-stable.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
+      specialArgs = {
+        inherit inputs;
+        # username = "yolan";
+      };
       modules = [
         # Import your main NixOS configuration
         ./hosts/yolan/configuration.nix

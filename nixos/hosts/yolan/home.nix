@@ -10,66 +10,52 @@
 
   programs.home-manager.enable = true;
 
-  home.packages = with pkgs; [
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
-  ];
-
-  home.file = {
-    # Setup symlinks
-    ".config/nvim".source = ../../../nvim;
-    ".config/nvim".recursive = true;
-
-    ".ideavimrc".source = ../../../.ideavimrc;
-
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
-  };
-
   imports = [
     ../../packages/hyprland.nix
 
     # Fonts
-    ../../packages/nerdfonts/jetbrains-mono.nix
+    ../../packages/fonts/jetbrains-mono.nix
 
-    # CLI
-    ../../packages/nushell
-    ../../packages/starship.nix
-    ../../packages/wezterm.nix
-    ../../packages/neovim.nix
-    ../../packages/git.nix
-    ../../packages/fzf.nix
-    ../../packages/tree.nix
-    ../../packages/dust.nix
-    ../../packages/ripgrep.nix
-    ../../packages/fastfetch.nix
+    # Terminal
+    ../../packages/terminal/nushell
+    ../../packages/terminal/starship.nix
+    ../../packages/terminal/wezterm.nix
+
+    # CLI tools
+    ../../packages/cli/neovim.nix
+    ../../packages/cli/git.nix
+    ../../packages/cli/fzf.nix
+    ../../packages/cli/tree.nix
+    ../../packages/cli/dust.nix
+    ../../packages/cli/ripgrep.nix
+    ../../packages/cli/fastfetch.nix
+    ../../packages/cli/lf
 
     # Dev
-    ../../packages/dotnet9.nix
-    ../../packages/nodejs23.nix
+    ../../packages/dev/dotnet9.nix
+    ../../packages/dev/nodejs23.nix
+
+    # IDEs
+    ../../packages/dev/ides/jetbrains.nix
 
     # Web
-    ../../packages/brave.nix
+    ../../packages/web-browsers/brave.nix
 
     # Graphics
-    ../../packages/inkscape.nix
-    ../../packages/gimp.nix
+    ../../packages/graphics/inkscape.nix
+    ../../packages/graphics/gimp.nix
 
     # Media
-    ../../packages/spotify.nix
-    ../../packages/vlc.nix
+    ../../packages/media/spotify.nix
+    ../../packages/media/vlc.nix
 
     # Communicators
-    ../../packages/discord.nix
+    ../../packages/communicators/discord.nix
 
     # Windows compatibility
-    ../../packages/bottles.nix
+    ../../packages/utils/bottles.nix
+
+    # VMWare
+    ../../packages/utils/vmware.nix
   ];
 }
