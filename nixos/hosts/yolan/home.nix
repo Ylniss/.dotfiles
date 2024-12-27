@@ -28,6 +28,7 @@
     ../../packages/cli/ripgrep.nix
     ../../packages/cli/fastfetch.nix
     ../../packages/cli/lf
+    ../../packages/cli/gnumake.nix
 
     # Dev
     ../../packages/dev/dotnet9.nix

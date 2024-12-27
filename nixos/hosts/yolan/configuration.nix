@@ -10,7 +10,8 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ../../system/desktop/plasma6.nix
+    # ../../system/desktop/plasma6.nix
+    ../../system/desktop/gnome.nix
     ../../system/cleanup.nix
     ../../system/boot.nix
     ../../system/localization.nix
