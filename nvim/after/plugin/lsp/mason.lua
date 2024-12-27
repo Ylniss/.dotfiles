@@ -59,12 +59,16 @@ capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 -- Ensure the servers above are installed
 local mason_lspconfig = require("mason-lspconfig")
 
-local uname = vim.loop.os_uname()
+local function is_android()
+	local camera_path = vim.fn.expand("~/storage/dcim/camera")
+	return vim.loop.fs_stat(camera_path) ~= nil
+end
 
--- Check if the OS is NixOS - it has to handle lsp and formatters installation itslef
+local uname = vim.loop.os_uname()
 local is_nixos = uname.sysname == "Linux" and uname.version:match("NixOS")
 
-if not is_nixos then
+-- Check if the OS is NixOS or Android - they have to handle lsp and formatters installation itslef
+if not is_nixos and not is_android() then
 	mason_lspconfig.setup({
 		ensure_installed = vim.tbl_keys(servers),
 	})
