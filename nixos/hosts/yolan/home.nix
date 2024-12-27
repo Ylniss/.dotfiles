@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
   home.username = "yolan";
@@ -9,6 +10,12 @@
   home.stateVersion = "24.11";
 
   programs.home-manager.enable = true;
+
+  home.activation.createDirectories = lib.mkAfter ''
+    mkdir -p ~/stuff/sec
+    mkdir -p ~/stuff/bgdev
+    mkdir -p ~/stuff/work
+  '';
 
   imports = [
     # Fonts
