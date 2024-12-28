@@ -18,6 +18,10 @@
   '';
 
   imports = [
+    # Scripts
+    ../../scripts/create-directories.nix
+    ../../scripts/clone-git-repos.nix
+
     # Fonts
     ../../packages/fonts/jetbrains-mono.nix
 
