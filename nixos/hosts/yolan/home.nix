@@ -36,6 +36,7 @@
     ../../packages/cli/fastfetch.nix
     ../../packages/cli/lf
     ../../packages/cli/gnumake.nix
+    ../../packages/cli/psw.nix
 
     # Dev
     ../../packages/dev/dotnet9.nix
