@@ -1,4 +1,8 @@
 {pkgs, ...}: {
+  home.packages = with pkgs; [
+    git-credential-manager
+  ];
+
   programs.git = {
     enable = true;
     userName = "Ylniss";
@@ -7,6 +11,11 @@
     extraConfig = {
       init = {
         defaultBranch = "main";
+      };
+      credential = {
+        helper = "manager";
+        "https://github.com".username = "Ylniss";
+        credentialStore = "cache";
       };
     };
   };
