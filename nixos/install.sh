@@ -10,8 +10,8 @@
 # 3. Run the script: ./install.sh
 ################################################################################
 
-REPO_URL="git@github.com:Ylniss/.dotfiles.git"
-TARGET_DIR="~/stuff/repo" # Target directory for the repository
+DOTFILES_REPO_URL="git@github.com:Ylniss/.dotfiles.git"
+REPO_DIR="~/stuff/repo"
 
 # Colors
 GREEN="\033[0;32m"
@@ -36,12 +36,12 @@ eval "$(ssh-agent -s)"
 
 # Create necessary directories
 echo -e "${GREEN}Setting up directories...${NC}"
-mkdir -p $TARGET_DIR
-cd $TARGET_DIR || exit 1
+mkdir -p $REPO_DIR
+cd $REPO_DIR || exit 1
 
 # Ensure git is available and clone repository
 echo -e "${GREEN}Cloning repository...${NC}"
-nix-shell -p git --run "git clone $REPO_URL"
+nix-shell -p git --run "git clone $DOTFILES_REPO_URL"
 
 # Verify clone success
 if [ ! -d ".dotfiles" ]; then
@@ -51,7 +51,6 @@ fi
 
 # Rebuild NixOS
 echo -e "${GREEN}Rebuilding NixOS configuration...${NC}"
-sudo nixos-rebuild switch --flake $TARGET_DIR/.dotfiles/nixos
+sudo nixos-rebuild switch --flake $REPO_DIR/.dotfiles/nixos
 
 echo -e "${GREEN}Setup complete!${NC}"
-
