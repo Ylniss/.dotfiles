@@ -18,7 +18,6 @@ GREEN="\033[0;32m"
 RED="\033[0;31m"
 NC="\033[0m" # No Color
 
-# Check for .ssh folder
 echo -e "${GREEN}Checking for .ssh folder...${NC}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ ! -d "$SCRIPT_DIR/.ssh" ]; then
@@ -26,20 +25,16 @@ if [ ! -d "$SCRIPT_DIR/.ssh" ]; then
   exit 1
 fi
 
-# Move .ssh folder
 echo -e "${GREEN}Moving SSH keys...${NC}"
 mv "$SCRIPT_DIR/.ssh" ~/ || { echo -e "${RED}Failed to move SSH keys.${NC}"; exit 1; }
 
-# Start ssh-agent
 echo -e "${GREEN}Starting SSH agent...${NC}"
 eval "$(ssh-agent -s)"
 
-# Create necessary directories
 echo -e "${GREEN}Setting up directories...${NC}"
 mkdir -p $REPO_DIR
 cd $REPO_DIR || exit 1
 
-# Ensure git is available and clone repository
 echo -e "${GREEN}Cloning repository...${NC}"
 nix-shell -p git --run "git clone $DOTFILES_REPO_URL"
 
@@ -49,7 +44,6 @@ if [ ! -d ".dotfiles" ]; then
   exit 1
 fi
 
-# Rebuild NixOS
 echo -e "${GREEN}Rebuilding NixOS configuration...${NC}"
 sudo nixos-rebuild switch --flake $REPO_DIR/.dotfiles/nixos
 
