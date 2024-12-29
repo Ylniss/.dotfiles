@@ -23,6 +23,9 @@
       typescript-language-server
       bash-language-server
 
+      # Linters
+      golangci-lint
+
       # Formatters
       prettierd
       eslint
