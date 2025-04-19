@@ -13,6 +13,9 @@ map X $
 " Jump to matching bracket
 map <C-B> %
 
+" Paste without overriding yanked selection
+map p P
+
 " Move selected code
 vnoremap <A-j> :m '>+1<CR>gv=gv
 vnoremap <A-k> :m '<-2<CR>gv=gv
