@@ -59,6 +59,9 @@ nnoremap <CR> o<Esc>
 " Go back to previous file
 noremap <Leader>n <C-6>
 
+" Yank whole file
+nnoremap yf ggVGy
+
 set relativenumber number
 set scrolloff=10
 
