@@ -93,5 +93,7 @@ map <leader>t <Action>(ActivateTerminalToolWindow)
 map <leader>ss <Action>(GotoFile)
 map <leader>sf <Action>(GotoFile)
 map <leader>sg <Action>(SearchEverywhere)
-
+map <leader>co <Action>(CloseAllEditorsButActive)
+map <leader>cr <Action>(CloseAllToTheRight)
+map <leader>cl <Action>(CloseAllToTheLeft)
 
