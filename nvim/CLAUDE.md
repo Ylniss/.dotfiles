@@ -68,11 +68,9 @@ Leader groups registered via `which-key.add()` at the bottom of the file.
 ### Leader Prefixes
 | Prefix | Category |
 |--------|----------|
-| `<leader>c` | code |
 | `<leader>e` | explore |
 | `<leader>g` | git |
 | `<leader>s` | search |
-| `<leader>d` | debug |
 
 ## LSP (plugins/lsp.lua)
 

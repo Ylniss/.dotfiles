@@ -2,7 +2,6 @@
 vim.keymap.set({ "n", "v" }, "Z", "^", { desc = "move to the first character in line" })
 vim.keymap.set({ "n", "v" }, "X", "$", { desc = "move to the end of line" })
 vim.keymap.set({ "n", "v" }, "<C-b>", "%", { desc = "jump to matching bracket" })
-vim.keymap.set({ "n", "v" }, "<C-g>", "<C-]>", { desc = "go into definition" })
 vim.keymap.set({ "n", "v" }, "<CR>", "o<ESC>", { desc = "add new line in normal mode" })
 vim.keymap.set({ "n", "v" }, "<leader>n", "<C-6>", { desc = "go back to previous file" })
 
@@ -13,8 +12,6 @@ vim.keymap.set({ "n", "v" }, "H", "b", { desc = "move left by 1 word" })
 
 vim.keymap.set({ "n", "v" }, "<C-d>", "<C-d>zz", { desc = "scroll half screen down" })
 vim.keymap.set({ "n", "v" }, "<C-u>", "<C-u>zz", { desc = "scroll half screen up" })
-
-vim.keymap.set({ "n", "v" }, "<C-x>", "<C-v>", { desc = "enter block mode" })
 
 -- ============================= Go to next/previous buffer =============================
 vim.keymap.set("n", "]", vim.cmd.bnext, { desc = "go to next buffer" })
@@ -56,9 +53,6 @@ end
 
 vim.keymap.set("n", "<leader>q", saveAndClose, { desc = "save and close window" })
 vim.keymap.set("n", "<leader>Q", "<cmd>q!<CR>", { desc = "close window without saving" })
-vim.keymap.set("n", "<leader>wqa", vim.cmd.wqa, { desc = "save all changes and quit vim" })
-vim.keymap.set("n", "<leader>wqA", "<cmd>qa!<CR>", { desc = "quit vim without saving changes" })
-
 local function smart_save()
 	local current_file = vim.fn.expand("%:p")
 	if current_file == "" or current_file == nil then
@@ -77,18 +71,7 @@ vim.keymap.set({ "n", "v" }, "<C-S-s>", vim.cmd.wa, { noremap = true, desc = "sa
 
 vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc = "find and replace" })
 
-vim.keymap.set("n", "<leader>m", "<cmd>messages<CR>", { noremap = true, desc = "open messages" })
-
 vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole file" })
-
--- ===================================== Terminal =====================================
-vim.keymap.set("t", "<esc>", "<C-\\><C-n>", { noremap = true, desc = "exit terminal mode" })
-
--- ======================================= LSP ========================================
-vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover, { desc = "hover docs" })
-
--- ====================================== DAP ========================================
--- todo: add some debugger cause previous one crashed XD
 
 -- ===================================== NeoTree ======================================
 local function open_neotree_git_root_or_file_dir()
@@ -122,9 +105,6 @@ end, { desc = "git status" })
 vim.keymap.set("n", "<leader>g>", "<cmd>Git push<CR>", { noremap = true, desc = "git push" })
 vim.keymap.set("n", "<leader>g<", "<cmd>Git pull<CR>", { noremap = true, desc = "git pull" })
 
-vim.keymap.set("n", "<leader>ch", "<cmd>diffget //2<CR>", { desc = "get diff from left" })
-vim.keymap.set("n", "<leader>cl", "<cmd>diffget //3<CR>", { desc = "get diff from right" })
-
 -- =================================== Commenting ===================================
 vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "toggle line comment" })
 vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "toggle line comment" })
@@ -132,8 +112,6 @@ vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "toggle line comment" 
 -- ========================== Document existing key chains ==========================
 local whichKey = require("which-key")
 whichKey.add({
-	{ "<leader>c", group = "code" },
-	{ "<leader>c_", hidden = true },
 	{ "<leader>e", group = "explore" },
 	{ "<leader>e_", hidden = true },
 	{ "<leader>g", group = "git" },
@@ -142,8 +120,6 @@ whichKey.add({
 	{ "<leader>gh_", hidden = true },
 	{ "<leader>s", group = "search" },
 	{ "<leader>s_", hidden = true },
-	{ "<leader>d", group = "debug" },
-	{ "<leader>d_", hidden = true },
 })
 
 -- Required for visual <leader>hs (hunk stage) to work
