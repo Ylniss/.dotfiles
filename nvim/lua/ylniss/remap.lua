@@ -55,7 +55,7 @@ vim.keymap.set("n", "<leader>q", saveAndClose, { desc = "save and close window" 
 vim.keymap.set("n", "<leader>Q", "<cmd>q!<CR>", { desc = "close window without saving" })
 local function smart_save()
 	local current_file = vim.fn.expand("%:p")
-	if current_file == "" or current_file == nil then
+	if current_file == "" then
 		-- File has no name, open command line with saveas and current directory
 		local current_dir = vim.fn.expand("%:p:h") .. "/"
 		local saveas_cmd = ":saveas " .. current_dir
@@ -74,28 +74,7 @@ vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc =
 vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole file" })
 
 -- ===================================== NeoTree ======================================
-local function open_neotree_git_root_or_file_dir()
-	-- Get the full path of the current file
-	local file_path = vim.fn.expand("%:p:h")
-
-	-- Change to the directory of the current file
-	vim.cmd("lcd " .. file_path)
-
-	-- Try to find the Git root directory relative to the current file
-	local git_root = vim.fn.system("git rev-parse --show-toplevel")
-
-	-- Check if the git command was successful
-	if vim.v.shell_error == 0 and git_root and #git_root > 0 then
-		vim.cmd("lcd " .. git_root)
-		-- Open Neotree at the Git root
-		vim.cmd("Neotree toggle dir=" .. git_root)
-	else
-		-- Open Neotree at the current file's directory
-		vim.cmd("Neotree toggle reveal_force_cwd")
-	end
-end
-
-vim.keymap.set("n", "<leader>e", open_neotree_git_root_or_file_dir, { noremap = true, desc = "open/close explorer" })
+vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "open/close explorer" })
 
 -- ============================ Git actions in Fugitive =============================
 vim.keymap.set("n", "<leader>gs", function()
