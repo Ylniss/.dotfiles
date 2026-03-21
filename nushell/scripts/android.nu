@@ -30,13 +30,7 @@ def 'ssh mob' [] {
 
 # Copy to clipboard file contents from mobile phone
 def 'ssh mob clip' [file_path: string] {
-  let ssh_output = (ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/personal $"cat ($file_path)")
-
-  if $nu.os-info.family == 'windows' {
-    $ssh_output | clip
-  } else {
-    $ssh_output | pbcopy
-  }
+  ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/personal $"cat ($file_path)" | clip
 }
 
 # Copy file from mobile phone to current machine
