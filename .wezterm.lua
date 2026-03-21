@@ -1,13 +1,10 @@
 local wezterm = require("wezterm")
-local config = {}
-
-if wezterm.config_builder then
-	config = wezterm.config_builder()
-end
+local act = wezterm.action
+local config = wezterm.config_builder()
 
 -- ============ BEHAVIOR ============
 
-local is_windows = wezterm.target_triple == "x86_64-pc-windows-msvc"
+local is_windows = wezterm.target_triple:find("windows") ~= nil
 
 config.default_prog = { "nu" }
 
@@ -35,16 +32,16 @@ local function split_nav(resize_or_move, key)
 		mods = resize_or_move == "resize" and "META" or "CTRL",
 		action = wezterm.action_callback(function(win, pane)
 			if is_vim(pane) then
-				-- pass the keys through to vim/nvim
-				win:perform_action({
-					SendKey = { key = key, mods = resize_or_move == "resize" and "META" or "CTRL" },
-				}, pane)
+				win:perform_action(
+					act.SendKey({ key = key, mods = resize_or_move == "resize" and "META" or "CTRL" }),
+					pane
+				)
+				return
+			end
+			if resize_or_move == "resize" then
+				win:perform_action(act.AdjustPaneSize({ direction_keys[key], 3 }), pane)
 			else
-				if resize_or_move == "resize" then
-					win:perform_action({ AdjustPaneSize = { direction_keys[key], 3 } }, pane)
-				else
-					win:perform_action({ ActivatePaneDirection = direction_keys[key] }, pane)
-				end
+				win:perform_action(act.ActivatePaneDirection(direction_keys[key]), pane)
 			end
 		end),
 	}
@@ -85,12 +82,8 @@ config.window_background_gradient = {
 local titlebar_color = "#0B0022"
 
 config.window_frame = {
-	-- The font used in the tab bar.
 	font = wezterm.font({ family = "JetBrainsMono NF" }),
-
-	-- The size of the font in the tab bar.
 	font_size = 12.0,
-
 	active_titlebar_bg = titlebar_color,
 	inactive_titlebar_bg = titlebar_color,
 }
@@ -131,7 +124,7 @@ local function tab_title(tab)
 	return pane.title
 end
 
-wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
+wezterm.on("format-tab-title", function(tab, _, _, _, hover, _)
 	local edge_background = titlebar_color
 	local background = "#1b1032"
 	local foreground = "#808080"
@@ -144,6 +137,7 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 	elseif hover then
 		background = "#3b3052"
 		foreground = "#909090"
+		edge_foreground = background
 	end
 
 	local title = tab_title(tab)
@@ -163,20 +157,18 @@ end)
 
 -- ========== KEY BINDINGS ==========
 
-local act = wezterm.action
-
 config.keys = {
 	-- Ctrl + number to focus on <number> tab
-	{ key = "1", mods = "CTRL", action = act({ ActivateTab = 0 }) },
-	{ key = "2", mods = "CTRL", action = act({ ActivateTab = 1 }) },
-	{ key = "3", mods = "CTRL", action = act({ ActivateTab = 2 }) },
-	{ key = "4", mods = "CTRL", action = act({ ActivateTab = 3 }) },
-	{ key = "5", mods = "CTRL", action = act({ ActivateTab = 4 }) },
-	{ key = "6", mods = "CTRL", action = act({ ActivateTab = 5 }) },
-	{ key = "7", mods = "CTRL", action = act({ ActivateTab = 6 }) },
-	{ key = "8", mods = "CTRL", action = act({ ActivateTab = 7 }) },
-	{ key = "9", mods = "CTRL", action = act({ ActivateTab = 8 }) },
-	{ key = "0", mods = "CTRL", action = act({ ActivateTab = -1 }) },
+	{ key = "1", mods = "CTRL", action = act.ActivateTab(0) },
+	{ key = "2", mods = "CTRL", action = act.ActivateTab(1) },
+	{ key = "3", mods = "CTRL", action = act.ActivateTab(2) },
+	{ key = "4", mods = "CTRL", action = act.ActivateTab(3) },
+	{ key = "5", mods = "CTRL", action = act.ActivateTab(4) },
+	{ key = "6", mods = "CTRL", action = act.ActivateTab(5) },
+	{ key = "7", mods = "CTRL", action = act.ActivateTab(6) },
+	{ key = "8", mods = "CTRL", action = act.ActivateTab(7) },
+	{ key = "9", mods = "CTRL", action = act.ActivateTab(8) },
+	{ key = "0", mods = "CTRL", action = act.ActivateTab(-1) },
 
 	-- move between split panes
 	split_nav("move", "h"),
@@ -190,36 +182,30 @@ config.keys = {
 	split_nav("resize", "l"),
 
 	-- Ctrl + T to open a new tab
-	{ key = "t", mods = "CTRL", action = act({ SpawnTab = "CurrentPaneDomain" }) },
+	{ key = "t", mods = "CTRL", action = act.SpawnTab("CurrentPaneDomain") },
 
 	-- Ctrl + Shift + T to create small pane on the bottom (terminal)
 	{
 		key = "t",
 		mods = "CTRL|SHIFT",
-		action = wezterm.action_callback(function(window, pane)
-			window:perform_action(act({ SplitVertical = { domain = "CurrentPaneDomain" } }), pane)
-			window:perform_action(act({ ActivatePaneDirection = "Down" }), pane)
-			window:perform_action(act({ AdjustPaneSize = { "Down", 20 } }), pane)
-		end),
+		action = act.Multiple({
+			act.SplitVertical({ domain = "CurrentPaneDomain" }),
+			act.ActivatePaneDirection("Down"),
+			act.AdjustPaneSize({ "Down", 20 }),
+		}),
 	},
 
-	-- Ctrl + Shift + Q to close current tab
-	{ key = "q", mods = "CTRL|SHIFT", action = act({ CloseCurrentPane = { confirm = false } }) },
+	-- Ctrl + Shift + Q to close current pane
+	{ key = "q", mods = "CTRL|SHIFT", action = act.CloseCurrentPane({ confirm = false }) },
 
-	-- Ctrl + Shift + W to close current pane
-	{ key = "w", mods = "CTRL|SHIFT", action = act({ CloseCurrentTab = { confirm = false } }) },
+	-- Ctrl + Shift + W to close current tab
+	{ key = "w", mods = "CTRL|SHIFT", action = act.CloseCurrentTab({ confirm = false }) },
 
-	-- Ctrl + Shift + V to split vertically
-	{ key = "v", mods = "CTRL|SHIFT", action = act({ SplitHorizontal = { domain = "CurrentPaneDomain" } }) },
+	-- Ctrl + Shift + V to split horizontally (side by side)
+	{ key = "v", mods = "CTRL|SHIFT", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
 
-	-- Ctrl + Shift + H to split vertically
-	{ key = "h", mods = "CTRL|SHIFT", action = act({ SplitVertical = { domain = "CurrentPaneDomain" } }) },
-
-	-- Ctrl + Alt + Arrow to resize in arrow direction
-	{ key = "UpArrow", mods = "CTRL|ALT", action = act({ AdjustPaneSize = { "Up", 1 } }) },
-	{ key = "DownArrow", mods = "CTRL|ALT", action = act({ AdjustPaneSize = { "Down", 1 } }) },
-	{ key = "LeftArrow", mods = "CTRL|ALT", action = act({ AdjustPaneSize = { "Left", 1 } }) },
-	{ key = "RightArrow", mods = "CTRL|ALT", action = act({ AdjustPaneSize = { "Right", 1 } }) },
+	-- Ctrl + Shift + H to split vertically (stacked)
+	{ key = "h", mods = "CTRL|SHIFT", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
 
 	-- Ctrl + e/y to scroll up or down
 	{ key = "e", mods = "CTRL", action = act.ScrollByLine(-1) },
@@ -256,8 +242,8 @@ local copy_mode = nil
 if wezterm.gui then
 	copy_mode = wezterm.gui.default_key_tables().copy_mode
 	local keybindings = {
-		{ key = "l", mods = "SHIFT", action = wezterm.action.CopyMode("MoveForwardWord") },
-		{ key = "h", mods = "SHIFT", action = wezterm.action.CopyMode("MoveBackwardWord") },
+		{ key = "l", mods = "SHIFT", action = act.CopyMode("MoveForwardWord") },
+		{ key = "h", mods = "SHIFT", action = act.CopyMode("MoveBackwardWord") },
 	}
 
 	for _, keybinding in ipairs(keybindings) do
