@@ -44,21 +44,19 @@ return {
 		dashboard.section.header.val = vim.split(logo, "\n")
 
 		dashboard.section.buttons.val = {
-			dashboard.button("space s f", " > Search file"),
-			dashboard.button("space s p", " > Search repo"),
-			dashboard.button("space s g", "⚡> Search text with grep"),
-			dashboard.button("space s b", " > Search bookmarks"),
-			dashboard.button("space ?", "� > Recently used files"),
-			dashboard.button("space e", " > Explorer"),
-			dashboard.button("n", " > New file", "<cmd>ene <BAR> startinsert <CR>"),
+			dashboard.button("space s f", "󰈞  Search file"),
+			dashboard.button("space s g", "󰊄  Search text with grep"),
+			dashboard.button("space s k", "󰌌  Search keymaps"),
+			dashboard.button("space ?", "󰋚  Recently used files"),
+			dashboard.button("space e", "󰙅  Explorer"),
 			dashboard.button(
 				"c",
-				" > Nvim config",
+				"󰒓  Nvim config",
 				"<cmd>lcd ~/stuff/repo/.dotfiles | e ~/stuff/repo/.dotfiles/nvim/lua/ylniss/init.lua<CR>"
 			),
-			dashboard.button("l", "󰚥 > Lazy config", "<cmd>Lazy<CR>"),
-			dashboard.button("m", "󱌣 > Mason config", "<cmd>Mason<CR>"),
-			dashboard.button("q", "⏻ > Quit Neovim", "<cmd>qa<CR>"),
+			dashboard.button("l", "󰚥  Lazy config", "<cmd>Lazy<CR>"),
+			dashboard.button("m", "󱌣  Mason config", "<cmd>Mason<CR>"),
+			dashboard.button("q", "󰐥  Quit Neovim", "<cmd>qa<CR>"),
 		}
 
 		dashboard.section.footer.val = " 󰈈 󰈈 󰈈  WE SMOKE ACID BITCH! 󰈈 󰈈 󰈈 "

@@ -67,6 +67,7 @@ return {
 		vim.keymap.set("n", "<leader>sg", live_grep_git_root, { desc = "search by grep on git root" })
 		vim.keymap.set("n", "<leader>sd", fzf.diagnostics_workspace, { desc = "search diagnostics" })
 		vim.keymap.set("n", "<leader>sb", fzf.marks, { desc = "search bookmarks" })
+		vim.keymap.set("n", "<leader>sk", fzf.keymaps, { desc = "search keymaps" })
 		vim.keymap.set("n", "<leader>sr", fzf.resume, { desc = "search resume" })
 	end,
 }
