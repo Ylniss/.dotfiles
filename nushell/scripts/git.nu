@@ -22,12 +22,12 @@ def gitl [--grph (-g)] {
 def gitd --wrapped [...opts] {
   let gitDiffOutput = git diff
   if $gitDiffOutput != "" {
-    echo $"(ansi red)\n --------------------- Unstaged Changes --------------------- (ansi reset)"
+    print $"(ansi red)\n --------------------- Unstaged Changes --------------------- (ansi reset)"
     git diff ...$opts
   }
   let gitDiffStagedOutput = git diff --staged
   if $gitDiffStagedOutput != "" {
-    echo $"(ansi green)\n --------------------- Staged Changes --------------------- (ansi reset)"
+    print $"(ansi green)\n --------------------- Staged Changes --------------------- (ansi reset)"
     git diff --staged ...$opts
   }
 
@@ -69,7 +69,7 @@ def gitp --wrapped [branchName?: string, ...opts] {
       git-push     
     }
 
-    echo $"Upstream set to origin/($currentBranch) for branch ($currentBranch)."
+    print $"Upstream set to origin/($currentBranch) for branch ($currentBranch)."
     git pull origin $currentBranch --allow-unrelated-histories
   }
 

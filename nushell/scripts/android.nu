@@ -33,9 +33,9 @@ def 'ssh mob clip' [file_path: string] {
   let ssh_output = (ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/personal $"cat ($file_path)")
 
   if $nu.os-info.family == 'windows' {
-    echo $ssh_output | clip
+    $ssh_output | clip
   } else {
-    echo $ssh_output | pbcopy
+    $ssh_output | pbcopy
   }
 }
 

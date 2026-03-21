@@ -3,7 +3,7 @@ alias dockercub = docker compose up --build
 
 # Stops all running containers
 def "docker stop all" [] { 
-  docker ps | from ssv | get names | each { |it| docker stop $it }
+  docker ps | from ssv | get NAMES | each { |it| docker stop $it }
 }
 
 # List all containers within a compose

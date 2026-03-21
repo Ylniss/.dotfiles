@@ -8,33 +8,16 @@ if $nu.os-info.family =~ windows {
   $env.downloads = $"($env.HOME)/stuff/downloads"
 }
 
-# Specifies how environment variables are:
-# - converted from a string to a value on Nushell startup (from_string)
-# - converted from a value back to a string when running external commands (to_string)
-# Note: The conversions happen *after* config.nu is loaded
-$env.ENV_CONVERSIONS = {
-    "PATH": {
-        from_string: { |s| $s | split row (char esep) | path expand --no-symlink }
-        to_string: { |v| $v | path expand --no-symlink | str join (char esep) }
-    }
-    "Path": {
-        from_string: { |s| $s | split row (char esep) | path expand --no-symlink }
-        to_string: { |v| $v | path expand --no-symlink | str join (char esep) }
-    }
-}
-
 # Directories to search for scripts when calling source or use
 $env.NU_LIB_DIRS = [
     ($nu.default-config-dir | path join 'scripts') # add <nushell-config-dir>/scripts
 ]
 
-# Directories to search for plugin binaries when calling register
+# Directories to search for plugin binaries when calling plugin add
 $env.NU_PLUGIN_DIRS = [
     ($nu.default-config-dir | path join 'plugins') # add <nushell-config-dir>/plugins
 ]
 
-# To add entries to PATH (on Windows you might use Path), you can use the following pattern:
-# $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
 if $nu.os-info.family =~ windows {
   $env.Path = ($env.Path | split row (char esep) | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')
 }
@@ -63,6 +46,9 @@ if $nu.os-info.name == 'android' {
   do { ^ssh-add ~/.ssh/andrd } | ignore
 }
 
-# Setup custom prompt - Starship
-mkdir ~/.cache/starship
-starship init nu | save -f ~/.cache/starship/init.nu
+# Setup custom prompt - Starship (delete cache file to regenerate after starship update)
+let starship_cache = ($"($nu.home-dir)/.cache/starship" | path expand)
+if not ($"($starship_cache)/init.nu" | path exists) {
+    mkdir $starship_cache
+    starship init nu | save -f $"($starship_cache)/init.nu"
+}
