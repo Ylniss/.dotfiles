@@ -1,26 +1,25 @@
---  This function gets run when an LSP connects to a particular buffer.
-local on_attach = function(_, bufnr)
-	-- In this case, we create a function that lets us more easily define mappings specific
-	-- for LSP related items. It sets the mode, buffer and description for us each time.
-	local lsp_keymap = function(keys, func, desc)
-		if desc then
-			desc = "lsp: " .. desc
+vim.api.nvim_create_autocmd("LspAttach", {
+	callback = function(ev)
+		local bufnr = ev.buf
+		local lsp_keymap = function(keys, func, desc)
+			if desc then
+				desc = "lsp: " .. desc
+			end
+			vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
 		end
 
-		vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
-	end
+		lsp_keymap("<leader>r", "<cmd>Lspsaga rename<CR>", "rename")
+		lsp_keymap("<C-.>", "<cmd>Lspsaga code_action<CR>", "code action") -- with .ahk script it is also <C-.> (powershell fix)
 
-	lsp_keymap("<leader>r", "<cmd>Lspsaga rename<CR>", "rename")
-	lsp_keymap("<C-.>", "<cmd>Lspsaga code_action<CR>", "code action") -- with .ahk script it is also <C-.> (powershell fix)
+		local telescope = require("telescope.builtin")
 
-	local telescope = require("telescope.builtin")
-
-	lsp_keymap("gD", vim.lsp.buf.declaration, "goto declaration")
-	lsp_keymap("gd", telescope.lsp_definitions, "goto definition")
-	lsp_keymap("gr", telescope.lsp_references, "goto references")
-	lsp_keymap("gI", telescope.lsp_implementations, "goto implementation")
-	lsp_keymap("<leader>D", telescope.lsp_type_definitions, "type definition")
-end
+		lsp_keymap("gD", vim.lsp.buf.declaration, "goto declaration")
+		lsp_keymap("gd", telescope.lsp_definitions, "goto definition")
+		lsp_keymap("gr", telescope.lsp_references, "goto references")
+		lsp_keymap("gI", telescope.lsp_implementations, "goto implementation")
+		lsp_keymap("<leader>D", telescope.lsp_type_definitions, "type definition")
+	end,
+})
 
 require("mason").setup()
 require("mason-lspconfig").setup()
@@ -73,16 +72,14 @@ if not is_nixos and not is_android() then
 		ensure_installed = vim.tbl_keys(servers),
 	})
 
-	mason_lspconfig.setup_handlers({
-		function(server_name)
-			require("lspconfig")[server_name].setup({
-				capabilities = capabilities,
-				on_attach = on_attach,
-				settings = servers[server_name],
-				filetypes = (servers[server_name] or {}).filetypes,
-			})
-		end,
-	})
+	for server_name, server_settings in pairs(servers) do
+		vim.lsp.config(server_name, {
+			capabilities = capabilities,
+			settings = server_settings,
+			filetypes = (server_settings or {}).filetypes,
+		})
+	end
+	vim.lsp.enable(vim.tbl_keys(servers))
 
 	require("mason-tool-installer").setup({
 		ensure_installed = {
