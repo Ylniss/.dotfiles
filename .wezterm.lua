@@ -120,8 +120,9 @@ local function tab_title(tab)
 		return fg_process_name
 	end
 
-	-- Otherwise, use the title from the active pane in that tab
-	return pane.title
+	-- Otherwise, use the title from the active pane, stripping .exe suffix on Windows
+	local t = pane.title
+	return t:gsub("%.exe", "")
 end
 
 wezterm.on("format-tab-title", function(tab, _, _, _, hover, _)

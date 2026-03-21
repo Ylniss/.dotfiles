@@ -1,61 +1,61 @@
 let dark_theme = {
-    separator: white
+    separator: "#9094a4"
     leading_trailing_space_bg: { attr: n }
-    header: green_bold
-    empty: blue
-    bool: light_cyan
-    int: white
-    filesize: cyan
-    duration: white
-    date: purple
-    range: white
-    float: white
-    string: white
-    nothing: white
-    binary: white
-    cell-path: white
-    row_index: green_bold
-    record: white
-    list: white
-    block: white
-    hints: dark_gray
-    search_result: {bg: red fg: white}
-    shape_and: purple_bold
-    shape_binary: purple_bold
-    shape_block: blue_bold
-    shape_bool: light_cyan
-    shape_closure: green_bold
-    shape_custom: green
-    shape_datetime: cyan_bold
-    shape_directory: cyan
-    shape_external: cyan
-    shape_externalarg: green_bold
-    shape_external_resolved: light_yellow_bold
-    shape_filepath: cyan
-    shape_flag: blue_bold
-    shape_float: purple_bold
-    shape_garbage: { fg: white bg: red attr: b}
-    shape_globpattern: cyan_bold
-    shape_int: purple_bold
-    shape_internalcall: cyan_bold
-    shape_keyword: cyan_bold
-    shape_list: cyan_bold
-    shape_literal: blue
-    shape_match_pattern: green
+    header: { fg: "#ffe585" attr: b }
+    empty: "#e9c1ff"
+    bool: "#ff8b92"
+    int: "#c5f2ff"
+    filesize: "#89ebff"
+    duration: "#f4d69f"
+    date: "#82aaff"
+    range: "#c5f2ff"
+    float: "#c5f2ff"
+    string: "#c5f2ff"
+    nothing: "#9094a4"
+    binary: "#c5f2ff"
+    cell-path: "#c5f2ff"
+    row_index: { fg: "#9094a4" attr: b }
+    record: "#c5f2ff"
+    list: "#c5f2ff"
+    block: "#c5f2ff"
+    hints: "#9094a4"
+    search_result: { bg: "#ffcc00" fg: "#292d3e" }
+    shape_and: { fg: "#82aaff" attr: b }
+    shape_binary: { fg: "#82aaff" attr: b }
+    shape_block: { fg: "#e9c1ff" attr: b }
+    shape_bool: "#ff8b92"
+    shape_closure: { fg: "#b4e88d" attr: b }
+    shape_custom: "#b4e88d"
+    shape_datetime: { fg: "#89ebff" attr: b }
+    shape_directory: "#89ebff"
+    shape_external: "#89ebff"
+    shape_externalarg: "#c5f2ff"
+    shape_external_resolved: { fg: "#ffe585" attr: b }
+    shape_filepath: "#89ebff"
+    shape_flag: { fg: "#9cc4ff" attr: b }
+    shape_float: "#ddb0f6"
+    shape_garbage: { fg: "#c5f2ff" bg: "#ff8288" attr: b }
+    shape_globpattern: { fg: "#e9c1ff" attr: b }
+    shape_int: "#ddb0f6"
+    shape_internalcall: { fg: "#e9c1ff" attr: b }
+    shape_keyword: { fg: "#82aaff" attr: b }
+    shape_list: { fg: "#e9c1ff" attr: b }
+    shape_literal: "#ff8b92"
+    shape_match_pattern: "#b4e88d"
     shape_matching_brackets: { attr: u }
-    shape_nothing: light_cyan
-    shape_operator: yellow
-    shape_or: purple_bold
-    shape_pipe: purple_bold
-    shape_range: yellow_bold
-    shape_record: cyan_bold
-    shape_redirection: purple_bold
-    shape_signature: green_bold
-    shape_string: green
-    shape_string_interpolation: cyan_bold
-    shape_table: blue_bold
-    shape_variable: purple
-    shape_vardecl: purple
+    shape_nothing: "#9094a4"
+    shape_operator: "#f4d69f"
+    shape_or: { fg: "#82aaff" attr: b }
+    shape_pipe: { fg: "#82aaff" attr: b }
+    shape_range: { fg: "#f4d69f" attr: b }
+    shape_record: { fg: "#89ebff" attr: b }
+    shape_redirection: { fg: "#82aaff" attr: b }
+    shape_signature: { fg: "#b4e88d" attr: b }
+    shape_string: "#b4e88d"
+    shape_string_interpolation: { fg: "#ffe585" attr: b }
+    shape_table: { fg: "#e9c1ff" attr: b }
+    shape_variable: "#c5f2ff"
+    shape_vardecl: "#ff8b92"
 }
 
 let carapace_completer = {|spans|
