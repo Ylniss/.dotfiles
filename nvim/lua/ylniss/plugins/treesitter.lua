@@ -7,7 +7,6 @@ return {
 	event = "VeryLazy",
 	dependencies = {
 		"nvim-treesitter/nvim-treesitter-textobjects",
-		"nushell/tree-sitter-nu",
 	},
 	build = ":TSUpdate",
 	config = function()
