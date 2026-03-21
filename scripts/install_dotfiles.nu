@@ -8,7 +8,7 @@ let dotfilesRepoDir = if $nu.os-info.family =~ windows {
 
 def create-symbolic-link [target, linkPath, description] {
   if ($linkPath | path exists) {
-    echo $'($description) symbolic link already exists.'
+    print $'($description) symbolic link already exists.'
   } else {
 
     let parentDir = ($linkPath | path dirname)
@@ -16,9 +16,15 @@ def create-symbolic-link [target, linkPath, description] {
       mkdir $parentDir
     }
 
-    echo $'Creating symbolic link for ($description)'
+    print $'Creating symbolic link for ($description)'
     if ($nu.os-info.family =~ windows) {
-      ^pwsh -c $"New-Item -ItemType SymbolicLink -Path ($linkPath) -Target ($target)"
+      let t = ($target | str replace --all '/' '\')
+      let l = ($linkPath | str replace --all '/' '\')
+      if ($target | path type) == 'dir' {
+        ^cmd /c $"mklink /j ($l) ($t)"
+      } else {
+        ^cmd /c $"mklink /h ($l) ($t)"
+      }
     } else {
       ^ln -s $target $linkPath
     }
@@ -37,6 +43,10 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)\nushell\config.nu' $'($env.APPDATA)\nushell\config.nu' 'nushell config.nu'
   create-symbolic-link $'($dotfilesRepoDir)\nushell\env.nu' $'($env.APPDATA)\nushell\env.nu' 'nushell env.nu'
   create-symbolic-link $'($dotfilesRepoDir)\nushell\scripts' $'($env.APPDATA)\nushell\scripts' 'nushell scripts'
+  create-symbolic-link $'($dotfilesRepoDir)\claude\CLAUDE.md' $'($env.USERPROFILE)\.claude\CLAUDE.md' 'claude CLAUDE.md'
+  create-symbolic-link $'($dotfilesRepoDir)\claude\settings.json' $'($env.USERPROFILE)\.claude\settings.json' 'claude settings.json'
+  create-symbolic-link $'($dotfilesRepoDir)\claude\skills' $'($env.USERPROFILE)\.claude\skills' 'claude skills'
+  create-symbolic-link $'($dotfilesRepoDir)\claude\agents' $'($env.USERPROFILE)\.claude\agents' 'claude agents'
 } else {
   # For Linux/Android
   create-symbolic-link $'($dotfilesRepoDir)/nvim' $'($env.HOME)/.config/nvim' 'nvim'
@@ -50,4 +60,8 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)/nushell/config.nu' $'($env.HOME)/.config/nushell/config.nu' 'nushell config.nu'
   create-symbolic-link $'($dotfilesRepoDir)/nushell/env.nu' $'($env.HOME)/.config/nushell/env.nu' 'nushell env.nu'
   create-symbolic-link $'($dotfilesRepoDir)/nushell/scripts' $'($env.HOME)/.config/nushell/scripts' 'nushell scripts'
+  create-symbolic-link $'($dotfilesRepoDir)/claude/CLAUDE.md' $'($env.HOME)/.claude/CLAUDE.md' 'claude CLAUDE.md'
+  create-symbolic-link $'($dotfilesRepoDir)/claude/settings.json' $'($env.HOME)/.claude/settings.json' 'claude settings.json'
+  create-symbolic-link $'($dotfilesRepoDir)/claude/skills' $'($env.HOME)/.claude/skills' 'claude skills'
+  create-symbolic-link $'($dotfilesRepoDir)/claude/agents' $'($env.HOME)/.claude/agents' 'claude agents'
 }

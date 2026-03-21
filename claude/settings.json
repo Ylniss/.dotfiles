@@ -1,0 +1,23 @@
+{
+  "effortLevel": "high",
+  "autoUpdatesChannel": "latest",
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git status:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(xargs grep:*)"
+    ]
+  },
+  "enabledPlugins": {
+    "lua-lsp@claude-plugins-official": true
+  }
+}
