@@ -7,29 +7,51 @@ Personal Neovim configuration for config/text file editing. Namespace: `ylniss`.
 ```
 init.lua                    → requires "ylniss"
 lua/ylniss/
-  init.lua                  → loads set, plugins, remap, tabs (in order)
+  init.lua                  → loads set, lazy.nvim bootstrap, remap, tabs (in order)
   set.lua                   → vim options, autocommands, shell config
-  plugins.lua               → lazy.nvim bootstrap + all plugin specs
-  remap.lua                 → all keybindings
+  remap.lua                 → keybindings not tied to specific plugins
   tabs.lua                  → per-filetype indentation
-after/plugin/               → plugin-specific setup (runs after plugins load)
-  lsp/                      → LSP-related setup (mason)
+  plugins/                  → one file per plugin (lazy.nvim auto-discovers)
+    alpha.lua               → dashboard
+    blink-cmp.lua           → autocompletion
+    conform.lua             → formatter
+    fzf-lua.lua             → fuzzy finder
+    fugitive.lua            → git client
+    gitsigns.lua            → git gutter signs
+    indent-blankline.lua    → indentation guides
+    kanagawa.lua            → colorscheme + lualine + highlights
+    lazydev.lua             → Neovim Lua development
+    lsp.lua                 → LSP + mason
+    neo-tree.lua            → file explorer
+    smart-splits.lua        → window navigation
+    surround.lua            → surround pairs
+    treesitter.lua          → syntax highlighting
+    which-key.lua           → keybinding hints
+    autopairs.lua           → auto-close brackets
 ```
 
-- **Core settings** go in `lua/ylniss/`. **Plugin configuration** goes in `after/plugin/`.
-- One file per plugin in `after/plugin/`. LSP-related config lives in `after/plugin/lsp/`.
+- **Core settings** go in `lua/ylniss/`. **Plugin specs + config** go in `lua/ylniss/plugins/`.
+- Each plugin file returns a lazy.nvim spec table (or list of tables).
 - Indentation per filetype is in `tabs.lua`, not scattered across plugin configs.
 
-## Plugin Specs (plugins.lua)
+## Plugin Specs (lua/ylniss/plugins/)
 
-All plugins defined in a single `require("lazy").setup({...})` call. Patterns used:
+Each file returns a lazy.nvim spec. Every file starts with a comment header:
+```lua
+-- ========================================================
+-- PluginName
+-- short one line description
+-- ========================================================
+return { ... }
+```
 
-- **Simple**: `"author/plugin"` — no config needed, or configured in `after/plugin/`
-- **With deps**: `{ "author/plugin", dependencies = { ... } }`
-- **With defaults**: `{ "author/plugin", opts = {} }` — uses plugin defaults
-- **Lazy-loaded**: add `event = "VeryLazy"` or `event = "InsertEnter"` etc.
+Patterns used:
+- **Simple**: `return { "author/plugin", opts = {} }` — uses plugin defaults
+- **With config**: `return { "author/plugin", config = function() ... end }` — custom setup
+- **Lazy triggers**: `event`, `cmd`, `keys`, `ft` — defer loading until needed
+- **Multi-spec**: return a list `{ { spec1 }, { spec2 } }` for related plugins (e.g., kanagawa + lualine)
 
-Plugin setup/customization code belongs in `after/plugin/`, not inline in the spec.
+Every plugin should have a lazy trigger unless it must be visible immediately (colorscheme, statusline, dashboard).
 
 ## Keybindings (remap.lua)
 
@@ -39,6 +61,7 @@ Plugin setup/customization code belongs in `after/plugin/`, not inline in the sp
 - Complex logic extracted into local functions above the mapping.
 - Use `{ remap = true }` only when chaining to built-in mappings (e.g., Neovim's built-in `gcc`).
 - Use `{ expr = true }` for count-aware mappings (e.g., `gj`/`gk` with count).
+- **Do not `require()` plugins at the top level of remap.lua** — this forces them to load at startup. Plugin-specific keymaps go in the plugin spec's `config` function.
 
 Leader groups registered via `which-key.add()` at the bottom of the file.
 
@@ -51,7 +74,7 @@ Leader groups registered via `which-key.add()` at the bottom of the file.
 | `<leader>s` | search |
 | `<leader>d` | debug |
 
-## LSP (after/plugin/lsp/mason.lua)
+## LSP (plugins/lsp.lua)
 
 - Servers: `dockerls`, `jsonls`, `yamlls`, `taplo`, `terraformls`, `lua_ls`.
 - `LspAttach` autocmd defines buffer-local LSP keymaps using a local helper.
@@ -68,12 +91,12 @@ Leader groups registered via `which-key.add()` at the bottom of the file.
 - Use `vim.api.nvim_create_autocmd(event, { callback, group, pattern })`.
 - FileType-specific settings use the `FileType` event with `vim.bo.*` (buffer options).
 
-## Theme (after/plugin/colors.lua)
+## Theme (plugins/kanagawa.lua)
 
 - Kanagawa theme with **transparent backgrounds everywhere** (`bg = "none"`).
 - Kanagawa `overrides` function handles plugin-specific theming (Lazy, Mason).
 - Lualine theme derived from `auto` with transparent `normal.c` background.
-- Treesitter setup also lives in this file.
+- All custom highlights (git signs, cursor, cursorline) set in kanagawa's `config`.
 
 ## Gotchas
 
@@ -81,5 +104,5 @@ Leader groups registered via `which-key.add()` at the bottom of the file.
 - **HJKL heavily remapped**: `H`/`L` = word movement, `J`/`K` = paragraph movement, `Z`/`X` = line start/end. These are NOT standard vim motions.
 - **Reversed paste**: `p` and `P` are swapped.
 - **Error handling**: Use `pcall()` for commands that may fail (e.g., `:wq` on unnamed buffers). Check `vim.v.shell_error` after `vim.fn.system()` calls.
-- **Git root detection**: Both NeoTree and fzf-lua resolve git root before operating. When adding similar features, follow the `find_git_root()` pattern in `fzf-lua.lua`.
+- **Git root detection**: NeoTree and fzf-lua resolve git root before operating. When adding similar features, follow the `find_git_root()` pattern in `plugins/fzf-lua.lua`.
 - **Format toggle**: `vim.g.disable_autoformat` / `vim.b[bufnr].disable_autoformat` control conform.nvim format-on-save.
