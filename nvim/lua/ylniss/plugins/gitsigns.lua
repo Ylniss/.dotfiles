@@ -37,7 +37,6 @@ return {
 			keymap("n", "<leader>gD", function()
 				gs.diffthis("~")
 			end, { desc = "git diff against last commit" })
-			keymap("n", "<leader>gb", gs.toggle_current_line_blame, { desc = "toggle git blame line" })
 			keymap("n", "<leader>gr", gs.toggle_deleted, { desc = "toggle git show removed" })
 		end,
 	},
