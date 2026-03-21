@@ -8,16 +8,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
 		end
 
-		lsp_keymap("<leader>r", "<cmd>Lspsaga rename<CR>", "rename")
-		lsp_keymap("<C-.>", "<cmd>Lspsaga code_action<CR>", "code action") -- with .ahk script it is also <C-.> (powershell fix)
+		lsp_keymap("<leader>r", vim.lsp.buf.rename, "rename")
+		lsp_keymap("<C-.>", vim.lsp.buf.code_action, "code action") -- with .ahk script it is also <C-.> (powershell fix)
 
-		local telescope = require("telescope.builtin")
+		local fzf = require("fzf-lua")
 
 		lsp_keymap("gD", vim.lsp.buf.declaration, "goto declaration")
-		lsp_keymap("gd", telescope.lsp_definitions, "goto definition")
-		lsp_keymap("gr", telescope.lsp_references, "goto references")
-		lsp_keymap("gI", telescope.lsp_implementations, "goto implementation")
-		lsp_keymap("<leader>D", telescope.lsp_type_definitions, "type definition")
+		lsp_keymap("gd", fzf.lsp_definitions, "goto definition")
+		lsp_keymap("gr", fzf.lsp_references, "goto references")
+		lsp_keymap("gI", fzf.lsp_implementations, "goto implementation")
+		lsp_keymap("<leader>D", fzf.lsp_typedefs, "type definition")
 	end,
 })
 
@@ -28,10 +28,6 @@ require("mason-lspconfig").setup()
 local servers = {
 	dockerls = {},
 	jsonls = {},
-	html = { filetypes = { "html" } },
-	powershell_es = {},
-	omnisharp = {},
-	gopls = {},
 	yamlls = {},
 	taplo = {},
 	terraformls = {},
@@ -48,22 +44,15 @@ local servers = {
 	},
 }
 
--- Setup neovim lua configuration
-require("neodev").setup()
-
--- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-
 -- Ensure the servers above are installed
 local mason_lspconfig = require("mason-lspconfig")
 
 local function is_android()
 	local camera_path = vim.fn.expand("~/storage/dcim/camera")
-	return vim.loop.fs_stat(camera_path) ~= nil
+	return vim.uv.fs_stat(camera_path) ~= nil
 end
 
-local uname = vim.loop.os_uname()
+local uname = vim.uv.os_uname()
 local is_nixos = uname.sysname == "Linux" and uname.version:match("NixOS")
 
 -- Check if the OS is NixOS or Android - they have to handle lsp and formatters installation itslef
@@ -74,25 +63,20 @@ if not is_nixos and not is_android() then
 
 	for server_name, server_settings in pairs(servers) do
 		vim.lsp.config(server_name, {
-			capabilities = capabilities,
 			settings = server_settings,
 			filetypes = (server_settings or {}).filetypes,
 		})
 	end
 	vim.lsp.enable(vim.tbl_keys(servers))
+	vim.lsp.enable("stylua", false)
 
 	require("mason-tool-installer").setup({
 		ensure_installed = {
-			-- formatters
 			"stylua",
 			"yamlfmt",
 			"prettier",
-			"prettierd",
 			"mdformat",
-			"csharpier",
 			"taplo",
-			"gofumpt",
-			"golangci-lint",
 		},
 	})
 end

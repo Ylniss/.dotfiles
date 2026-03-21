@@ -1,57 +1,34 @@
-local cmp = require("cmp")
-local luasnip = require("luasnip")
-require("luasnip.loaders.from_vscode").lazy_load()
-
-luasnip.config.setup({})
-
-cmp.setup({
-	snippet = {
-		expand = function(args)
-			luasnip.lsp_expand(args.body)
-		end,
+require("blink.cmp").setup({
+	keymap = {
+		preset = "none",
+		["<C-n>"] = { "select_next", "fallback" },
+		["<C-p>"] = { "select_prev", "fallback" },
+		["<C-d>"] = { "scroll_documentation_down" },
+		["<C-f>"] = { "scroll_documentation_up" },
+		["<A-a>"] = { "show" },
+		["<CR>"] = { "accept", "fallback" },
+		["<Esc>"] = { "cancel", "fallback" },
+		["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
+		["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
 	},
 
 	completion = {
-		completeopt = "menu,menuone,noinsert",
+		list = {
+			selection = { preselect = true, auto_insert = false },
+		},
+		documentation = {
+			auto_show = true,
+		},
 	},
 
-	mapping = cmp.mapping.preset.insert({
-		["<C-n>"] = cmp.mapping.select_next_item(),
-		["<C-p>"] = cmp.mapping.select_prev_item(),
-		["<C-d>"] = cmp.mapping.scroll_docs(-4),
-		["<C-f>"] = cmp.mapping.scroll_docs(4),
-		["<A-a>"] = cmp.mapping.complete(), -- with .ahk script it is also <C-Space> (powershell fix)
-		["<CR>"] = cmp.mapping.confirm({
-			behavior = cmp.ConfirmBehavior.Replace,
-			select = true,
-		}),
-		["<esc>"] = function()
-			cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() })
-			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
-		end,
-		["<Tab>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_next_item()
-			elseif luasnip.expand_or_locally_jumpable() then
-				luasnip.expand_or_jump()
-			else
-				fallback()
-			end
-		end, { "i", "s" }),
-		["<S-Tab>"] = cmp.mapping(function(fallback)
-			if cmp.visible() then
-				cmp.select_prev_item()
-			elseif luasnip.locally_jumpable(-1) then
-				luasnip.jump(-1)
-			else
-				fallback()
-			end
-		end, { "i", "s" }),
-	}),
-
 	sources = {
-		{ name = "nvim_lsp" },
-		{ name = "luasnip" },
-		{ name = "path" },
+		default = { "lazydev", "lsp", "path", "snippets" },
+		providers = {
+			lazydev = {
+				name = "LazyDev",
+				module = "lazydev.integrations.blink",
+				score_offset = 100,
+			},
+		},
 	},
 })

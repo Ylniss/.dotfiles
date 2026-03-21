@@ -19,35 +19,6 @@ require("kanagawa").setup({
 			LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
 			MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
 
-			TelescopeTitle = { fg = theme.ui.special, bold = true },
-			TelescopePromptNormal = { bg = theme.ui.bg_p1 },
-			TelescopePromptBorder = { fg = theme.ui.bg_p1, bg = theme.ui.bg_p1 },
-			TelescopeResultsNormal = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m1 },
-			TelescopeResultsBorder = { fg = theme.ui.bg_m1, bg = theme.ui.bg_m1 },
-			TelescopePreviewNormal = { bg = theme.ui.bg_dim },
-			TelescopePreviewBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
-
-			-- Set themes for notifications
-			NotifyERRORBorder = { fg = "#8A1F1F", bg = "none" },
-			NotifyWARNBorder = { fg = "#79491D", bg = "none" },
-			NotifyINFOBorder = { fg = "#4F6752", bg = "none" },
-			NotifyDEBUGBorder = { fg = "#8B8B8B", bg = "none" },
-			NotifyTRACEBorder = { fg = "#4F3552", bg = "none" },
-			NotifyERRORIcon = { fg = "#F70067", bg = "none" },
-			NotifyWARNIcon = { fg = "#F79000", bg = "none" },
-			NotifyINFOIcon = { fg = "#A9FF68", bg = "none" },
-			NotifyDEBUGIcon = { fg = "#8B8B8B", bg = "none" },
-			NotifyTRACEIcon = { fg = "#D484FF", bg = "none" },
-			NotifyERRORTitle = { fg = "#F70067", bg = "none" },
-			NotifyWARNTitle = { fg = "#F79000", bg = "none" },
-			NotifyINFOTitle = { fg = "#A9FF68", bg = "none" },
-			NotifyDEBUGTitle = { fg = "#8B8B8B", bg = "none" },
-			NotifyTRACETitle = { fg = "#D484FF", bg = "none" },
-			NotifyERRORBody = { link = "Normal" },
-			NotifyWARNBody = { link = "Normal" },
-			NotifyINFOBody = { link = "Normal" },
-			NotifyDEBUGBody = { link = "Normal" },
-			NotifyTRACEBody = { link = "Normal" },
 		}
 	end,
 })
@@ -79,41 +50,8 @@ vim.api.nvim_set_hl(0, "Cursor", { bg = light_orange })
 local color_purple = "#30184F"
 vim.api.nvim_set_hl(0, "CursorLine", { bg = color_purple, fg = "", underline = false })
 
--- Setup same text highlights
-require("illuminate").configure({
-	under_cursor = false,
-})
-
--- Coloize text color
-require("ccc").setup({
-	highlighter = {
-		auto_enable = true,
-		lsp = true,
-	},
-})
-
-local function set_custom_highlights()
-	vim.api.nvim_set_hl(0, "IlluminatedWordText", { fg = "Orange" })
-	vim.api.nvim_set_hl(0, "IlluminatedWordRead", { fg = "Orange" })
-	vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { fg = "Orange" })
-end
-
-set_custom_highlights()
-
---- auto update the highlight style on colorscheme change
-vim.api.nvim_create_autocmd({ "ColorScheme" }, {
-	pattern = { "*" },
-	callback = set_custom_highlights,
-})
-
 require("nvim-treesitter.configs").setup({
 	ensure_installed = {
-		"c_sharp",
-		"go",
-		"javascript",
-		"typescript",
-		"html",
-		"scss",
 		"jsonc",
 		"dockerfile",
 		"terraform",

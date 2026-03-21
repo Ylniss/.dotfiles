@@ -88,7 +88,7 @@ vim.keymap.set({ "n", "v" }, "<C-S-s>", vim.cmd.wa, { noremap = true, desc = "sa
 
 vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc = "find and replace" })
 
-vim.keymap.set("n", "<leader>m", "<cmd>Noice<CR>", { noremap = true, desc = "open messages" })
+vim.keymap.set("n", "<leader>m", "<cmd>messages<CR>", { noremap = true, desc = "open messages" })
 
 vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole file" })
 
@@ -96,25 +96,7 @@ vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole fi
 vim.keymap.set("t", "<esc>", "<C-\\><C-n>", { noremap = true, desc = "exit terminal mode" })
 
 -- ======================================= LSP ========================================
-vim.keymap.set("n", "<leader>k", "<cmd>Lspsaga hover_doc<CR>", { desc = "hover docs" })
-vim.keymap.set({ "n", "v" }, "ga", "<cmd>Lspsaga finder def+ref<CR>", { desc = "find definitions and references" })
-
--- ===================================== Trouble ======================================
-local trouble = require("trouble")
-
-vim.keymap.set("n", "<leader>xx", trouble.toggle)
-vim.keymap.set("n", "<leader>xw", function()
-	trouble.toggle("workspace_diagnostics")
-end)
-vim.keymap.set("n", "<leader>xd", function()
-	trouble.toggle("document_diagnostics")
-end)
-vim.keymap.set("n", "<leader>xq", function()
-	trouble.toggle("quickfix")
-end)
-vim.keymap.set("n", "<leader>xl", function()
-	trouble.toggle("loclist")
-end)
+vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover, { desc = "hover docs" })
 
 -- ====================================== DAP ========================================
 -- todo: add some debugger cause previous one crashed XD
@@ -154,11 +136,9 @@ vim.keymap.set("n", "<leader>g<", "<cmd>Git pull<CR>", { noremap = true, desc = 
 vim.keymap.set("n", "<leader>ch", "<cmd>diffget //2<CR>", { desc = "get diff from left" })
 vim.keymap.set("n", "<leader>cl", "<cmd>diffget //3<CR>", { desc = "get diff from right" })
 
--- ================================== Comment.nvim ==================================
-vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "make inline comment" })
-vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "make inline comment" })
-vim.keymap.set("n", "<C-A-_>", "gbc", { remap = true, desc = "make block comment" })
-vim.keymap.set("v", "<C-A-_>", "gb", { remap = true, desc = "make block comment" })
+-- =================================== Commenting ===================================
+vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "toggle line comment" })
+vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "toggle line comment" })
 
 -- ========================== Document existing key chains ==========================
 local whichKey = require("which-key")
