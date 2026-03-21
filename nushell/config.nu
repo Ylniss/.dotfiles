@@ -58,10 +58,9 @@ let dark_theme = {
     shape_vardecl: purple
 }
 
-# External completer example
-# let carapace_completer = {|spans|
-#     carapace $spans.0 nushell $spans | from json
-# }
+let carapace_completer = {|spans|
+    carapace $spans.0 nushell ...$spans | from json
+}
 
 $env.config = {
     show_banner: false
@@ -70,6 +69,12 @@ $env.config = {
         index_mode: always
     }
     color_config: $dark_theme
+    completions: {
+        external: {
+            enable: true
+            completer: $carapace_completer
+        }
+    }
     footer_mode: 25
     cursor_shape: {
         emacs: block

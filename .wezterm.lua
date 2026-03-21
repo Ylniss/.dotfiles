@@ -12,6 +12,7 @@ local is_windows = wezterm.target_triple == "x86_64-pc-windows-msvc"
 config.default_prog = { "nu" }
 
 config.window_close_confirmation = "NeverPrompt"
+config.canonicalize_pasted_newlines = "LineFeed"
 
 config.show_new_tab_button_in_tab_bar = false
 config.switch_to_last_active_tab_when_closing_tab = true
@@ -231,6 +232,24 @@ config.keys = {
 
 	-- Ctrl + V to paste
 	{ key = "v", mods = "CTRL", action = act.PasteFrom("Clipboard") },
+
+	-- Shift + Enter to insert newline (for Claude Code)
+	{ key = "Enter", mods = "SHIFT", action = act.SendString("\n") },
+
+	-- Ctrl + C: copy if text is selected, otherwise send interrupt
+	{
+		key = "c",
+		mods = "CTRL",
+		action = wezterm.action_callback(function(window, pane)
+			local sel = window:get_selection_text_for_pane(pane)
+			if sel ~= "" then
+				window:perform_action(act.CopyTo("ClipboardAndPrimarySelection"), pane)
+				window:perform_action(act.ClearSelection, pane)
+			else
+				window:perform_action(act.SendKey({ key = "c", mods = "CTRL" }), pane)
+			end
+		end),
+	},
 }
 
 local copy_mode = nil
