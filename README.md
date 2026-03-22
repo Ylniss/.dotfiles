@@ -16,7 +16,7 @@ Nushell + Wezterm + Neovim config for Windows and NixOS. Bootstrap with `install
 | `gitl` | git log as table |
 | `gitl -g` | git log as graph |
 | `giti [name] [-g]` | init repo, `-g` creates on GitHub |
-| `gitwa <path> <branch>` | add worktree with new branch |
+| `gitwa <branch>` | add worktree, cd into it, open layout-dev |
 | `gitwr <path> <branch>` | remove worktree + delete branch |
 
 ## Wezterm
@@ -44,9 +44,10 @@ Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.
 
 ### Other
 
+`layout-dev` — 3-pane layout: left 60%, right 40% (split 80/20)
+
 | Key | Action |
 |-----|--------|
-| `layout-dev` | 3-pane layout: left 60%, right 40% (split 80/20) |
 | `Ctrl+E / Ctrl+Y` | Scroll up / down |
 | `Shift+Alt+L` | Launcher |
 

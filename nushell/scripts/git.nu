@@ -98,8 +98,17 @@ def giti [
 }
 
 # Git Worktree Add: Creates a new worktree with a new branch.
-def gitwa [path: string, branch: string] {
+# Usage: gitwa <branch> — creates worktree at ../{current_dir}-{branch}
+def --env gitwa [branch: string, --stay (-s)] {
+  let dir_name = (pwd | path basename)
+  let path = $"../($dir_name)-($branch)"
   git worktree add $path -b $branch
+  if not $stay {
+    cd $path
+    if 'WEZTERM_PANE' in $env {
+      layout-dev
+    }
+  }
 }
 
 # Git Worktree Remove: Removes a worktree and deletes its branch.
