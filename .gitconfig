@@ -8,16 +8,30 @@
 	diffFilter = delta --color-only
 [delta]
 	navigate = true
+	line-numbers = true
+	hyperlinks = true
 [merge]
 	conflictstyle = diff3
 [diff]
 	colorMoved = default
-[credential "helperselector"]
-	selected = wincred
+[credential]
+	helper = manager
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
-[safe]
-	directory = *
+[push]
+	autoSetupRemote = true
+[fetch]
+	prune = true
+[rebase]
+	autoStash = true
+[rerere]
+	enabled = true
+[branch]
+	sort = -committerdate
+[tag]
+	sort = -version:refname
+[column]
+	ui = auto

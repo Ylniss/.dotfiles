@@ -45,35 +45,13 @@ def gitc --wrapped [...opts, message?: string] {
   }
 }
 
-# Git Push Origin: Pushes the current branch to the origin remote, setting upstream if specified.
+# Git Push: Pushes to origin, optionally targeting a specific branch.
 def gitp --wrapped [branchName?: string, ...opts] {
-  let currentBranch = git rev-parse --abbrev-ref HEAD
-
-  def git-push [] {
-    if not ($branchName | is-empty) {
-      git push -u origin $branchName ...$opts
-    } else {
-      git push -u origin $currentBranch ...$opts
-    } 
+  if not ($branchName | is-empty) {
+    git push origin $branchName ...$opts
+  } else {
+    git push ...$opts
   }
-  
-  # Check if the current branch has an upstream set
-  let res = do -i { git rev-parse --abbrev-ref @{upstream} } | complete
-  let upstream = $res.stderr | is-empty 
-
-  if $upstream == false {
-    # If there's no upstream, set it automatically
-    let resGitBranch = do { git branch $"--set-upstream-to=origin/($currentBranch)" $currentBranch } | complete
-    let noBranch = not ($resGitBranch.stderr | is-empty)
-    if $noBranch {
-      git-push     
-    }
-
-    print $"Upstream set to origin/($currentBranch) for branch ($currentBranch)."
-    git pull origin $currentBranch --allow-unrelated-histories
-  }
-
-  git-push
 }
 
 alias gitch = git checkout

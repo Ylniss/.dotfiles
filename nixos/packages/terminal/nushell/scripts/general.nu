@@ -13,7 +13,7 @@ def mkdircd --env [dirName: string] {
 alias vi = nvim
 alias vim = nvim
 
-# -------------- LF --------------- 
+# -------------- LF ---------------
 
 # Change directory into path that lf exits on
 def lfcd --env [] {

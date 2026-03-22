@@ -831,6 +831,9 @@ $env.config = {
     ]
 }
 
-source ~/stuff/repo/.dotfiles/nixos/packages/terminal/nushell/scripts/git.nu
+source ~/stuff/repo/.dotfiles/nixos/packages/terminal/nushell/scripts/docker.nu
 source ~/stuff/repo/.dotfiles/nixos/packages/terminal/nushell/scripts/fzf.nu
+source ~/stuff/repo/.dotfiles/nixos/packages/terminal/nushell/scripts/general.nu
+source ~/stuff/repo/.dotfiles/nixos/packages/terminal/nushell/scripts/git.nu
+source ~/stuff/repo/.dotfiles/nixos/packages/terminal/nushell/scripts/weather.nu
 

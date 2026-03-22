@@ -178,6 +178,7 @@ $env.config = {
 
 source android.nu
 source docker.nu
+source fzf.nu
 source general.nu
 source git.nu
 source weather.nu
