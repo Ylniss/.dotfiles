@@ -25,6 +25,7 @@ return {
 				"toml",
 				"markdown_inline",
 				"gitignore",
+				"c_sharp",
 			},
 			highlight = {
 				enable = true,
