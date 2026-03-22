@@ -17,6 +17,7 @@ When asked to update claude.md / save learnings / remember this:
 
 - Conventions, decisions → project CLAUDE.md
 - Patterns with code → skill reference files
+- New repeatable pattern fitting no existing skill → propose new skill.
 - Gotchas → relevant SKILL.md
 - No duplication across locations.
 
