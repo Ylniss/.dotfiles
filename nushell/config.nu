@@ -67,6 +67,7 @@ $env.config = {
     table: {
         mode: none
         index_mode: always
+        trim: { methodology: truncating, truncating_suffix: "..." }
     }
     color_config: $dark_theme
     completions: {

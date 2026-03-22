@@ -14,7 +14,7 @@ def gitl [--grph (-g)] {
   if $grph {
     git log --all --decorate --oneline --graph --pretty=format:'%C(auto)%h %<(12,trunc)%an %<(16,trunc)%ar %s %d'
   } else {
-    git log $"--pretty=(ansi yellow)%h(ansi reset)»¦«%s»¦«%aN»¦«%aE»¦«%aD" | lines | split column "»¦«" commit message name email date | upsert date {|d| $d.date | into datetime} | sort-by date
+    git log $"--pretty=(ansi yellow)%h(ansi reset)»¦«%s»¦«%aN»¦«%as" | lines | split column "»¦«" commit message name date | upsert message {|r| $r.message | str substring 0..65} | sort-by date
   }
 }
 
