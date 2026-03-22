@@ -23,6 +23,7 @@ return {
 				end
 
 				lsp_keymap("<leader>r", vim.lsp.buf.rename, "rename")
+				lsp_keymap("<leader>k", vim.lsp.buf.hover, "hover")
 				lsp_keymap("<C-.>", vim.lsp.buf.code_action, "code action")
 
 				local fzf = require("fzf-lua")

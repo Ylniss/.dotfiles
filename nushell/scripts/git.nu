@@ -98,8 +98,8 @@ def giti [
 }
 
 # Git Worktree Add: Creates a new worktree with a new branch.
-# Usage: gitwa <branch> — creates worktree at ../{current_dir}-{branch}
-def --env gitwa [branch: string, --stay (-s)] {
+# Usage: gitwta <branch> — creates worktree at ../{current_dir}-{branch}
+def --env gitwta [branch: string, --stay (-s)] {
   let dir_name = (pwd | path basename)
   let path = $"../($dir_name)-($branch)"
   git worktree add $path -b $branch
@@ -111,15 +111,74 @@ def --env gitwa [branch: string, --stay (-s)] {
   }
 }
 
-# Git Worktree Remove: Removes a worktree and deletes its branch.
-def gitwr [path: string, branch: string] {
-  let resolved = ($path | path expand)
-  try { git worktree remove --force $resolved } catch {
+# Git Worktree Finish: Pushes branch, merges into base branch, then removes worktree.
+# Usage: gitwtf <path> | gitwtf .
+def --env gitwtf [path: string] {
+  let resolved = if $path == "." { pwd } else { $path | path expand }
+
+  # Validate: is a git repo and get branch
+  let branch = try { git -C $resolved rev-parse --abbrev-ref HEAD | str trim } catch {
+    print $"(ansi red)Not a git repository(ansi reset)"
+    return
+  }
+
+  # Get main worktree (base repo) path — always first in porcelain output
+  let base_path = (git -C $resolved worktree list --porcelain
+    | lines
+    | where {|l| $l starts-with 'worktree '}
+    | first
+    | str replace 'worktree ' '')
+
+  # Validate: not the main worktree
+  if ($resolved | path expand | str downcase) == ($base_path | str downcase) {
+    print $"(ansi red)This is the main worktree — refusing to remove(ansi reset)"
+    return
+  }
+
+  # Validate: base repo exists
+  if not ($base_path | path exists) {
+    print $"(ansi red)Base repo not found at ($base_path)(ansi reset)"
+    return
+  }
+
+  # Safety: abort if working tree is dirty
+  let dirty = (git -C $resolved status --porcelain | str trim)
+  if ($dirty | is-not-empty) {
+    print $"(ansi red)Uncommitted changes — commit first(ansi reset)"
+    return
+  }
+
+  # Push worktree branch, merge into base branch, push
+  let base_branch = (git -C $base_path rev-parse --abbrev-ref HEAD | str trim)
+  try {
+    git -C $resolved push origin $branch
+    git -C $resolved fetch origin
+    git -C $resolved merge $"origin/($base_branch)"
+    git -C $resolved push origin $"HEAD:($base_branch)"
+  } catch {
+    print $"(ansi red)Push/merge failed — resolve and retry(ansi reset)"
+    return
+  }
+
+  # cd out before removal (only for `.`)
+  if $path == "." {
+    cd $base_path
+  }
+
+  # Pull latest into base repo
+  try { git -C $base_path pull } catch {}
+
+  # Remove directory (retry once for Windows handle release)
+  if ($resolved | path exists) {
     try { rm -rf $resolved } catch {
-      print $"(ansi red)Could not remove directory — close programs using it and retry(ansi reset)"
-      return
+      sleep 1sec
+      try { rm -rf $resolved } catch {
+        print $"(ansi yellow)Warning: could not remove directory — remove it manually(ansi reset)"
+      }
     }
   }
-  git worktree prune
-  git branch -D $branch
+
+  # Clean up git state
+  git -C $base_path worktree prune
+  try { git -C $base_path branch -D $branch } catch {}
 }

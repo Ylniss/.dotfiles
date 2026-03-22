@@ -16,8 +16,8 @@ Nushell + Wezterm + Neovim config for Windows and NixOS. Bootstrap with `install
 | `gitl` | git log as table |
 | `gitl -g` | git log as graph |
 | `giti [name] [-g]` | init repo, `-g` creates on GitHub |
-| `gitwa <branch>` | add worktree, cd into it, open layout-dev |
-| `gitwr <path> <branch>` | remove worktree + delete branch |
+| `gitwta <branch>` | add worktree, cd into it, open layout-dev |
+| `gitwtf <path>` | push branch, merge into base, remove worktree |
 
 ## Wezterm
 
