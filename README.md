@@ -44,7 +44,7 @@ Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.
 
 | Key | Action |
 |-----|--------|
-| `layout-dev` | 3-pane layout: main 60%, right 40%, bottom-left 20% |
+| `layout-dev` | 3-pane layout: left 60%, right 40% (split 80/20) |
 | `Ctrl+E / Ctrl+Y` | Scroll up / down |
 | `Shift+Alt+L` | Launcher |
 
