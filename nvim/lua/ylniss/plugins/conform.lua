@@ -16,7 +16,6 @@ return {
 			formatters_by_ft = {
 				lua = { "stylua" },
 				nix = { "alejandra" },
-				markdown = { "mdformat" },
 				json = { "prettier" },
 				yaml = { "prettier" },
 			},

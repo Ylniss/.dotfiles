@@ -7,6 +7,9 @@ return {
 	event = "VeryLazy",
 	config = function()
 		local ss = require("smart-splits")
+		ss.setup({
+			at_edge = "stop",
+		})
 		vim.keymap.set("n", "<A-h>", ss.resize_left, { desc = "resize window left" })
 		vim.keymap.set("n", "<A-j>", ss.resize_down, { desc = "resize window down" })
 		vim.keymap.set("n", "<A-k>", ss.resize_up, { desc = "resize window up" })

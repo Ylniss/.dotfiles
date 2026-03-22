@@ -5,6 +5,7 @@
 return {
 	"neovim/nvim-lspconfig",
 	event = "BufReadPre",
+	cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonUpdate" },
 	dependencies = {
 		"williamboman/mason.nvim",
 		"williamboman/mason-lspconfig.nvim",
@@ -79,10 +80,8 @@ return {
 			require("mason-tool-installer").setup({
 				ensure_installed = {
 					"stylua",
-					"yamlfmt",
-					"prettier",
-					"mdformat",
-					"taplo",
+				"prettier",
+				"taplo",
 				},
 			})
 		end
