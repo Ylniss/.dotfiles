@@ -96,3 +96,21 @@ def giti [
     touch $"(pwd)/($repoName)/.gitignore"
   }
 }
+
+# Git Worktree Add: Creates a new worktree with a new branch.
+def gitwa [path: string, branch: string] {
+  git worktree add $path -b $branch
+}
+
+# Git Worktree Remove: Removes a worktree and deletes its branch.
+def gitwr [path: string, branch: string] {
+  let resolved = ($path | path expand)
+  try { git worktree remove --force $resolved } catch {
+    try { rm -rf $resolved } catch {
+      print $"(ansi red)Could not remove directory — close programs using it and retry(ansi reset)"
+      return
+    }
+  }
+  git worktree prune
+  git branch -D $branch
+}
