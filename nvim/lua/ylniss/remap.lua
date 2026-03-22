@@ -43,10 +43,8 @@ vim.keymap.set("n", "<leader>h", vim.cmd.split, { desc = "open new horizontal sp
 
 -- ===================================== Commands =====================================
 local function saveAndClose()
-	-- Try to write and quit
 	local status, _ = pcall(vim.cmd.wq)
 	if not status then
-		-- If wq fails, just quit
 		vim.cmd.q()
 	end
 end

@@ -28,6 +28,9 @@ vim.o.shellxquote = ""
 vim.o.shellpipe = "| save %s"
 vim.o.shellredir = "| save %s"
 
+-- Don't add trailing newline to files missing one
+vim.o.fixeol = false
+
 -- Sync clipboard between OS and Neovim.
 vim.o.clipboard = "unnamedplus"
 
