@@ -7,7 +7,7 @@ let dotfilesRepoDir = if $nu.os-info.family =~ windows {
 }
 
 def create-symbolic-link [target, linkPath, description] {
-  if ($linkPath | path exists) {
+  if ($linkPath | path exists) or (not ($nu.os-info.family =~ windows) and ((do { ^test -L $linkPath } | complete).exit_code == 0)) {
     print $'($description) symbolic link already exists.'
   } else {
 
@@ -64,8 +64,10 @@ if ($nu.os-info.family =~ windows) {
   # For Linux/Android
   create-symbolic-link $'($dotfilesRepoDir)/nvim' $'($env.HOME)/.config/nvim' 'nvim'
   create-symbolic-link $'($dotfilesRepoDir)/.gitconfig' $'($env.HOME)/.gitconfig' '.gitconfig'
-  create-symbolic-link $'($dotfilesRepoDir)/.ideavimrc' $'($env.HOME)/.ideavimrc' '.ideavimrc'
-  create-symbolic-link $'($dotfilesRepoDir)/.wezterm.lua' $'($env.HOME)/.wezterm.lua' '.wezterm.lua'
+  if $nu.os-info.name != 'android' {
+    create-symbolic-link $'($dotfilesRepoDir)/.ideavimrc' $'($env.HOME)/.ideavimrc' '.ideavimrc'
+    create-symbolic-link $'($dotfilesRepoDir)/.wezterm.lua' $'($env.HOME)/.wezterm.lua' '.wezterm.lua'
+  }
   create-symbolic-link $'($dotfilesRepoDir)/.zshrc' $'($env.HOME)/.zshrc' '.zshrc'
   create-symbolic-link $'($dotfilesRepoDir)/lf/linux/lfrc' $'($env.HOME)/.config/lf/lfrc' 'lf (lfrc)'
   create-symbolic-link $'($dotfilesRepoDir)/lf/linux/icons' $'($env.HOME)/.config/lf/icons' 'lf (icons)'
