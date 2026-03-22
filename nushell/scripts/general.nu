@@ -70,6 +70,16 @@ def extract [file: path] {
   }
 }
 
+# -------------- WEZTERM LAYOUTS --------------
+
+# Create dev layout: right pane (40%) + bottom-left pane (20% height)
+def layout-dev [] {
+  let pane_id = $env.WEZTERM_PANE
+  wezterm cli split-pane --right --percent 40 --pane-id $pane_id
+  wezterm cli split-pane --bottom --percent 20 --pane-id $pane_id
+  wezterm cli activate-pane --pane-id $pane_id
+}
+
 # -------------- NETWORK --------------
 
 # Show local and public IP addresses
