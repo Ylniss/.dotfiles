@@ -1,6 +1,4 @@
 {
-  "effortLevel": "high",
-  "autoUpdatesChannel": "latest",
   "permissions": {
     "allow": [
       "Bash(git add:*)",
@@ -8,16 +6,41 @@
       "Bash(git log:*)",
       "Bash(git diff:*)",
       "Bash(git status:*)",
+      "Bash(git branch:*)",
+      "Bash(git stash:*)",
+      "Bash(git checkout:*)",
       "Bash(grep:*)",
       "Bash(find:*)",
       "Bash(cat:*)",
       "Bash(ls:*)",
       "Bash(head:*)",
       "Bash(tail:*)",
-      "Bash(xargs grep:*)"
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(xargs grep:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet format:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset --hard:*)"
     ]
   },
-  "enabledPlugins": {
-    "lua-lsp@claude-plugins-official": true
-  }
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude needs your attention', 'Claude Code')\""
+          }
+        ]
+      }
+    ]
+  },
+  "effortLevel": "high",
+  "autoUpdatesChannel": "latest"
 }

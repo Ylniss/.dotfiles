@@ -23,7 +23,7 @@ def create-symbolic-link [target, linkPath, description] {
       if ($target | path type) == 'dir' {
         ^cmd /c $"mklink /j ($l) ($t)"
       } else {
-        ^cmd /c $"mklink /h ($l) ($t)"
+        ^cmd /c $"mklink ($l) ($t)"
       }
     } else {
       ^ln -s $target $linkPath
@@ -32,6 +32,19 @@ def create-symbolic-link [target, linkPath, description] {
 }
 
 if ($nu.os-info.family =~ windows) {
+  # Test if we can create symlinks (requires admin or Developer Mode)
+  let testLink = $'($env.TEMP)\dotfiles_symlink_test'
+  let testTarget = $'($env.TEMP)\dotfiles_symlink_target'
+  "test" | save -f $testTarget
+  try {
+    ^cmd /c $"mklink ($testLink | str replace --all '/' '\') ($testTarget | str replace --all '/' '\')" | ignore
+  }
+  if not ($testLink | path exists) or (($testLink | path type) != 'symlink') {
+    rm -f $testTarget
+    error make { msg: "Cannot create symbolic links. Enable Developer Mode: Windows Settings > System > Advanced > Developer Mode." }
+  }
+  rm -f $testLink $testTarget
+
   create-symbolic-link $'($dotfilesRepoDir)\nvim' $'($env.LOCALAPPDATA)\nvim' 'nvim'
   create-symbolic-link $'($dotfilesRepoDir)\.gitconfig' $'($env.USERPROFILE)\.gitconfig' '.gitconfig'
   create-symbolic-link $'($dotfilesRepoDir)\.ideavimrc' $'($env.USERPROFILE)\.ideavimrc' '.ideavimrc'
