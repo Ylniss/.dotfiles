@@ -3,24 +3,13 @@
     "allow": [
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git log:*)",
-      "Bash(git diff:*)",
-      "Bash(git status:*)",
-      "Bash(git branch:*)",
       "Bash(git stash:*)",
       "Bash(git checkout:*)",
-      "Bash(grep:*)",
-      "Bash(find:*)",
-      "Bash(cat:*)",
-      "Bash(ls:*)",
-      "Bash(head:*)",
-      "Bash(tail:*)",
-      "Bash(wc:*)",
-      "Bash(sort:*)",
+      "Bash(git mv:*)",
       "Bash(xargs grep:*)",
-      "Bash(dotnet build:*)",
-      "Bash(dotnet test:*)",
-      "Bash(dotnet format:*)"
+      "Bash(dotnet format:*)",
+      "WebSearch",
+      "WebFetch"
     ],
     "deny": [
       "Bash(git push:*)",
@@ -36,6 +25,17 @@
           {
             "type": "command",
             "command": "powershell -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude needs your attention', 'Claude Code')\""
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command // \"\"' | { read cmd; case \"$cmd\" in grep*|find*|cat*|ls*|head*|tail*|wc*|sort*|echo*|pwd*|which*|dotnet\\ build*|dotnet\\ test*|git\\ log*|git\\ diff*|git\\ status*|git\\ branch*) echo '{\"decision\":{\"behavior\":\"allow\"}}'; ;; *) echo '{\"decision\":{\"behavior\":\"ask\"}}'; ;; esac; }"
           }
         ]
       }

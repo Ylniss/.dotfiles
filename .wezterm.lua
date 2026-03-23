@@ -60,8 +60,8 @@ config.initial_cols = 135
 config.initial_rows = 34
 
 config.font = wezterm.font("JetBrains Mono")
-config.font_size = 10.5
-config.line_height = 0.9
+config.font_size = 11
+config.line_height = 1
 
 config.window_decorations = "RESIZE"
 config.window_background_opacity = 0.88
