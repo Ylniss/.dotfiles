@@ -60,6 +60,12 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)\claude\settings.json' $'($env.USERPROFILE)\.claude\settings.json' 'claude settings.json'
   create-symbolic-link $'($dotfilesRepoDir)\claude\skills' $'($env.USERPROFILE)\.claude\skills' 'claude skills'
   create-symbolic-link $'($dotfilesRepoDir)\claude\agents' $'($env.USERPROFILE)\.claude\agents' 'claude agents'
+
+  let gitconfigLocal = $'($env.USERPROFILE)\.gitconfig-local'
+  if not ($gitconfigLocal | path exists) {
+    print 'Creating .gitconfig-local with default user'
+    "[user]\n\tname = Ylniss\n\temail = zupqa0@gmail.com\n" | save $gitconfigLocal
+  }
 } else {
   # For Linux/Android
   create-symbolic-link $'($dotfilesRepoDir)/nvim' $'($env.HOME)/.config/nvim' 'nvim'
@@ -79,4 +85,10 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)/claude/settings.json' $'($env.HOME)/.claude/settings.json' 'claude settings.json'
   create-symbolic-link $'($dotfilesRepoDir)/claude/skills' $'($env.HOME)/.claude/skills' 'claude skills'
   create-symbolic-link $'($dotfilesRepoDir)/claude/agents' $'($env.HOME)/.claude/agents' 'claude agents'
+
+  let gitconfigLocal = $'($env.HOME)/.gitconfig-local'
+  if not ($gitconfigLocal | path exists) {
+    print 'Creating .gitconfig-local with default user'
+    "[user]\n\tname = Ylniss\n\temail = zupqa0@gmail.com\n" | save $gitconfigLocal
+  }
 }

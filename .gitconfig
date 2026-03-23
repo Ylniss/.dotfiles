@@ -1,9 +1,8 @@
 [core]
 	autocrlf = true
 	pager = delta
-[user]
-	name = Ylniss
-	email = zupqa0@gmail.com
+[include]
+	path = ~/.gitconfig-local
 [interactive]
 	diffFilter = delta --color-only
 [delta]
