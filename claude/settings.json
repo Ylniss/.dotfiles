@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); [System.Windows.Forms.MessageBox]::Show('Claude needs your attention', 'Claude Code')\""
+            "command": "powershell -File claude/hooks/notify.ps1"
           }
         ]
       }
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.command // \"\"' | { read cmd; case \"$cmd\" in grep*|find*|cat*|ls*|head*|tail*|wc*|sort*|echo*|pwd*|which*|dotnet\\ build*|dotnet\\ test*|git\\ log*|git\\ diff*|git\\ status*|git\\ branch*) echo '{\"decision\":{\"behavior\":\"allow\"}}'; ;; *) echo '{\"decision\":{\"behavior\":\"ask\"}}'; ;; esac; }"
+            "command": "bash claude/hooks/auto-permit.sh"
           }
         ]
       }
