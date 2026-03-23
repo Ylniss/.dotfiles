@@ -182,3 +182,59 @@ def --env gitwtf [path: string] {
   git -C $base_path worktree prune
   try { git -C $base_path branch -D $branch } catch {}
 }
+
+# Git Parents: Shows the parent branch chain with ahead/behind counts.
+# Walks first-parent history to determine which branch was created from which.
+# Example output:
+#   ╭───┬──────────────────┬───────┬────────╮
+#   │ # │      branch      │ ahead │ behind │
+#   ├───┼──────────────────┼───────┼────────┤
+#   │ 0 │ feature-x        │     3 │      5 │
+#   │ 1 │ ← develop        │    12 │      0 │
+#   │ 2 │   ← main         │       │        │
+#   ╰───┴──────────────────┴───────┴────────╯
+#   ahead  = commits on feature-x not in develop (your work since branching)
+#   behind = commits on develop not in feature-x (new work on develop you haven't pulled)
+def gitpar [] {
+  let all = (git branch --format='%(refname:short)' | lines | str trim)
+  mut current = (git rev-parse --abbrev-ref HEAD | str trim)
+  mut chain = [$current]
+
+  loop {
+    if $current in ['main', 'master'] { break }
+    let cur = $current
+    let seen = $chain
+
+    let sha = (git rev-parse $"refs/heads/($cur)" | str trim)
+    let parent = (git log $sha --first-parent --simplify-by-decoration --format='%D' --
+      | lines
+      | str trim
+      | where {|l| $l != ''}
+      | each {|l| $l | split row ', ' | str trim}
+      | flatten
+      | each {|r| $r | str replace 'HEAD -> ' '' | str replace 'origin/' ''}
+      | where {|r| $r != $cur and not ($r | str starts-with 'tag:') and $r != 'HEAD' and $r in $all}
+      | uniq
+      | where {|r| $r not-in $seen}
+    )
+
+    if ($parent | is-empty) { break }
+    let p = ($parent | first)
+    $chain = ($chain | append $p)
+    $current = $p
+  }
+
+  let ch = $chain
+  0..(($ch | length) - 1) | each {|i|
+    let name = ($ch | get $i)
+    let label = if $i == 0 { $name } else { $"('' | fill -c ' ' -w (($i - 1) * 2))← ($name)" }
+    if $i < (($ch | length) - 1) {
+      let parent = ($ch | get ($i + 1))
+      let ahead = (git rev-list --count $"refs/heads/($parent)..refs/heads/($name)" | str trim | into int)
+      let behind = (git rev-list --count $"refs/heads/($name)..refs/heads/($parent)" | str trim | into int)
+      {branch: $label, ahead: $ahead, behind: $behind}
+    } else {
+      {branch: $label, ahead: null, behind: null}
+    }
+  }
+}
