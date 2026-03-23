@@ -10,6 +10,7 @@ return {
 		fzf.setup({
 			files = { fd_opts = "--type f --hidden --exclude .git" },
 			keymap = { fzf = { ["ctrl-q"] = "select-all+accept" } },
+			defaults = { formatter = "path.filename_first" },
 		})
 
 		local function find_git_root()
