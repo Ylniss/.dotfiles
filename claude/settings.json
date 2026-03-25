@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -File claude/hooks/notify.ps1"
+            "command": "powershell -File ~/stuff/repo/.dotfiles/claude/hooks/notify.ps1"
           }
         ]
       }
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash claude/hooks/auto-permit.sh"
+            "command": "bash ~/stuff/repo/.dotfiles/claude/hooks/auto-permit.sh"
           }
         ]
       }
