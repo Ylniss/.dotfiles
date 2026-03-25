@@ -1,4 +1,4 @@
-# Claude Code notification hook.
+# Notification hook.
 # Shows a Windows message box when Claude needs the user's attention.
 
 Add-Type -AssemblyName System.Windows.Forms

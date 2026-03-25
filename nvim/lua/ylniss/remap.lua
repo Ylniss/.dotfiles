@@ -74,13 +74,9 @@ vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole fi
 -- ===================================== NeoTree ======================================
 vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "open/close explorer" })
 
--- ============================ Git actions in Fugitive =============================
-vim.keymap.set("n", "<leader>gs", function()
-	vim.cmd.Git()
-	vim.cmd.wincmd("L")
-end, { desc = "git status" })
-vim.keymap.set("n", "<leader>g>", "<cmd>Git push<CR>", { noremap = true, desc = "git push" })
-vim.keymap.set("n", "<leader>g<", "<cmd>Git pull<CR>", { noremap = true, desc = "git pull" })
+-- ================================= Git actions =================================
+vim.keymap.set("n", "<leader>g>", "<cmd>!git push<CR>", { noremap = true, desc = "git push" })
+vim.keymap.set("n", "<leader>g<", "<cmd>!git pull<CR>", { noremap = true, desc = "git pull" })
 
 -- =================================== Commenting ===================================
 vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "toggle line comment" })
