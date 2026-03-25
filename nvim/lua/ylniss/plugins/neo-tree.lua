@@ -12,7 +12,7 @@ return {
 		"MunifTanjim/nui.nvim",
 	},
 	opts = {
-		close_if_last_window = false,
+		close_if_last_window = true,
 		window = {
 			width = 40,
 			mappings = {
