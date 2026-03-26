@@ -1,6 +1,11 @@
 {
   "permissions": {
     "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Edit",
+      "Write",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git stash:*)",
