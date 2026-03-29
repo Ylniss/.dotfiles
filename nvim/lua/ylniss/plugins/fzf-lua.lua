@@ -67,10 +67,72 @@ return {
 		vim.keymap.set("n", "<leader>sw", fzf.grep_cword, { desc = "search current word" })
 		vim.keymap.set("n", "<leader>sg", live_grep_git_root, { desc = "search by grep on git root" })
 		vim.keymap.set("n", "<leader>sd", function()
-			fzf.diagnostics_workspace({
-				diag_source = false,
-				file_icons = false,
-				path_shorten = true,
+			local fzf_utils = require("fzf-lua.utils")
+			local actions = require("fzf-lua.actions")
+			local nbsp = fzf_utils.nbsp
+
+			local diags = vim.diagnostic.get(nil)
+			table.sort(diags, function(a, b)
+				if a.severity ~= b.severity then return a.severity < b.severity end
+				return a.lnum < b.lnum
+			end)
+
+			local sev_map = {
+				[1] = { icon = "E", hl = "DiagnosticError" },
+				[2] = { icon = "W", hl = "DiagnosticWarn" },
+				[3] = { icon = "I", hl = "DiagnosticInfo" },
+				[4] = { icon = "H", hl = "DiagnosticHint" },
+			}
+
+			local entries = {}
+			for _, d in ipairs(diags) do
+				local bufname = vim.api.nvim_buf_get_name(d.bufnr)
+				if bufname == "" then goto continue end
+				local s = sev_map[d.severity]
+				if not s then goto continue end
+
+				local rel_path = vim.fn.fnamemodify(bufname, ":~:.")
+				local msg = d.message:match("^[^\n]+") or d.message
+				local lnum = d.lnum + 1
+				local col = d.col + 1
+
+				local icon = fzf_utils.ansi_from_hl(s.hl, s.icon)
+				local dim_path = fzf_utils.ansi_from_hl("Comment",
+					string.format("%s:%d:%d", rel_path, lnum, col))
+
+				-- entry_to_file() splits by nbsp, finds first part matching :%d+:
+				-- Field 1 (hidden): path:lnum:col: for parsing/preview/actions
+				-- Field 2: severity icon
+				-- Field 3: message + dimmed path
+				table.insert(entries, table.concat({
+					string.format("%s:%d:%d:", rel_path, lnum, col),
+					icon,
+					string.format("%s  %s", msg, dim_path),
+				}, nbsp))
+
+				::continue::
+			end
+
+			if #entries == 0 then
+				vim.notify("No diagnostics", vim.log.levels.INFO)
+				return
+			end
+
+			fzf.fzf_exec(entries, {
+				cwd = vim.fn.getcwd(),
+				actions = {
+					["default"] = actions.file_edit_or_qf,
+					["ctrl-s"] = actions.file_split,
+					["ctrl-v"] = actions.file_vsplit,
+					["ctrl-t"] = actions.file_tabedit,
+				},
+				previewer = "builtin",
+				fzf_opts = {
+					["--delimiter"] = nbsp,
+					["--with-nth"] = "2..",
+					["--multi"] = true,
+					["--wrap"] = true,
+				},
 			})
 		end, { desc = "search diagnostics" })
 		vim.keymap.set("n", "<leader>sb", fzf.marks, { desc = "search bookmarks" })
