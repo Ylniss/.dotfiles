@@ -2,10 +2,12 @@ if $nu.os-info.family =~ windows {
   $env.repo = $"($env.USERPROFILE)/stuff/repo"
   $env.games = $"($env.USERPROFILE)/stuff/games"
   $env.downloads = $"($env.USERPROFILE)/stuff/downloads"
+  $env.notes = $"($env.USERPROFILE)/stuff/knowtes"
 } else {
   $env.repo = $"($env.HOME)/stuff/repo"
   $env.games = $"($env.HOME)/stuff/games"
   $env.downloads = $"($env.HOME)/stuff/downloads"
+  $env.notes = $"($env.HOME)/stuff/knowtes"
 }
 
 # Directories to search for scripts when calling source or use

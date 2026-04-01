@@ -1,6 +1,8 @@
 alias repo = cd $env.repo
 alias games = cd $env.games
 alias dwn = cd $env.downloads
+alias notes = cd $env.notes
+alias knowtes = cd $env.notes
 
 # Make directory and enter inside
 def mkdircd --env [dirName: string] {
