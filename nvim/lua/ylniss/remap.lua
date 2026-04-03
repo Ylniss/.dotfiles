@@ -82,6 +82,31 @@ vim.keymap.set("n", "<leader>g<", "<cmd>!git pull<CR>", { noremap = true, desc =
 vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "toggle line comment" })
 vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "toggle line comment" })
 
+-- ================================= LSP keymaps ==================================
+vim.api.nvim_create_autocmd("LspAttach", {
+	callback = function(ev)
+		local bufnr = ev.buf
+		local lsp_keymap = function(keys, func, desc)
+			if desc then
+				desc = "lsp: " .. desc
+			end
+			vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
+		end
+
+		lsp_keymap("<leader>r", vim.lsp.buf.rename, "rename")
+		lsp_keymap("<leader>k", vim.lsp.buf.hover, "hover")
+		lsp_keymap("<C-.>", vim.lsp.buf.code_action, "code action")
+		lsp_keymap("<leader>a", vim.lsp.buf.code_action, "code action")
+
+		local fzf = require("fzf-lua")
+		lsp_keymap("gD", vim.lsp.buf.declaration, "goto declaration")
+		lsp_keymap("gd", fzf.lsp_definitions, "goto definition")
+		lsp_keymap("gr", fzf.lsp_references, "goto references")
+		lsp_keymap("gI", fzf.lsp_implementations, "goto implementation")
+		lsp_keymap("<leader>D", fzf.lsp_typedefs, "type definition")
+	end,
+})
+
 -- ========================== Document existing key chains ==========================
 local whichKey = require("which-key")
 whichKey.add({

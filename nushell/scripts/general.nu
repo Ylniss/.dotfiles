@@ -15,6 +15,16 @@ def mkdircd --env [dirName: string] {
 alias vi = nvim
 alias vim = nvim
 
+# Remove stale nvim shada temp files
+def virmtmp [] {
+  let shada_dir = if $nu.os-info.family =~ windows {
+    $"($env.LOCALAPPDATA)/nvim-data/shada"
+  } else {
+    $"($nu.home-dir)/.local/share/nvim/shada"
+  }
+  glob ($shada_dir | path join "main.shada.tmp.*" | str replace --all '\' '/') | each { rm $in } | ignore
+}
+
 # -------------- LF --------------- 
 
 # Change directory into path that lf exits on
