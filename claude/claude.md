@@ -5,6 +5,7 @@
 - No dead code — don't add params, fields, or logic nothing currently uses.
 - Keep TODO comments unless implementing what they describe.
 - Prefer early return over nested ifs. Invert conditions and return/continue early.
+- Fail fast — no defensive null checks for values that can't be null. If they are null, it's a bug; let it throw early.
 
 ## Communication
 
