@@ -19,6 +19,12 @@ Nushell + Wezterm + Neovim config for Windows and NixOS. Bootstrap with `install
 | `gitwta <branch>` | add worktree, cd into it, open layout-dev |
 | `gitwtf <path>` | push branch, merge into base, remove worktree |
 
+## Robes & Steel (Nushell)
+
+| Command | Action |
+|---------|--------|
+| `rns imgprocess <file>` | Process sprite image into silhouette via `process_image.py` |
+
 ## Wezterm
 
 Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.

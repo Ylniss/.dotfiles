@@ -183,5 +183,6 @@ source fzf.nu
 source general.nu
 source git.nu
 source weather.nu
+source robes-and-steel.nu
 
 use ~/.cache/starship/init.nu
