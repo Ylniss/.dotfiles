@@ -7,27 +7,38 @@ let dotfilesRepoDir = if $nu.os-info.family =~ windows {
 }
 
 def create-symbolic-link [target, linkPath, description] {
-  if ($linkPath | path exists) or (not ($nu.os-info.family =~ windows) and ((do { ^test -L $linkPath } | complete).exit_code == 0)) {
-    print $'($description) symbolic link already exists.'
+  let isSymlink = if ($nu.os-info.family =~ windows) {
+    ($linkPath | path exists) and ($linkPath | path type) == 'symlink'
   } else {
+    (do { ^test -L $linkPath } | complete).exit_code == 0
+  }
 
-    let parentDir = ($linkPath | path dirname)
-    if (not ($parentDir | path exists)) {
-      mkdir $parentDir
-    }
+  if $isSymlink {
+    print $'($description) symbolic link already exists.'
+    return
+  }
 
-    print $'Creating symbolic link for ($description)'
-    if ($nu.os-info.family =~ windows) {
-      let t = ($target | str replace --all '/' '\')
-      let l = ($linkPath | str replace --all '/' '\')
-      if ($target | path type) == 'dir' {
-        ^cmd /c $"mklink /j ($l) ($t)"
-      } else {
-        ^cmd /c $"mklink ($l) ($t)"
-      }
+  if ($linkPath | path exists) {
+    print $'Removing existing ($description) to replace with symbolic link'
+    rm -rf $linkPath
+  }
+
+  let parentDir = ($linkPath | path dirname)
+  if not ($parentDir | path exists) {
+    mkdir $parentDir
+  }
+
+  print $'Creating symbolic link for ($description)'
+  if ($nu.os-info.family =~ windows) {
+    let t = ($target | str replace --all '/' '\')
+    let l = ($linkPath | str replace --all '/' '\')
+    if ($target | path type) == 'dir' {
+      ^cmd /c $"mklink /j ($l) ($t)"
     } else {
-      ^ln -s $target $linkPath
+      ^cmd /c $"mklink ($l) ($t)"
     }
+  } else {
+    ^ln -s $target $linkPath
   }
 }
 
