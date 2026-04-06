@@ -1,3 +1,3 @@
 def "rns imgprocess" [file: string] {
-  python $"($env.repo)/rglk/scripts/process_image.py" $file
+  dotnet run $"($env.repo)/rglk/scripts/process_image.cs" $file
 }
