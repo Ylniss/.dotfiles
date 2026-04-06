@@ -69,6 +69,7 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)\nushell\scripts' $'($env.APPDATA)\nushell\scripts' 'nushell scripts'
   create-symbolic-link $'($dotfilesRepoDir)\claude\CLAUDE.md' $'($env.USERPROFILE)\.claude\CLAUDE.md' 'claude CLAUDE.md'
   create-symbolic-link $'($dotfilesRepoDir)\claude\settings.json' $'($env.USERPROFILE)\.claude\settings.json' 'claude settings.json'
+  create-symbolic-link $'($dotfilesRepoDir)\claude\statusline-command.sh' $'($env.USERPROFILE)\.claude\statusline-command.sh' 'claude statusline-command.sh'
   create-symbolic-link $'($dotfilesRepoDir)\claude\skills' $'($env.USERPROFILE)\.claude\skills' 'claude skills'
   create-symbolic-link $'($dotfilesRepoDir)\claude\agents' $'($env.USERPROFILE)\.claude\agents' 'claude agents'
 
@@ -94,6 +95,7 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)/nushell/scripts' $'($env.HOME)/.config/nushell/scripts' 'nushell scripts'
   create-symbolic-link $'($dotfilesRepoDir)/claude/CLAUDE.md' $'($env.HOME)/.claude/CLAUDE.md' 'claude CLAUDE.md'
   create-symbolic-link $'($dotfilesRepoDir)/claude/settings.json' $'($env.HOME)/.claude/settings.json' 'claude settings.json'
+  create-symbolic-link $'($dotfilesRepoDir)/claude/statusline-command.sh' $'($env.HOME)/.claude/statusline-command.sh' 'claude statusline-command.sh'
   create-symbolic-link $'($dotfilesRepoDir)/claude/skills' $'($env.HOME)/.claude/skills' 'claude skills'
   create-symbolic-link $'($dotfilesRepoDir)/claude/agents' $'($env.HOME)/.claude/agents' 'claude agents'
 
