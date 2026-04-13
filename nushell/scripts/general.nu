@@ -60,24 +60,33 @@ def clip [] {
 
 # -------------- EXTRACT --------------
 
-# Extract archive based on file extension
+# Extract archive into directory named after the archive
 def extract [file: path] {
   let ext = ($file | str downcase)
+  let dir = ($file | path basename | str replace -r '(?i)\.(tar\.(gz|bz2|xz)|tgz|zip|7z|rar|tar)$' '')
+
+  mkdir $dir
+
   if ($ext | str ends-with ".tar.gz") or ($ext | str ends-with ".tgz") {
-    tar -xzf $file
+    tar -xzf $file -C $dir
   } else if ($ext | str ends-with ".tar.bz2") {
-    tar -xjf $file
+    tar -xjf $file -C $dir
   } else if ($ext | str ends-with ".tar.xz") {
-    tar -xJf $file
+    tar -xJf $file -C $dir
   } else if ($ext | str ends-with ".tar") {
-    tar -xf $file
+    tar -xf $file -C $dir
   } else if ($ext | str ends-with ".zip") {
-    unzip $file
+    if $nu.os-info.family == 'windows' {
+      tar -xf $file -C $dir
+    } else {
+      unzip $file -d $dir
+    }
   } else if ($ext | str ends-with ".7z") {
-    7z x $file
+    7z x $file $"-o($dir)"
   } else if ($ext | str ends-with ".rar") {
-    unrar x $file
+    unrar x $file $"($dir)/"
   } else {
+    rm -r $dir
     print $"Unsupported archive format: ($file)"
   }
 }
