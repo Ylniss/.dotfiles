@@ -1,4 +1,13 @@
-alias repo = cd $env.repo
+# Change directory to repo, optionally into a subdirectory
+def --env repo [subdir?: string] {
+  let target = if $subdir == null { $env.repo } else { $env.repo | path join $subdir }
+  if not ($target | path exists) {
+    print -e $"repo: directory does not exist: ($target)"
+    return
+  }
+  cd $target
+}
+
 alias games = cd $env.games
 alias dwn = cd $env.downloads
 alias notes = cd $env.notes

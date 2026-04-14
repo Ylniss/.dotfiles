@@ -11,7 +11,6 @@
     envFile.source = ./env.nu;
 
     shellAliases = {
-      repo = "cd ~/stuff/repo";
       dotfiles = "cd ~/stuff/repo/.dotfiles";
       downloads = "cd ~/Downloads/";
     };
