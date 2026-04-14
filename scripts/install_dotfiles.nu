@@ -93,6 +93,7 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)\yazi\keymap.toml' $'($env.APPDATA)\yazi\config\keymap.toml' 'yazi keymap.toml'
   create-symbolic-link $'($dotfilesRepoDir)\yazi\theme.toml' $'($env.APPDATA)\yazi\config\theme.toml' 'yazi theme.toml'
   create-symbolic-link $'($dotfilesRepoDir)\yazi\package.toml' $'($env.APPDATA)\yazi\config\package.toml' 'yazi package.toml'
+  create-symbolic-link $'($dotfilesRepoDir)\yazi\init.lua' $'($env.APPDATA)\yazi\config\init.lua' 'yazi init.lua'
   install-yazi-packages
   create-symbolic-link $'($dotfilesRepoDir)\starship.toml' $'($env.USERPROFILE)\.config\starship.toml' 'starship.toml'
   create-symbolic-link $'($dotfilesRepoDir)\nushell\config.nu' $'($env.APPDATA)\nushell\config.nu' 'nushell config.nu'
@@ -146,6 +147,7 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)/yazi/keymap.toml' $'($env.HOME)/.config/yazi/keymap.toml' 'yazi keymap.toml'
   create-symbolic-link $'($dotfilesRepoDir)/yazi/theme.toml' $'($env.HOME)/.config/yazi/theme.toml' 'yazi theme.toml'
   create-symbolic-link $'($dotfilesRepoDir)/yazi/package.toml' $'($env.HOME)/.config/yazi/package.toml' 'yazi package.toml'
+  create-symbolic-link $'($dotfilesRepoDir)/yazi/init.lua' $'($env.HOME)/.config/yazi/init.lua' 'yazi init.lua'
   install-yazi-packages
   create-symbolic-link $'($dotfilesRepoDir)/starship.toml' $'($env.HOME)/.config/starship.toml' 'starship.toml'
   create-symbolic-link $'($dotfilesRepoDir)/nushell/config.nu' $'($env.HOME)/.config/nushell/config.nu' 'nushell config.nu'

@@ -1,16 +1,18 @@
 [mgr]
 show_hidden = true
+sort_by = "mtime"
+sort_reverse = true
+sort_dir_first = true
+linemode = "size_and_mtime"
 
-# Image/video/PDF preview requires external tools:
-#   Windows: winget install Gyan.FFmpeg ImageMagick.ImageMagick oschwartz10612.Poppler
-#   Linux (apt):   sudo apt install ffmpeg imagemagick poppler-utils
-#   Linux (pacman): sudo pacman -S ffmpeg imagemagick poppler
+# Image/video/PDF/SVG preview requires external tools:
+#   Windows: winget install Gyan.FFmpeg ImageMagick.ImageMagick
+#            scoop install poppler resvg
+#   Linux (apt):    sudo apt install ffmpeg imagemagick poppler-utils resvg
+#   Linux (pacman): sudo pacman -S ffmpeg imagemagick poppler resvg
 [preview]
 max_width = 1000
 max_height = 1000
-image_delay = 30
-image_filter = "triangle"
-image_quality = 75
 
 # Replace slow file.exe MIME detection with extension-based lookup.
 # Installed via: ya pkg add yazi-rs/plugins:mime-ext
@@ -25,3 +27,34 @@ id = "mime"
 url = "remote://*"
 run = "mime-ext.remote"
 prio = "high"
+
+# Open text files in nvim by default; SVGs in Inkscape
+[opener]
+edit = [
+	{ run = 'nvim "$@"', block = true, desc = "nvim", for = "unix" },
+	{ run = 'nvim %*', block = true, desc = "nvim", for = "windows" },
+]
+inkscape = [
+	{ run = 'inkscape "$@"', orphan = true, desc = "Inkscape", for = "unix" },
+	{ run = 'inkscape %*', orphan = true, desc = "Inkscape", for = "windows" },
+]
+
+[[open.prepend_rules]]
+mime = "text/*"
+use = "edit"
+
+[[open.prepend_rules]]
+mime = "application/xml"
+use = "edit"
+
+[[open.prepend_rules]]
+mime = "application/json"
+use = "edit"
+
+[[open.prepend_rules]]
+mime = "application/javascript"
+use = "edit"
+
+[[open.prepend_rules]]
+mime = "image/svg+xml"
+use = "inkscape"

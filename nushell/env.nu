@@ -21,10 +21,7 @@ $env.NU_PLUGIN_DIRS = [
 ]
 
 if $nu.os-info.family =~ windows {
-  $env.Path = ($env.Path
-    | split row (char esep)
-    | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve'
-    | prepend 'C:\tools\poppler\Library\bin')
+  $env.Path = ($env.Path | split row (char esep) | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')
 }
 
 
