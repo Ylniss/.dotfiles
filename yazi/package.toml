@@ -8,6 +8,11 @@ use = "Rolv-Apneseth/starship"
 rev = "a837101"
 hash = "d396365cef932fce588b80df69438f2e"
 
+[[plugin.deps]]
+use = "Lil-Dank/lazygit"
+rev = "8c4086c"
+hash = "337b5aa2662d0500625d3807c695229a"
+
 [[flavor.deps]]
 use = "BennyOe/tokyo-night"
 rev = "8e6296f"

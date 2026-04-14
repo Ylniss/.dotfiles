@@ -12,3 +12,8 @@ desc = "Go Obsidian knowtes"
 on = ["g", "r"]
 run = "cd ~/stuff/repo/"
 desc = "Go repo"
+
+[[mgr.prepend_keymap]]
+on = ["g", "i"]
+run = "plugin lazygit"
+desc = "Open lazygit"
