@@ -44,6 +44,25 @@ def lfcd --env [] {
 
 alias lf = lfcd
 
+# -------------- YAZI ---------------
+
+# Change directory into path that yazi exits on
+def yazicd --env [...args] {
+  let tmp = (mktemp)
+  ^yazi ...$args --cwd-file $tmp
+  try {
+    let target_dir = (open --raw $tmp | str trim)
+    rm -f $tmp
+    try {
+      if ($target_dir != "" and $target_dir != $env.PWD) { cd $target_dir }
+    } catch { |e| print -e $'yazicd: Can not change to ($target_dir): ($e | get debug)' }
+  } catch {
+    |e| print -e $'yazicd: Reading ($tmp) returned an error: ($e | get debug)'
+  }
+}
+
+alias yazi = yazicd
+
 # -------------- CLIPBOARD --------------
 
 # Pipe input to system clipboard

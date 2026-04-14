@@ -1,0 +1,14 @@
+[[mgr.prepend_keymap]]
+on = ["g", "s"]
+run = "cd ~/stuff/"
+desc = "Go stuff"
+
+[[mgr.prepend_keymap]]
+on = ["g", "n"]
+run = "cd ~/stuff/knowtes/"
+desc = "Go Obsidian knowtes"
+
+[[mgr.prepend_keymap]]
+on = ["g", "r"]
+run = "cd ~/stuff/repo/"
+desc = "Go repo"

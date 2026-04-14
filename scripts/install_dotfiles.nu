@@ -6,6 +6,32 @@ let dotfilesRepoDir = if $nu.os-info.family =~ windows {
   $'($env.HOME)/stuff/repo/.dotfiles'
 }
 
+def windows-is-admin [] {
+  (^powershell -NoProfile -Command "([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)" | str trim) == "True"
+}
+
+def windows-cfa-enabled [] {
+  (^powershell -NoProfile -Command "(Get-MpPreference).EnableControlledFolderAccess" | str trim) != "0"
+}
+
+def allow-cfa-app [exePath, appName] {
+  ^powershell -NoProfile -Command $"Add-MpPreference -ControlledFolderAccessAllowedApplications '($exePath)'"
+  print $'Allowed ($appName) through Controlled Folder Access'
+}
+
+def install-yazi-packages [] {
+  if (which ya | is-empty) {
+    print 'ya CLI not found on PATH. Skipping yazi plugin install — install yazi, then rerun this script (or run `ya pkg install`).'
+    return
+  }
+  print 'Installing yazi plugins via `ya pkg install`'
+  try {
+    ^ya pkg install
+  } catch { |e|
+    print -e $'ya pkg install failed: ($e.msg)'
+  }
+}
+
 def create-symbolic-link [target, linkPath, description] {
   let isSymlink = if ($nu.os-info.family =~ windows) {
     ($linkPath | path exists) and ($linkPath | path type) == 'symlink'
@@ -63,6 +89,11 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)\.zshrc' $'($env.USERPROFILE)\.zshrc' '.zshrc'
   create-symbolic-link $'($dotfilesRepoDir)\lf\windows\lfrc' $'($env.LOCALAPPDATA)\lf\lfrc' 'lf (lfrc)'
   create-symbolic-link $'($dotfilesRepoDir)\lf\windows\icons' $'($env.LOCALAPPDATA)\lf\icons' 'lf (icons)'
+  create-symbolic-link $'($dotfilesRepoDir)\yazi\yazi.toml' $'($env.APPDATA)\yazi\config\yazi.toml' 'yazi yazi.toml'
+  create-symbolic-link $'($dotfilesRepoDir)\yazi\keymap.toml' $'($env.APPDATA)\yazi\config\keymap.toml' 'yazi keymap.toml'
+  create-symbolic-link $'($dotfilesRepoDir)\yazi\theme.toml' $'($env.APPDATA)\yazi\config\theme.toml' 'yazi theme.toml'
+  create-symbolic-link $'($dotfilesRepoDir)\yazi\package.toml' $'($env.APPDATA)\yazi\config\package.toml' 'yazi package.toml'
+  install-yazi-packages
   create-symbolic-link $'($dotfilesRepoDir)\starship.toml' $'($env.USERPROFILE)\.config\starship.toml' 'starship.toml'
   create-symbolic-link $'($dotfilesRepoDir)\nushell\config.nu' $'($env.APPDATA)\nushell\config.nu' 'nushell config.nu'
   create-symbolic-link $'($dotfilesRepoDir)\nushell\env.nu' $'($env.APPDATA)\nushell\env.nu' 'nushell env.nu'
@@ -78,6 +109,28 @@ if ($nu.os-info.family =~ windows) {
     print 'Creating .gitconfig-local with default user'
     "[user]\n\tname = Ylniss\n\temail = zupqa0@gmail.com\n" | save $gitconfigLocal
   }
+
+  # Allow tools through Windows Defender Controlled Folder Access so they can
+  # delete files in protected folders (Pictures, Documents, etc.)
+  if (windows-cfa-enabled) {
+    let apps = [
+      { name: 'yazi', cmd: 'yazi' }
+      { name: 'nushell', cmd: 'nu' }
+    ]
+    let resolved = $apps | each { |a|
+      let r = (which $a.cmd)
+      if ($r | is-empty) { null } else { { name: $a.name, path: ($r | get 0.path) } }
+    } | compact
+
+    if ($resolved | is-empty) {
+      # nothing on PATH to allow
+    } else if (windows-is-admin) {
+      $resolved | each { |a| allow-cfa-app $a.path $a.name } | ignore
+    } else {
+      print 'Controlled Folder Access is enabled. Run in an elevated PowerShell to allow these:'
+      $resolved | each { |a| print $"  Add-MpPreference -ControlledFolderAccessAllowedApplications '($a.path)'" } | ignore
+    }
+  }
 } else {
   # For Linux/Android
   create-symbolic-link $'($dotfilesRepoDir)/nvim' $'($env.HOME)/.config/nvim' 'nvim'
@@ -89,6 +142,11 @@ if ($nu.os-info.family =~ windows) {
   create-symbolic-link $'($dotfilesRepoDir)/.zshrc' $'($env.HOME)/.zshrc' '.zshrc'
   create-symbolic-link $'($dotfilesRepoDir)/lf/linux/lfrc' $'($env.HOME)/.config/lf/lfrc' 'lf (lfrc)'
   create-symbolic-link $'($dotfilesRepoDir)/lf/linux/icons' $'($env.HOME)/.config/lf/icons' 'lf (icons)'
+  create-symbolic-link $'($dotfilesRepoDir)/yazi/yazi.toml' $'($env.HOME)/.config/yazi/yazi.toml' 'yazi yazi.toml'
+  create-symbolic-link $'($dotfilesRepoDir)/yazi/keymap.toml' $'($env.HOME)/.config/yazi/keymap.toml' 'yazi keymap.toml'
+  create-symbolic-link $'($dotfilesRepoDir)/yazi/theme.toml' $'($env.HOME)/.config/yazi/theme.toml' 'yazi theme.toml'
+  create-symbolic-link $'($dotfilesRepoDir)/yazi/package.toml' $'($env.HOME)/.config/yazi/package.toml' 'yazi package.toml'
+  install-yazi-packages
   create-symbolic-link $'($dotfilesRepoDir)/starship.toml' $'($env.HOME)/.config/starship.toml' 'starship.toml'
   create-symbolic-link $'($dotfilesRepoDir)/nushell/config.nu' $'($env.HOME)/.config/nushell/config.nu' 'nushell config.nu'
   create-symbolic-link $'($dotfilesRepoDir)/nushell/env.nu' $'($env.HOME)/.config/nushell/env.nu' 'nushell env.nu'

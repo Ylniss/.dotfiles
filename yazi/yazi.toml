@@ -1,0 +1,27 @@
+[mgr]
+show_hidden = true
+
+# Image/video/PDF preview requires external tools:
+#   Windows: winget install Gyan.FFmpeg ImageMagick.ImageMagick oschwartz10612.Poppler
+#   Linux (apt):   sudo apt install ffmpeg imagemagick poppler-utils
+#   Linux (pacman): sudo pacman -S ffmpeg imagemagick poppler
+[preview]
+max_width = 1000
+max_height = 1000
+image_delay = 30
+image_filter = "triangle"
+image_quality = 75
+
+# Replace slow file.exe MIME detection with extension-based lookup.
+# Installed via: ya pkg add yazi-rs/plugins:mime-ext
+[[plugin.prepend_fetchers]]
+id = "mime"
+url = "local://*"
+run = "mime-ext.local"
+prio = "high"
+
+[[plugin.prepend_fetchers]]
+id = "mime"
+url = "remote://*"
+run = "mime-ext.remote"
+prio = "high"
