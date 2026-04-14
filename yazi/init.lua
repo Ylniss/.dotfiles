@@ -1,5 +1,7 @@
 require("starship"):setup()
 
+require("session"):setup({ sync_yanked = true })
+
 require("mime-ext.local"):setup({
 	with_exts = {
 		cs = "text/plain",
