@@ -1,7 +1,7 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:mime-ext"
-rev = "babfd0f"
-hash = "7aa5cddbc6dc2fd8ef9b8abd944d06f8"
+rev = "06b1921"
+hash = "bb679534fb2dfe71eabc81d9cf464991"
 
 [[plugin.deps]]
 use = "Rolv-Apneseth/starship"

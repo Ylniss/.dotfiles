@@ -10,8 +10,22 @@ def windows-is-admin [] {
   (^powershell -NoProfile -Command "([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)" | str trim) == "True"
 }
 
+def windows-dev-mode-enabled [] {
+  let script = 'try { (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name AllowDevelopmentWithoutDevLicense -ErrorAction Stop).AllowDevelopmentWithoutDevLicense } catch { "0" }'
+  (^powershell -NoProfile -Command $script | str trim) == "1"
+}
+
 def windows-cfa-enabled [] {
   (^powershell -NoProfile -Command "(Get-MpPreference).EnableControlledFolderAccess" | str trim) != "0"
+}
+
+def windows-is-reparse-point [path] {
+  if not ($path | path exists -n) { return false }
+  let script = 'try { (Get-Item -Force -LiteralPath $env:CHECK_PATH -ErrorAction Stop).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint) } catch { "False" }'
+  let r = (with-env { CHECK_PATH: ($path | str replace --all '/' '\') } {
+    ^powershell -NoProfile -Command $script | complete
+  })
+  ($r.stdout | str trim) == "True"
 }
 
 def allow-cfa-app [exePath, appName] {
@@ -33,6 +47,29 @@ def install-yazi-packages [] {
 }
 
 def create-symbolic-link [target, linkPath, description] {
+  # Remove any ancestor reparse point first so rm/mkdir below don't follow it
+  # into its target.
+  if ($nu.os-info.family =~ windows) {
+    mut anc = ($linkPath | path dirname)
+    mut stale = ''
+    loop {
+      if ($anc | path exists -n) and (windows-is-reparse-point $anc) {
+        $stale = $anc
+        break
+      }
+      let up = ($anc | path dirname)
+      if $up == $anc { break }
+      $anc = $up
+    }
+    if ($stale | is-not-empty) {
+      print $'Removing stale directory symlink before linking ($description): ($stale)'
+      let delScript = '(Get-Item -Force -LiteralPath $env:DEL_PATH).Delete()'
+      with-env { DEL_PATH: ($stale | str replace --all '/' '\') } {
+        ^powershell -NoProfile -Command $delScript
+      }
+    }
+  }
+
   let isSymlink = if ($nu.os-info.family =~ windows) {
     ($linkPath | path exists) and ($linkPath | path type) == 'symlink'
   } else {
@@ -69,18 +106,9 @@ def create-symbolic-link [target, linkPath, description] {
 }
 
 if ($nu.os-info.family =~ windows) {
-  # Test if we can create symlinks (requires admin or Developer Mode)
-  let testLink = $'($env.TEMP)\dotfiles_symlink_test'
-  let testTarget = $'($env.TEMP)\dotfiles_symlink_target'
-  "test" | save -f $testTarget
-  try {
-    ^cmd /c $"mklink ($testLink | str replace --all '/' '\') ($testTarget | str replace --all '/' '\')" | ignore
+  if not ((windows-is-admin) or (windows-dev-mode-enabled)) {
+    error make { msg: "Cannot create symbolic links. Enable Developer Mode (Settings > System > For developers) or run this script as Administrator." }
   }
-  if not ($testLink | path exists) or (($testLink | path type) != 'symlink') {
-    rm -f $testTarget
-    error make { msg: "Cannot create symbolic links. Enable Developer Mode: Windows Settings > System > Advanced > Developer Mode." }
-  }
-  rm -f $testLink $testTarget
 
   create-symbolic-link $'($dotfilesRepoDir)\nvim' $'($env.LOCALAPPDATA)\nvim' 'nvim'
   create-symbolic-link $'($dotfilesRepoDir)\.gitconfig' $'($env.USERPROFILE)\.gitconfig' '.gitconfig'
