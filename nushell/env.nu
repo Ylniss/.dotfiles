@@ -22,6 +22,10 @@ $env.NU_PLUGIN_DIRS = [
 
 if $nu.os-info.family =~ windows {
   $env.Path = ($env.Path | split row (char esep) | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')
+  let aseprite_dir = 'C:\Program Files\Aseprite'
+  if ($aseprite_dir | path exists) {
+    $env.Path = ($env.Path | prepend $aseprite_dir)
+  }
 }
 
 
