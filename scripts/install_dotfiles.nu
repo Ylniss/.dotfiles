@@ -52,6 +52,11 @@ if $isWindows { allow-cfa-apps-if-needed }
 
 # -------------- FUNCTIONS --------------
 
+# Prints a yellow warning to stderr
+def warn [msg: string] {
+  print -e $"(ansi yellow)($msg)(ansi reset)"
+}
+
 # Returns the dotfiles repo directory for this platform
 def get-dotfiles-repo-dir [] {
   if $nu.os-info.family =~ windows {
@@ -93,7 +98,7 @@ def create-symbolic-link [target, linkPath, description] {
   }
 
   if $isSymlink {
-    print $'($description) symbolic link already exists.'
+    print $'($description) (ansi blue)symbolic link already exists.(ansi reset)'
     return
   }
 
@@ -107,7 +112,7 @@ def create-symbolic-link [target, linkPath, description] {
     mkdir $parentDir
   }
 
-  print $'Creating symbolic link for ($description)'
+  print $'(ansi green)Creating symbolic link for(ansi reset) ($description)'
   if ($nu.os-info.family =~ windows) {
     let t = ($target | str replace --all '/' '\')
     let l = ($linkPath | str replace --all '/' '\')
@@ -124,14 +129,14 @@ def create-symbolic-link [target, linkPath, description] {
 # Installs yazi plugins via `ya pkg install` (no-op if `ya` is missing)
 def install-yazi-packages [] {
   if (which ya | is-empty) {
-    print 'ya CLI not found on PATH. Skipping yazi plugin install — install yazi, then rerun this script (or run `ya pkg install`).'
+    warn 'ya CLI not found on PATH. Skipping yazi plugin install — install yazi, then rerun this script (or run `ya pkg install`).'
     return
   }
   print 'Installing yazi plugins via `ya pkg install`'
   try {
     ^ya pkg install
   } catch { |e|
-    print -e $'ya pkg install failed: ($e.msg)'
+    warn $'ya pkg install failed: ($e.msg)'
   }
 }
 
@@ -139,13 +144,21 @@ def install-yazi-packages [] {
 # so .nu files get syntax highlighting (used by yazi's piper previewer).
 def install-bat-syntaxes [] {
   if (which bat | is-empty) {
-    print 'bat not found on PATH. Skipping Nushell syntax install.'
+    warn 'bat not found on PATH. Skipping Nushell syntax install.'
     return
   }
-  let alreadyInstalled = (^bat --list-languages | lines | any { |l| $l =~ '^Nushell:' })
-  if $alreadyInstalled {
+  # `which` can report an entry (stale shim, cross-user binary, App Execution
+  # Alias stub) that then fails to actually spawn — probe before using.
+  let probe = try {
+    { ok: true, langs: (^bat --list-languages | lines) }
+  } catch { |e|
+    { ok: false, err: ($e.msg | str trim) }
+  }
+  if not $probe.ok {
+    warn $'bat is on PATH but cannot run: ($probe.err). Skipping Nushell syntax install.'
     return
   }
+  if ($probe.langs | any { |l| $l =~ '^Nushell:' }) { return }
   let syntaxesDir = $'(^bat --config-dir | str trim)/syntaxes'
   if not ($syntaxesDir | path exists) { mkdir $syntaxesDir }
   let target = $'($syntaxesDir)/nushell.sublime-syntax'
@@ -155,7 +168,7 @@ def install-bat-syntaxes [] {
     print 'Rebuilding bat cache'
     ^bat cache --build
   } catch { |e|
-    print -e $'bat syntax install failed: ($e.msg)'
+    warn $'bat syntax install failed: ($e.msg)'
   }
 }
 
@@ -182,7 +195,12 @@ def windows-dev-mode-enabled [] {
 
 # True if Windows Defender Controlled Folder Access is enabled
 def windows-cfa-enabled [] {
-  (^powershell -NoProfile -Command "(Get-MpPreference).EnableControlledFolderAccess" | str trim) != "0"
+  try {
+    (^powershell -NoProfile -Command "(Get-MpPreference).EnableControlledFolderAccess" | str trim) != "0"
+  } catch { |e|
+    warn $'Could not check Controlled Folder Access state: ($e.msg | str trim). Skipping CFA allow-list step.'
+    false
+  }
 }
 
 # True if path is a symlink or junction (reparse point)
@@ -227,6 +245,6 @@ def allow-cfa-apps-if-needed [] {
     return
   }
 
-  print 'Controlled Folder Access is enabled. Run in an elevated PowerShell to allow these:'
+  warn 'Controlled Folder Access is enabled. Run in an elevated PowerShell to allow these:'
   $resolved | each { |a| print $"  Add-MpPreference -ControlledFolderAccessAllowedApplications '($a.path)'" } | ignore
 }
