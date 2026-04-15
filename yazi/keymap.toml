@@ -39,6 +39,16 @@ run = "plugin disk-info"
 desc = "Info: disk usage"
 
 [[mgr.prepend_keymap]]
+on = ["i", "f"]
+run = "plugin file-info"
+desc = "Info: file"
+
+[[mgr.prepend_keymap]]
+on = ["i", "s"]
+run = "plugin system-info"
+desc = "Info: system"
+
+[[mgr.prepend_keymap]]
 on = ["e", "a"]
 run = 'shell --orphan "aseprite %h"'
 desc = "Edit in Aseprite"

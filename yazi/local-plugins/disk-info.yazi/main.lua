@@ -8,7 +8,7 @@ let matches = (sys disks | where { |x| $cwd | str starts-with $x.mount })
 if ($matches | is-empty) {
     error make { msg: $"No disk info for ($cwd)" }
 }
-let d = ($matches | first)
+let d = $matches.0
 let used = ($d.total - $d.free)
 $"Drive: ($d.mount)\nLabel: ($d.device)\nTotal: ($d.total)\nUsed:  ($used)\nFree:  ($d.free)"
 ]]

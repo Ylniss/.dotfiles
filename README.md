@@ -64,8 +64,8 @@ Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.
 **Windows**
 
 ```
-winget install --scope machine Gyan.FFmpeg ImageMagick.ImageMagick sharkdp.bat Inkscape.Inkscape JesseDuffield.lazygit
-scoop install --global poppler resvg
+winget install --scope machine ImageMagick.ImageMagick sharkdp.bat Inkscape.Inkscape JesseDuffield.lazygit
+scoop install --global ffmpeg poppler resvg
 ```
 
 **Linux (apt)**

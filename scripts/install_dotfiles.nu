@@ -25,6 +25,8 @@ let symlinks = [
   { src: 'yazi/init.lua',                 desc: 'yazi init.lua',              target: $'($yaziConfigDir)/init.lua' }
   { src: 'yazi/local-plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',   target: $'($yaziConfigDir)/plugins/tab-hover.yazi' }
   { src: 'yazi/local-plugins/disk-info.yazi',   desc: 'yazi disk-info plugin',   target: $'($yaziConfigDir)/plugins/disk-info.yazi' }
+  { src: 'yazi/local-plugins/file-info.yazi',   desc: 'yazi file-info plugin',   target: $'($yaziConfigDir)/plugins/file-info.yazi' }
+  { src: 'yazi/local-plugins/system-info.yazi', desc: 'yazi system-info plugin', target: $'($yaziConfigDir)/plugins/system-info.yazi' }
   { src: 'starship.toml',                 desc: 'starship.toml',              target: $'($homeDir)/.config/starship.toml' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          target: $'($appdataDir)/nushell/config.nu' }
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             target: $'($appdataDir)/nushell/env.nu' }
