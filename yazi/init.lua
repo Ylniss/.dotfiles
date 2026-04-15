@@ -22,6 +22,7 @@ require("mime-ext.local"):setup({
 		csx = "text/plain",
 		ps1 = "text/plain",
 		ahk = "text/plain",
+		config = "text/plain",
 		nu = "text/plain",
 	},
 	with_files = {
