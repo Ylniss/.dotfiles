@@ -427,15 +427,6 @@ Set-Alias nvim OpenNvimWithAhkFix
 Set-Alias sudo gsudo
 gsudo config PowerShellLoadProfile true | Out-Null
 
-# ----- LF -----
-function OpenLf()
-{
-    $originalLf = (Get-Command -Name lf -CommandType Application).Source
-    & $originalLf -print-last-dir $args | Set-Location
-}
-
-Set-Alias lf OpenLf 
-
 # ----- STARSHIP -----
 starship init powershell | Invoke-Expression
 

@@ -38,7 +38,6 @@
     ../../packages/cli/dust.nix
     ../../packages/cli/ripgrep.nix
     ../../packages/cli/fastfetch.nix
-    ../../packages/cli/lf
     ../../packages/cli/gnumake.nix
     ../../packages/cli/psw.nix
 

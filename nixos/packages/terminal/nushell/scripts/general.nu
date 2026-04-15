@@ -22,25 +22,6 @@ def mkdircd --env [dirName: string] {
 alias vi = nvim
 alias vim = nvim
 
-# -------------- LF ---------------
-
-# Change directory into path that lf exits on
-def lfcd --env [] {
-  let tmp = (mktemp)
-  lf -last-dir-path $tmp
-  try {
-    let target_dir = (open --raw $tmp)
-    rm -f $tmp
-    try {
-      if ($target_dir != $env.PWD) { cd $target_dir }
-    } catch { |e| print -e $'lfcd: Can not change to ($target_dir): ($e | get debug)' }
-  } catch {
-    |e| print -e $'lfcd: Reading ($tmp) returned an error: ($e | get debug)'
-  }
-}
-
-alias lf = lfcd
-
 # -------------- CLIPBOARD --------------
 
 # Pipe input to system clipboard

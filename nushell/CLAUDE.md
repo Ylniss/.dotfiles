@@ -14,5 +14,5 @@ Personal nushell (v0.111+) dotfiles. No build/test/lint — validate by loading 
 - **Wrapped commands**: CLI wrappers use `def --wrapped` for variadic passthrough.
 - **Environment-mutating functions**: `def --env` when changing `cd` or setting env vars.
 - **Naming**: Multi-word subcommands (`docker stop all`, `ssh mob cp`) over abbreviations. Short aliases only for high-frequency navigation (`vi`, `repo`, `dwn`).
-- **External tools assumed present**: starship, fzf, ripgrep, neovim, git, docker, lf. No fallback logic.
+- **External tools assumed present**: starship, fzf, fd, ripgrep, neovim, git, gh, docker, yazi, wezterm, ssh-agent. No fallback logic.
 - **Minimal config**: Only non-default `$env.config` values. Check defaults with `config nu --default` or `$env.config.<field>`.

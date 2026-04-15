@@ -11,7 +11,6 @@ let homeDir = if $isWindows { $env.USERPROFILE } else { $env.HOME }
 let configDir = if $isWindows { $env.LOCALAPPDATA } else { $'($env.HOME)/.config' }
 let appdataDir = if $isWindows { $env.APPDATA } else { $'($env.HOME)/.config' }
 let yaziConfigDir = if $isWindows { $'($env.APPDATA)/yazi/config' } else { $'($configDir)/yazi' }
-let lfSubdir = if $isWindows { 'windows' } else { 'linux' }
 
 let symlinks = [
   { src: 'nvim',                          desc: 'nvim',                       target: $'($configDir)/nvim' }
@@ -19,8 +18,6 @@ let symlinks = [
   { src: '.ideavimrc',                    desc: '.ideavimrc',                 target: $'($homeDir)/.ideavimrc',                  skipOnAndroid: true }
   { src: '.wezterm.lua',                  desc: '.wezterm.lua',               target: $'($homeDir)/.wezterm.lua',                skipOnAndroid: true }
   { src: '.zshrc',                        desc: '.zshrc',                     target: $'($homeDir)/.zshrc' }
-  { src: $'lf/($lfSubdir)/lfrc',          desc: 'lf (lfrc)',                  target: $'($configDir)/lf/lfrc' }
-  { src: $'lf/($lfSubdir)/icons',         desc: 'lf (icons)',                 target: $'($configDir)/lf/icons' }
   { src: 'yazi/yazi.toml',                desc: 'yazi yazi.toml',             target: $'($yaziConfigDir)/yazi.toml' }
   { src: 'yazi/keymap.toml',              desc: 'yazi keymap.toml',           target: $'($yaziConfigDir)/keymap.toml' }
   { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            target: $'($yaziConfigDir)/theme.toml' }
