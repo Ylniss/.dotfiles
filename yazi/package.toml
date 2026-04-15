@@ -13,6 +13,16 @@ use = "Lil-Dank/lazygit"
 rev = "8c4086c"
 hash = "337b5aa2662d0500625d3807c695229a"
 
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-enter"
+rev = "06b1921"
+hash = "2ede7b0f1beade8390be1b52cfed6a49"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:piper"
+rev = "06b1921"
+hash = "bef05511fab6c6414990eb48003582b9"
+
 [[flavor.deps]]
 use = "BennyOe/tokyo-night"
 rev = "8e6296f"

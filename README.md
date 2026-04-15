@@ -57,6 +57,40 @@ Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.
 | `Ctrl+E / Ctrl+Y` | Scroll up / down |
 | `Shift+Alt+L` | Launcher |
 
+## Yazi
+
+### Dependencies
+
+**Windows**
+
+```
+winget install --scope machine Gyan.FFmpeg ImageMagick.ImageMagick sharkdp.bat Inkscape.Inkscape JesseDuffield.lazygit
+scoop install --global poppler resvg
+```
+
+**Linux (apt)**
+
+```
+sudo apt install ffmpeg imagemagick poppler-utils resvg bat inkscape lazygit
+```
+
+**Linux (pacman)**
+
+```
+sudo pacman -S ffmpeg imagemagick poppler resvg bat inkscape lazygit
+```
+
+On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -s /usr/bin/batcat /usr/local/bin/bat` if so.
+
+### Keys
+
+| Key | Action |
+|-----|--------|
+| `t` | New tab at hovered directory |
+| `J` / `K` | Half page down / up |
+| `g s/n/r/a/m//` | Jump to stuff / knowtes / repo / games / movies / root |
+| `g i` | Open lazygit |
+
 ## Neovim
 
 > **HJKL is remapped.** `H`/`L` = word, `J`/`K` = paragraph, `Z`/`X` = line start/end.

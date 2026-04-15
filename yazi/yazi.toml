@@ -5,14 +5,10 @@ sort_reverse = true
 sort_dir_first = true
 linemode = "size_and_mtime"
 
-# Image/video/PDF/SVG preview requires external tools:
-#   Windows: winget install Gyan.FFmpeg ImageMagick.ImageMagick
-#            scoop install poppler resvg
-#   Linux (apt):    sudo apt install ffmpeg imagemagick poppler-utils resvg
-#   Linux (pacman): sudo pacman -S ffmpeg imagemagick poppler resvg
 [preview]
 max_width = 1000
 max_height = 1000
+wrap = "yes"
 
 # Replace slow file.exe MIME detection with extension-based lookup.
 # Installed via: ya pkg add yazi-rs/plugins:mime-ext
@@ -27,6 +23,12 @@ id = "mime"
 url = "remote://*"
 run = "mime-ext.remote"
 prio = "high"
+
+# Syntax-highlight .nu via bat (yazi's bundled syntect lacks nushell).
+# Requires: bat, sh on PATH
+[[plugin.prepend_previewers]]
+url = "*.nu"
+run = 'piper -- bat --color=always --theme=ansi --style=plain --paging=never "$1"'
 
 # Open text files in nvim by default; SVGs in Inkscape
 [opener]

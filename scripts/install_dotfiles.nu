@@ -23,6 +23,7 @@ let symlinks = [
   { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            target: $'($yaziConfigDir)/theme.toml' }
   { src: 'yazi/package.toml',             desc: 'yazi package.toml',          target: $'($yaziConfigDir)/package.toml' }
   { src: 'yazi/init.lua',                 desc: 'yazi init.lua',              target: $'($yaziConfigDir)/init.lua' }
+  { src: 'yazi/plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',      target: $'($yaziConfigDir)/plugins/tab-hover.yazi' }
   { src: 'starship.toml',                 desc: 'starship.toml',              target: $'($homeDir)/.config/starship.toml' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          target: $'($appdataDir)/nushell/config.nu' }
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             target: $'($appdataDir)/nushell/env.nu' }
@@ -42,6 +43,8 @@ $symlinks
   | ignore
 
 install-yazi-packages
+
+install-bat-syntaxes
 
 ensure-gitconfig-local $homeDir
 
@@ -129,6 +132,30 @@ def install-yazi-packages [] {
     ^ya pkg install
   } catch { |e|
     print -e $'ya pkg install failed: ($e.msg)'
+  }
+}
+
+# Downloads the Nushell sublime-syntax into bat's config dir and rebuilds cache
+# so .nu files get syntax highlighting (used by yazi's piper previewer).
+def install-bat-syntaxes [] {
+  if (which bat | is-empty) {
+    print 'bat not found on PATH. Skipping Nushell syntax install.'
+    return
+  }
+  let alreadyInstalled = (^bat --list-languages | lines | any { |l| $l =~ '^Nushell:' })
+  if $alreadyInstalled {
+    return
+  }
+  let syntaxesDir = $'(^bat --config-dir | str trim)/syntaxes'
+  if not ($syntaxesDir | path exists) { mkdir $syntaxesDir }
+  let target = $'($syntaxesDir)/nushell.sublime-syntax'
+  print $'Downloading Nushell sublime-syntax to ($target)'
+  try {
+    http get 'https://raw.githubusercontent.com/stevenxxiu/sublime_text_nushell/master/nushell.sublime-syntax' | save -f $target
+    print 'Rebuilding bat cache'
+    ^bat cache --build
+  } catch { |e|
+    print -e $'bat syntax install failed: ($e.msg)'
   }
 }
 

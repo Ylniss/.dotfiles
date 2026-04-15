@@ -26,6 +26,7 @@ require("mime-ext.local"):setup({
 	},
 	with_files = {
 		[".editorconfig"] = "text/plain",
+		[".gitattributes"] = "text/plain",
 		[".ideavimrc"] = "text/plain",
 		[".ripgreprc"] = "text/plain",
 		dockerfile = "text/plain",
@@ -34,6 +35,7 @@ require("mime-ext.local"):setup({
 	fallback_file1 = false,
 })
 
+-- Linemode showing file size + mtime (e.g. "4.2 KB Apr 15 10:30")
 function Linemode:size_and_mtime()
 	local time = math.floor(self._file.cha.mtime or 0)
 	if time == 0 then
