@@ -23,8 +23,8 @@ let symlinks = [
   { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            target: $'($yaziConfigDir)/theme.toml' }
   { src: 'yazi/package.toml',             desc: 'yazi package.toml',          target: $'($yaziConfigDir)/package.toml' }
   { src: 'yazi/init.lua',                 desc: 'yazi init.lua',              target: $'($yaziConfigDir)/init.lua' }
-  { src: 'yazi/plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',      target: $'($yaziConfigDir)/plugins/tab-hover.yazi' }
-  { src: 'yazi/plugins/disk-info.yazi',   desc: 'yazi disk-info plugin',      target: $'($yaziConfigDir)/plugins/disk-info.yazi' }
+  { src: 'yazi/local-plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',   target: $'($yaziConfigDir)/plugins/tab-hover.yazi' }
+  { src: 'yazi/local-plugins/disk-info.yazi',   desc: 'yazi disk-info plugin',   target: $'($yaziConfigDir)/plugins/disk-info.yazi' }
   { src: 'starship.toml',                 desc: 'starship.toml',              target: $'($homeDir)/.config/starship.toml' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          target: $'($appdataDir)/nushell/config.nu' }
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             target: $'($appdataDir)/nushell/env.nu' }
