@@ -14,6 +14,11 @@ run = "cd ~/stuff/repo/"
 desc = "Go repo"
 
 [[mgr.prepend_keymap]]
+on = ["g", "."]
+run = "cd ~/stuff/repo/.dotfiles/"
+desc = "Go dotfiles"
+
+[[mgr.prepend_keymap]]
 on = ["g", "a"]
 run = "cd /games/"
 desc = "Go games"

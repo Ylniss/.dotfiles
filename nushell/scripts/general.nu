@@ -10,8 +10,38 @@ def --env repo [subdir?: string] {
 
 alias games = cd $env.GAMES
 alias dwn = cd $env.DOWNLOADS
-alias notes = cd $env.NOTES
 alias knowtes = cd $env.NOTES
+
+def --env notes [] { cd $env.NOTES }
+
+# Sync notes repo: commit local changes as "update", rebase onto remote, then push.
+# Reports how many commits were uploaded and downloaded.
+def "notes up" [] {
+  cd $env.NOTES
+
+  git fetch --quiet
+
+  let branch = (git rev-parse --abbrev-ref HEAD | str trim)
+  let upstream = $"origin/($branch)"
+
+  let dirty = (git status --porcelain | str trim)
+  if ($dirty | is-not-empty) {
+    git add .
+    git commit --quiet -m "update"
+  }
+
+  let behind = (git rev-list --count $"HEAD..($upstream)" | str trim | into int)
+  if $behind > 0 {
+    git rebase --quiet $upstream
+  }
+
+  let ahead = (git rev-list --count $"($upstream)..HEAD" | str trim | into int)
+  if $ahead > 0 {
+    git push --quiet
+  }
+
+  print $"(ansi green_bold)notes synced(ansi reset) — (ansi cyan)↑ ($ahead)(ansi reset) uploaded, (ansi yellow)↓ ($behind)(ansi reset) downloaded"
+}
 
 # Make directory and enter inside
 def mkdircd --env [dir_name: string] {
