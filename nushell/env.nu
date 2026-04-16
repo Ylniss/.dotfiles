@@ -3,15 +3,15 @@ def is-android [] { $nu.os-info.name == 'android' }
 def is-macos   [] { $nu.os-info.name == 'macos' }
 
 if (is-windows) {
-  $env.repo = $"($env.USERPROFILE)/stuff/repo"
-  $env.games = $"($env.USERPROFILE)/stuff/games"
-  $env.downloads = $"($env.USERPROFILE)/stuff/downloads"
-  $env.notes = $"($env.USERPROFILE)/stuff/knowtes"
+  $env.REPO = $"($env.USERPROFILE)/stuff/repo"
+  $env.GAMES = $"($env.USERPROFILE)/stuff/games"
+  $env.DOWNLOADS = $"($env.USERPROFILE)/stuff/downloads"
+  $env.NOTES = $"($env.USERPROFILE)/stuff/knowtes"
 } else {
-  $env.repo = $"($env.HOME)/stuff/repo"
-  $env.games = $"($env.HOME)/stuff/games"
-  $env.downloads = $"($env.HOME)/stuff/downloads"
-  $env.notes = $"($env.HOME)/stuff/knowtes"
+  $env.REPO = $"($env.HOME)/stuff/repo"
+  $env.GAMES = $"($env.HOME)/stuff/games"
+  $env.DOWNLOADS = $"($env.HOME)/stuff/downloads"
+  $env.NOTES = $"($env.HOME)/stuff/knowtes"
 }
 
 # Directories to search for scripts when calling source or use
@@ -34,14 +34,14 @@ if (is-windows) {
 }
 
 
-$env.RIPGREP_CONFIG_PATH = $'($env.repo)/.dotfiles/.ripgreprc' 
+$env.RIPGREP_CONFIG_PATH = $'($env.REPO)/.dotfiles/.ripgreprc'
 $env.FZF_DEFAULT_COMMAND = 'fd -H'
 $env.GIT_EDITOR = 'nvim'
 
 # Setup Android env
 if (is-android) {
-  $env.storage = "~/storage"
-  $env.camera = "~/storage/dcim/camera"
+  $env.STORAGE = "~/storage"
+  $env.CAMERA = "~/storage/dcim/camera"
 }
 
 # Start ssh-agent

@@ -114,14 +114,14 @@ $env.config = {
             name: history_menu
             modifier: control
             keycode: char_q
-            mode: [emacs, vi_insert, vi_normal]
+            mode: [emacs vi_insert vi_normal]
             event: { send: menu name: history_menu }
         }
         {
             name: help_menu
             modifier: none
             keycode: f1
-            mode: [emacs, vi_insert, vi_normal]
+            mode: [emacs vi_insert vi_normal]
             event: { send: menu name: help_menu }
         }
         {
@@ -140,14 +140,14 @@ $env.config = {
             name: move_one_word_left
             modifier: control
             keycode: char_b
-            mode: [emacs, vi_normal, vi_insert]
+            mode: [emacs vi_normal vi_insert]
             event: {edit: movewordleft}
         }
         {
             name: move_to_line_end_or_take_history_hint
             modifier: control
             keycode: char_d
-            mode: [emacs, vi_normal, vi_insert]
+            mode: [emacs vi_normal vi_insert]
             event: {
                 until: [
                     {send: historyhintcomplete}

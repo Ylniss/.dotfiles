@@ -1,13 +1,13 @@
-# if $nu.os-info.name =~ android {
-#   alias strg = cd $env.storage
-#   alias cam = cd $env.camera
+# if (is-android) {
+#   alias strg = cd $env.STORAGE
+#   alias cam = cd $env.CAMERA
 # }
 
 # currently not able to set conditional aliases in nushell
-# https://github.com/nushell/nushell/issues/5068 
+# https://github.com/nushell/nushell/issues/5068
 # when problem is resolved bring back alias lines on top of this script into if statement
-alias strg = cd $env.storage
-alias cam = cd $env.camera
+alias strg = cd $env.STORAGE
+alias cam = cd $env.CAMERA
 
 # -------------- APT -------------- 
 
@@ -35,9 +35,9 @@ def 'ssh mob clip' [file_path: string] {
 
 # Copy file from mobile phone to current machine
 def 'ssh mob cp' [file_path: string target_path: string] {
-  let parentDir = ($target_path | path dirname)
-  if (not ($parentDir | path exists)) {
-    mkdir $parentDir
+  let parent_dir = ($target_path | path dirname)
+  if (not ($parent_dir | path exists)) {
+    mkdir $parent_dir
   }
 
   (ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/personal $"cp ($file_path) ($target_path)")

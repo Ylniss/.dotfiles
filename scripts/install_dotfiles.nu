@@ -2,50 +2,50 @@
 
 # -------------- MAIN --------------
 
-let repoDir = (get-dotfiles-repo-dir)
+let repo_dir = (get-dotfiles-repo-dir)
 
-let homeDir = if (is-windows) { $env.USERPROFILE } else { $env.HOME }
-let configDir = if (is-windows) { $env.LOCALAPPDATA } else { $'($env.HOME)/.config' }
-let appdataDir = if (is-windows) { $env.APPDATA } else { $'($env.HOME)/.config' }
-let yaziConfigDir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $'($configDir)/yazi' }
+let home_dir = if (is-windows) { $env.USERPROFILE } else { $env.HOME }
+let config_dir = if (is-windows) { $env.LOCALAPPDATA } else { $'($env.HOME)/.config' }
+let appdata_dir = if (is-windows) { $env.APPDATA } else { $'($env.HOME)/.config' }
+let yazi_config_dir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $'($config_dir)/yazi' }
 
 let symlinks = [
-  { src: 'nvim',                          desc: 'nvim',                       dest: $'($configDir)/nvim' }
-  { src: '.gitconfig',                    desc: '.gitconfig',                 dest: $'($homeDir)/.gitconfig' }
-  { src: '.ideavimrc',                    desc: '.ideavimrc',                 dest: $'($homeDir)/.ideavimrc',                  skipOnAndroid: true }
-  { src: '.wezterm.lua',                  desc: '.wezterm.lua',               dest: $'($homeDir)/.wezterm.lua',                skipOnAndroid: true }
-  { src: '.zshrc',                        desc: '.zshrc',                     dest: $'($homeDir)/.zshrc' }
-  { src: 'yazi/yazi.toml',                desc: 'yazi yazi.toml',             dest: $'($yaziConfigDir)/yazi.toml' }
-  { src: 'yazi/keymap.toml',              desc: 'yazi keymap.toml',           dest: $'($yaziConfigDir)/keymap.toml' }
-  { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            dest: $'($yaziConfigDir)/theme.toml' }
-  { src: 'yazi/package.toml',             desc: 'yazi package.toml',          dest: $'($yaziConfigDir)/package.toml' }
-  { src: 'yazi/init.lua',                 desc: 'yazi init.lua',              dest: $'($yaziConfigDir)/init.lua' }
-  { src: 'yazi/local-plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',   dest: $'($yaziConfigDir)/plugins/tab-hover.yazi' }
-  { src: 'yazi/local-plugins/disk-info.yazi',   desc: 'yazi disk-info plugin',   dest: $'($yaziConfigDir)/plugins/disk-info.yazi' }
-  { src: 'yazi/local-plugins/file-info.yazi',   desc: 'yazi file-info plugin',   dest: $'($yaziConfigDir)/plugins/file-info.yazi' }
-  { src: 'yazi/local-plugins/system-info.yazi', desc: 'yazi system-info plugin', dest: $'($yaziConfigDir)/plugins/system-info.yazi' }
-  { src: 'starship.toml',                 desc: 'starship.toml',              dest: $'($homeDir)/.config/starship.toml' }
-  { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdataDir)/nushell/config.nu' }
-  { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdataDir)/nushell/env.nu' }
-  { src: 'nushell/scripts',               desc: 'nushell scripts',            dest: $'($appdataDir)/nushell/scripts' }
-  { src: 'claude/CLAUDE.md',              desc: 'claude CLAUDE.md',           dest: $'($homeDir)/.claude/CLAUDE.md' }
-  { src: 'claude/settings.json',          desc: 'claude settings.json',       dest: $'($homeDir)/.claude/settings.json' }
-  { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', dest: $'($homeDir)/.claude/statusline-command.sh' }
-  { src: 'claude/skills',                 desc: 'claude skills',              dest: $'($homeDir)/.claude/skills' }
-  { src: 'claude/agents',                 desc: 'claude agents',              dest: $'($homeDir)/.claude/agents' }
+  { src: 'nvim',                          desc: 'nvim',                       dest: $'($config_dir)/nvim' }
+  { src: '.gitconfig',                    desc: '.gitconfig',                 dest: $'($home_dir)/.gitconfig' }
+  { src: '.ideavimrc',                    desc: '.ideavimrc',                 dest: $'($home_dir)/.ideavimrc',                  skip_on_android: true }
+  { src: '.wezterm.lua',                  desc: '.wezterm.lua',               dest: $'($home_dir)/.wezterm.lua',                skip_on_android: true }
+  { src: '.zshrc',                        desc: '.zshrc',                     dest: $'($home_dir)/.zshrc' }
+  { src: 'yazi/yazi.toml',                desc: 'yazi yazi.toml',             dest: $'($yazi_config_dir)/yazi.toml' }
+  { src: 'yazi/keymap.toml',              desc: 'yazi keymap.toml',           dest: $'($yazi_config_dir)/keymap.toml' }
+  { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            dest: $'($yazi_config_dir)/theme.toml' }
+  { src: 'yazi/package.toml',             desc: 'yazi package.toml',          dest: $'($yazi_config_dir)/package.toml' }
+  { src: 'yazi/init.lua',                 desc: 'yazi init.lua',              dest: $'($yazi_config_dir)/init.lua' }
+  { src: 'yazi/local-plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',   dest: $'($yazi_config_dir)/plugins/tab-hover.yazi' }
+  { src: 'yazi/local-plugins/disk-info.yazi',   desc: 'yazi disk-info plugin',   dest: $'($yazi_config_dir)/plugins/disk-info.yazi' }
+  { src: 'yazi/local-plugins/file-info.yazi',   desc: 'yazi file-info plugin',   dest: $'($yazi_config_dir)/plugins/file-info.yazi' }
+  { src: 'yazi/local-plugins/system-info.yazi', desc: 'yazi system-info plugin', dest: $'($yazi_config_dir)/plugins/system-info.yazi' }
+  { src: 'starship.toml',                 desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
+  { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }
+  { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdata_dir)/nushell/env.nu' }
+  { src: 'nushell/scripts',               desc: 'nushell scripts',            dest: $'($appdata_dir)/nushell/scripts' }
+  { src: 'claude/CLAUDE.md',              desc: 'claude CLAUDE.md',           dest: $'($home_dir)/.claude/CLAUDE.md' }
+  { src: 'claude/settings.json',          desc: 'claude settings.json',       dest: $'($home_dir)/.claude/settings.json' }
+  { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', dest: $'($home_dir)/.claude/statusline-command.sh' }
+  { src: 'claude/skills',                 desc: 'claude skills',              dest: $'($home_dir)/.claude/skills' }
+  { src: 'claude/agents',                 desc: 'claude agents',              dest: $'($home_dir)/.claude/agents' }
 ]
 
 if (is-windows) { windows-require-symlink-capability }
 
-for s in ($symlinks | where { |s| not (($s.skipOnAndroid? | default false) and (is-android)) }) {
-  create-symbolic-link $'($repoDir)/($s.src)' $s.dest $s.desc
+for s in ($symlinks | where { |s| not (($s.skip_on_android? | default false) and (is-android)) }) {
+  create-symbolic-link $'($repo_dir)/($s.src)' $s.dest $s.desc
 }
 
 install-yazi-packages
 
 install-bat-syntaxes
 
-ensure-gitconfig-local $homeDir
+ensure-gitconfig-local $home_dir
 
 if (is-windows) { allow-cfa-apps-if-needed }
 
@@ -70,9 +70,9 @@ def get-dotfiles-repo-dir [] {
 }
 
 # Reads where a symlink points (lists parent so directory symlinks aren't followed into)
-def read-symlink-target [linkPath] {
-  let parent = ($linkPath | path dirname)
-  let basename = ($linkPath | path basename)
+def read-symlink-target [link_path] {
+  let parent = ($link_path | path dirname)
+  let basename = ($link_path | path basename)
   let matches = try {
     ls --long $parent | where { |r| ($r.name | path basename) == $basename }
   } catch { [] }
@@ -89,11 +89,11 @@ def same-path [a: string, b: string] {
 }
 
 # Creates a symlink, replacing existing file/dir; on Windows clears stale ancestor reparse points first
-def create-symbolic-link [target, linkPath, description] {
+def create-symbolic-link [target, link_path, description] {
   # Remove any ancestor reparse point first so rm/mkdir below don't follow it
   # into its target.
   if (is-windows) {
-    mut anc = ($linkPath | path dirname)
+    mut anc = ($link_path | path dirname)
     mut stale = ''
     loop {
       if ($anc | path exists -n) and (($anc | path type) == 'symlink') {
@@ -110,43 +110,43 @@ def create-symbolic-link [target, linkPath, description] {
     }
   }
 
-  let isSymlink = ($linkPath | path exists -n) and (($linkPath | path type) == 'symlink')
+  let is_symlink = ($link_path | path exists -n) and (($link_path | path type) == 'symlink')
 
-  if $isSymlink {
-    let currentTarget = (read-symlink-target $linkPath)
-    if (same-path $currentTarget $target) {
+  if $is_symlink {
+    let current_target = (read-symlink-target $link_path)
+    if (same-path $current_target $target) {
       print $'($description) (ansi blue)symbolic link already exists.(ansi reset)'
       return
     }
-    print $'(ansi yellow)Updating(ansi reset) ($description) — was: ($currentTarget)'
+    print $'(ansi yellow)Updating(ansi reset) ($description) — was: ($current_target)'
     if (is-windows) {
-      windows-delete-reparse $linkPath
+      windows-delete-reparse $link_path
     } else {
-      ^rm -f $linkPath
+      ^rm -f $link_path
     }
   }
 
-  if ($linkPath | path exists) {
+  if ($link_path | path exists) {
     print $'Removing existing ($description) to replace with symbolic link'
-    rm -rf $linkPath
+    rm -rf $link_path
   }
 
-  let parentDir = ($linkPath | path dirname)
-  if not ($parentDir | path exists) {
-    mkdir $parentDir
+  let parent_dir = ($link_path | path dirname)
+  if not ($parent_dir | path exists) {
+    mkdir $parent_dir
   }
 
   print $'(ansi green)Creating symbolic link for(ansi reset) ($description)'
   if (is-windows) {
     let t = ($target | str replace --all '/' '\')
-    let l = ($linkPath | str replace --all '/' '\')
+    let l = ($link_path | str replace --all '/' '\')
     if ($target | path type) == 'dir' {
       ^cmd /c $"mklink /j ($l) ($t)"
     } else {
       ^cmd /c $"mklink ($l) ($t)"
     }
   } else {
-    ^ln -s $target $linkPath
+    ^ln -s $target $link_path
   }
 }
 
@@ -183,9 +183,9 @@ def install-bat-syntaxes [] {
     return
   }
   if ($probe.langs | any { |l| $l =~ '^Nushell:' }) { return }
-  let syntaxesDir = $'(^bat --config-dir | str trim)/syntaxes'
-  if not ($syntaxesDir | path exists) { mkdir $syntaxesDir }
-  let target = $'($syntaxesDir)/nushell.sublime-syntax'
+  let syntaxes_dir = $'(^bat --config-dir | str trim)/syntaxes'
+  if not ($syntaxes_dir | path exists) { mkdir $syntaxes_dir }
+  let target = $'($syntaxes_dir)/nushell.sublime-syntax'
   print $'Downloading Nushell sublime-syntax to ($target)'
   try {
     http get 'https://raw.githubusercontent.com/stevenxxiu/sublime_text_nushell/master/nushell.sublime-syntax' | save -f $target
@@ -197,20 +197,20 @@ def install-bat-syntaxes [] {
 }
 
 # Creates ~/.gitconfig-local with the default user info if it doesn't exist
-def ensure-gitconfig-local [homeDir] {
-  let gitconfigLocal = $'($homeDir)/.gitconfig-local'
-  if ($gitconfigLocal | path exists) { return }
+def ensure-gitconfig-local [home_dir] {
+  let gitconfig_local = $'($home_dir)/.gitconfig-local'
+  if ($gitconfig_local | path exists) { return }
   print 'Creating .gitconfig-local with default user'
-  "[user]\n\tname = Ylniss\n\temail = zupqa0@gmail.com\n" | save $gitconfigLocal
+  "[user]\n\tname = Ylniss\n\temail = zupqa0@gmail.com\n" | save $gitconfig_local
 }
 
 # -------------- WINDOWS --------------
 
 # Deletes a symlink or junction without touching its target
 def windows-delete-reparse [path] {
-  let delScript = '(Get-Item -Force -LiteralPath $env:DEL_PATH).Delete()'
+  let del_script = '(Get-Item -Force -LiteralPath $env:DEL_PATH).Delete()'
   with-env { DEL_PATH: ($path | str replace --all '/' '\') } {
-    ^powershell -NoProfile -Command $delScript
+    ^powershell -NoProfile -Command $del_script
   }
 }
 
@@ -242,9 +242,9 @@ def windows-require-symlink-capability [] {
 }
 
 # Adds one executable to the Defender CFA allow-list
-def allow-cfa-app [exePath, appName] {
-  ^powershell -NoProfile -Command $"Add-MpPreference -ControlledFolderAccessAllowedApplications '($exePath)'"
-  print $'Allowed ($appName) through Controlled Folder Access'
+def allow-cfa-app [exe_path, app_name] {
+  ^powershell -NoProfile -Command $"Add-MpPreference -ControlledFolderAccessAllowedApplications '($exe_path)'"
+  print $'Allowed ($app_name) through Controlled Folder Access'
 }
 
 # Allows yazi/nushell through CFA so they can delete files in protected folders; prints manual instructions if not elevated

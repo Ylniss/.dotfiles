@@ -34,15 +34,15 @@ def "docker psqls" --env [
     docker run --name $container_name -e $'POSTGRES_USER=($postgres_user)' -e $'POSTGRES_PASSWORD=($postgres_password)' -e $'POSTGRES_DB=($db_name)' -d postgres
   }
 
-  $env.docker_psql_container_name = $container_name
-  $env.docker_psql_postgres_user = $postgres_user
-  $env.docker_psql_db_name = $db_name
+  $env.DOCKER_PSQL_CONTAINER_NAME = $container_name
+  $env.DOCKER_PSQL_POSTGRES_USER = $postgres_user
+  $env.DOCKER_PSQL_DB_NAME = $db_name
 }
 
 # Execute `psql` commands inside the Docker container
 def "docker psql" [command: string] {
   try {
-    docker exec -it $env.docker_psql_container_name psql -U $env.docker_psql_postgres_user -d $env.docker_psql_db_name -c $"($command)"
+    docker exec -it $env.DOCKER_PSQL_CONTAINER_NAME psql -U $env.DOCKER_PSQL_POSTGRES_USER -d $env.DOCKER_PSQL_DB_NAME -c $"($command)"
   } catch {
     "Set the Docker PostgreSQL environment variables first using 'docker psqls'."
   }

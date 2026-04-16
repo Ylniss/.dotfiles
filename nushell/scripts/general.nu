@@ -1,6 +1,6 @@
 # Change directory to repo, optionally into a subdirectory
 def --env repo [subdir?: string] {
-  let target = if $subdir == null { $env.repo } else { $env.repo | path join $subdir }
+  let target = if $subdir == null { $env.REPO } else { $env.REPO | path join $subdir }
   if not ($target | path exists) {
     print -e $"repo: directory does not exist: ($target)"
     return
@@ -8,15 +8,15 @@ def --env repo [subdir?: string] {
   cd $target
 }
 
-alias games = cd $env.games
-alias dwn = cd $env.downloads
-alias notes = cd $env.notes
-alias knowtes = cd $env.notes
+alias games = cd $env.GAMES
+alias dwn = cd $env.DOWNLOADS
+alias notes = cd $env.NOTES
+alias knowtes = cd $env.NOTES
 
 # Make directory and enter inside
-def mkdircd --env [dirName: string] {
-  mkdir $dirName
-  cd $dirName
+def mkdircd --env [dir_name: string] {
+  mkdir $dir_name
+  cd $dir_name
 }
 
 # -------------- NVIM --------------

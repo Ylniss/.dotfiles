@@ -21,18 +21,18 @@ def gitl [--grph (-g)] {
 
 # Git Diff: Displays unstaged and staged changes with appropriate messages.
 def gitd --wrapped [...opts] {
-  let gitDiffOutput = git diff
-  if $gitDiffOutput != "" {
+  let git_diff_output = git diff
+  if $git_diff_output != "" {
     print $"(ansi red)\n --------------------- Unstaged Changes --------------------- (ansi reset)"
     git diff ...$opts
   }
-  let gitDiffStagedOutput = git diff --staged
-  if $gitDiffStagedOutput != "" {
+  let git_diff_staged_output = git diff --staged
+  if $git_diff_staged_output != "" {
     print $"(ansi green)\n --------------------- Staged Changes --------------------- (ansi reset)"
     git diff --staged ...$opts
   }
 
-  if $gitDiffOutput == "" and $gitDiffStagedOutput == "" {
+  if $git_diff_output == "" and $git_diff_staged_output == "" {
     git diff ...$opts
   }
 }
@@ -47,9 +47,9 @@ def gitc --wrapped [...opts, message?: string] {
 }
 
 # Git Push: Pushes to origin, optionally targeting a specific branch.
-def gitp --wrapped [branchName?: string, ...opts] {
-  if not ($branchName | is-empty) {
-    git push origin $branchName ...$opts
+def gitp --wrapped [branch_name?: string, ...opts] {
+  if not ($branch_name | is-empty) {
+    git push origin $branch_name ...$opts
   } else {
     git push ...$opts
   }
@@ -62,12 +62,12 @@ def gitbch [branch: string] {
 }
 
 def gitmrg [branch: string] {
-  let currentBranch = git rev-parse --abbrev-ref HEAD
+  let current_branch = git rev-parse --abbrev-ref HEAD
   git fetch --all
 
-  # Check if the current branch has an upstream set, if not, set it to origin/currentBranch
+  # Check if the current branch has an upstream set, if not, set it to origin/current_branch
   if (git rev-parse --abbrev-ref --symbolic-full-name @{u} | is-empty) {
-    git branch $'--set-upstream-to=origin/($currentBranch)' $currentBranch
+    git branch $'--set-upstream-to=origin/($current_branch)' $current_branch
   }
 
   git merge $"origin/($branch)" --allow-unrelated-histories
@@ -75,26 +75,26 @@ def gitmrg [branch: string] {
 
 # Initialize new git repo
 def giti [
-  repoName?: string # New repo name, if not specified it will be created in current working dir
+  repo_name?: string # New repo name, if not specified it will be created in current working dir
   --github (-g) # Create repo also on github
 ] {
-  let currentDir = pwd | path basename
-  if ($repoName | is-empty) {
+  let current_dir = pwd | path basename
+  if ($repo_name | is-empty) {
     git init
 
     if $github {
       gh auth login
-      gh repo create $currentDir --private --source=. 
+      gh repo create $current_dir --private --source=.
     }
     touch .gitignore
   } else {
-    git init $repoName
+    git init $repo_name
 
     if $github {
       gh auth login
-      gh repo create $repoName --private $"--source=(pwd)/($repoName)"
+      gh repo create $repo_name --private $"--source=(pwd)/($repo_name)"
     }
-    touch $"(pwd)/($repoName)/.gitignore"
+    touch $"(pwd)/($repo_name)/.gitignore"
   }
 }
 
@@ -202,7 +202,7 @@ def gitpar [] {
   mut chain = [$current]
 
   loop {
-    if $current in ['main', 'master'] { break }
+    if $current in ['main' 'master'] { break }
     let cur = $current
     let seen = $chain
 
