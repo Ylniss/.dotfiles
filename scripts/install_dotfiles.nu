@@ -8,6 +8,7 @@ let home_dir = if (is-windows) { $env.USERPROFILE } else { $env.HOME }
 let config_dir = if (is-windows) { $env.LOCALAPPDATA } else { $'($env.HOME)/.config' }
 let appdata_dir = if (is-windows) { $env.APPDATA } else { $'($env.HOME)/.config' }
 let yazi_config_dir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $'($config_dir)/yazi' }
+let obsidian_data_dir = if (is-windows) { $'($env.APPDATA)/obsidian' } else if (is-macos) { $'($env.HOME)/Library/Application Support/obsidian' } else { $'($env.HOME)/.config/obsidian' }
 
 let symlinks = [
   { src: 'nvim',                          desc: 'nvim',                       dest: $'($config_dir)/nvim' }
@@ -33,6 +34,7 @@ let symlinks = [
   { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', dest: $'($home_dir)/.claude/statusline-command.sh' }
   { src: 'claude/skills',                 desc: 'claude skills',              dest: $'($home_dir)/.claude/skills' }
   { src: 'claude/agents',                 desc: 'claude agents',              dest: $'($home_dir)/.claude/agents' }
+  { src: 'obsidian/Custom Dictionary.txt', desc: 'obsidian Custom Dictionary.txt', dest: $'($obsidian_data_dir)/Custom Dictionary.txt', skip_on_android: true }
 ]
 
 if (is-windows) { windows-require-symlink-capability }
