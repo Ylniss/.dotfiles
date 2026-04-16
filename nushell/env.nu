@@ -14,15 +14,13 @@ if (is-windows) {
   $env.NOTES = $"($env.HOME)/stuff/knowtes"
 }
 
-# Directories to search for scripts when calling source or use
-$env.NU_LIB_DIRS = [
-    ($nu.default-config-dir | path join 'scripts') # add <nushell-config-dir>/scripts
-]
-
-# Directories to search for plugin binaries when calling plugin add
-$env.NU_PLUGIN_DIRS = [
-    ($nu.default-config-dir | path join 'plugins') # add <nushell-config-dir>/plugins
-]
+# Script/plugin lookup dirs — skip if already set (e.g. by NixOS home-manager).
+if ($env.NU_LIB_DIRS? | is-empty) {
+  $env.NU_LIB_DIRS = [($nu.default-config-dir | path join 'scripts')]
+}
+if ($env.NU_PLUGIN_DIRS? | is-empty) {
+  $env.NU_PLUGIN_DIRS = [($nu.default-config-dir | path join 'plugins')]
+}
 
 if (is-windows) {
   $env.Path = ($env.Path | split row (char esep) | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')

@@ -1,24 +1,63 @@
-# Specifies how environment variables are:
-# - converted from a string to a value on Nushell startup (from_string)
-# - converted from a value back to a string when running external commands (to_string)
-# Note: The conversions happen *after* config.nu is loaded
-$env.ENV_CONVERSIONS = {
-    "PATH": {
-        from_string: { |s| $s | split row (char esep) | path expand --no-symlink }
-        to_string: { |v| $v | path expand --no-symlink | str join (char esep) }
-    }
+def is-windows [] { $nu.os-info.family == 'windows' }
+def is-android [] { $nu.os-info.name == 'android' }
+def is-macos   [] { $nu.os-info.name == 'macos' }
+
+if (is-windows) {
+  $env.REPO = $"($env.USERPROFILE)/stuff/repo"
+  $env.GAMES = $"($env.USERPROFILE)/stuff/games"
+  $env.DOWNLOADS = $"($env.USERPROFILE)/stuff/downloads"
+  $env.NOTES = $"($env.USERPROFILE)/stuff/knowtes"
+} else {
+  $env.REPO = $"($env.HOME)/stuff/repo"
+  $env.GAMES = $"($env.HOME)/stuff/games"
+  $env.DOWNLOADS = $"($env.HOME)/stuff/downloads"
+  $env.NOTES = $"($env.HOME)/stuff/knowtes"
 }
 
-# To add entries to PATH (on Windows you might use Path), you can use the following pattern:
-# $env.PATH = ($env.PATH | split row (char esep) | prepend '/some/path')
-# An alternate way to add entries to $env.PATH is to use the custom command `path add`
-# which is built into the nushell stdlib:
-# use std "path add"
-# $env.PATH = ($env.PATH | split row (char esep))
-# path add /some/path
-# path add ($env.CARGO_HOME | path join "bin")
-# path add ($env.HOME | path join ".local" "bin")
-# $env.PATH = ($env.PATH | uniq)
+# Script/plugin lookup dirs — skip if already set (e.g. by NixOS home-manager).
+if ($env.NU_LIB_DIRS? | is-empty) {
+  $env.NU_LIB_DIRS = [($nu.default-config-dir | path join 'scripts')]
+}
+if ($env.NU_PLUGIN_DIRS? | is-empty) {
+  $env.NU_PLUGIN_DIRS = [($nu.default-config-dir | path join 'plugins')]
+}
 
-# To load from a custom file you can use:
-# source ($nu.default-config-dir | path join 'custom.nu')
+if (is-windows) {
+  $env.Path = ($env.Path | split row (char esep) | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')
+  let aseprite_dir = 'C:\Program Files\Aseprite'
+  if ($aseprite_dir | path exists) {
+    $env.Path = ($env.Path | prepend $aseprite_dir)
+  }
+  $env.Path = ($env.Path | prepend ($nu.home-dir | path join 'go' 'bin'))
+}
+
+
+$env.RIPGREP_CONFIG_PATH = $'($env.REPO)/.dotfiles/.ripgreprc'
+$env.FZF_DEFAULT_COMMAND = 'fd -H'
+$env.GIT_EDITOR = 'nvim'
+
+# Setup Android env
+if (is-android) {
+  $env.STORAGE = "~/storage"
+  $env.CAMERA = "~/storage/dcim/camera"
+}
+
+# Start ssh-agent
+^ssh-agent -c
+    | lines
+    | first 2
+    | parse "setenv {name} {value};"
+    | transpose -r
+    | into record
+    | load-env
+
+if (is-android) {
+  do { ^ssh-add ~/.ssh/andrd } | ignore
+}
+
+# Setup custom prompt - Starship (delete cache file to regenerate after starship update)
+let starship_cache = ($"($nu.home-dir)/.cache/starship" | path expand)
+if not ($"($starship_cache)/init.nu" | path exists) {
+    mkdir $starship_cache
+    starship init nu | save -f $"($starship_cache)/init.nu"
+}
