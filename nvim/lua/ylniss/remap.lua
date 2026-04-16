@@ -107,6 +107,19 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
+-- ================================= Markdown keymaps =================================
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "markdown",
+	callback = function(ev)
+		local function vmap(lhs, rhs, desc)
+			vim.keymap.set("v", lhs, rhs, { buffer = ev.buf, desc = desc })
+		end
+		vmap("<leader>`", [[c`<C-r>"`<Esc>]], "markdown: surround with backticks")
+		vmap("<C-b>", [[c**<C-r>"**<Esc>]], "markdown: bold (**)")
+		vmap("<C-i>", [[c*<C-r>"*<Esc>]], "markdown: italic (*)")
+	end,
+})
+
 -- ========================== Document existing key chains ==========================
 local whichKey = require("which-key")
 whichKey.add({

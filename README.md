@@ -142,6 +142,37 @@ On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -
 
 ## Obsidian
 
+### Neovim Integration
+
+Uses [obsidian.nvim](https://github.com/obsidian-nvim/obsidian.nvim) — wikilink following, backlinks, completion for `[[...]]` and `#tags`. Loads on markdown files or `:Obsidian` commands. Picker: fzf-lua.
+
+Buffer-local keys in vault notes:
+
+| Key | Action |
+|-----|--------|
+| `gd` | Follow wikilink under cursor |
+| `gb` | Show backlinks |
+| `<leader>sf` | Fuzzy-find vault notes (overrides global fzf-lua files) |
+| `<leader>sg` | Grep vault (overrides global fzf-lua grep) |
+| `<leader>t` | Toggle checkbox |
+| `[[` / `#` (insert) | Trigger link / tag completion |
+
+Visual-mode markdown surround (any markdown file):
+
+| Key | Action |
+|-----|--------|
+| `<leader>\`` | Surround selection with backticks |
+| `<C-b>` | Bold (`**`) |
+| `<C-i>` | Italic (`*`) |
+
+Useful commands from any buffer:
+
+| Command | Action |
+|---------|--------|
+| `:Obsidian new [title]` | Create a new note |
+
+### Custom Dictionary
+
 `Custom Dictionary.txt` is copied (not symlinked) — Obsidian rewrites it with a checksum and would reject a symlinked file.
 
 To save new words from Obsidian into the repo:
