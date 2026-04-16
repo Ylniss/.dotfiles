@@ -34,13 +34,16 @@ let symlinks = [
   { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', dest: $'($home_dir)/.claude/statusline-command.sh' }
   { src: 'claude/skills',                 desc: 'claude skills',              dest: $'($home_dir)/.claude/skills' }
   { src: 'claude/agents',                 desc: 'claude agents',              dest: $'($home_dir)/.claude/agents' }
-  { src: 'obsidian/Custom Dictionary.txt', desc: 'obsidian Custom Dictionary.txt', dest: $'($obsidian_data_dir)/Custom Dictionary.txt', skip_on_android: true }
 ]
 
 if (is-windows) { windows-require-symlink-capability }
 
 for s in ($symlinks | where { |s| not (($s.skip_on_android? | default false) and (is-android)) }) {
   create-symbolic-link $'($repo_dir)/($s.src)' $s.dest $s.desc
+}
+
+if not (is-android) {
+  copy-file $'($repo_dir)/obsidian/Custom Dictionary.txt' $'($obsidian_data_dir)/Custom Dictionary.txt' 'obsidian Custom Dictionary.txt'
 }
 
 install-yazi-packages
@@ -150,6 +153,32 @@ def create-symbolic-link [target, link_path, description] {
   } else {
     ^ln -s $target $link_path
   }
+}
+
+# Copies src to dest. Replaces a stale symlink; keeps an existing regular file.
+def copy-file [src: string, dest: string, description: string] {
+  let exists = ($dest | path exists -n)
+  let is_symlink = $exists and (($dest | path type) == 'symlink')
+
+  if $is_symlink {
+    print $'(ansi yellow)Replacing stale symlink(ansi reset) for ($description)'
+    if (is-windows) {
+      windows-delete-reparse $dest
+    } else {
+      ^rm -f $dest
+    }
+  } else if $exists {
+    print $'($description) (ansi blue)already exists, leaving local copy in place.(ansi reset)'
+    return
+  }
+
+  let parent_dir = ($dest | path dirname)
+  if not ($parent_dir | path exists) {
+    mkdir $parent_dir
+  }
+
+  print $'(ansi green)Copying(ansi reset) ($description)'
+  cp $src $dest
 }
 
 # Installs yazi plugins via `ya pkg install` (no-op if `ya` is missing)

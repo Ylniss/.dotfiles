@@ -3,6 +3,8 @@ Misc
 Neotree
 Neovim
 Nushell
+Nvim
+PowerToys
 Wellmify
 Wezterm
 Wikilinks
@@ -19,6 +21,7 @@ lazygit
 nvim
 prev
 psql
+psw
 reflog
 scrollback
 symlink
@@ -29,4 +32,4 @@ wezterm
 wikilinks
 worktree
 yazi
-checksum_v1 = 4e6103ea6bb9cd9239ad6d6b4ed365c7
+checksum_v1 = 6d6a037f98c8f7df2c55bf04f625338e
