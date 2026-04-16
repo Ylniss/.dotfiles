@@ -143,9 +143,9 @@ def create-symbolic-link [target, link_path, description] {
     let t = ($target | str replace --all '/' '\')
     let l = ($link_path | str replace --all '/' '\')
     if ($target | path type) == 'dir' {
-      ^cmd /c $"mklink /j ($l) ($t)"
+      ^cmd /c mklink /j $l $t
     } else {
-      ^cmd /c $"mklink ($l) ($t)"
+      ^cmd /c mklink $l $t
     }
   } else {
     ^ln -s $target $link_path
