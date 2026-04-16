@@ -69,6 +69,25 @@ def get-dotfiles-repo-dir [] {
   }
 }
 
+# Reads where a symlink points (lists parent so directory symlinks aren't followed into)
+def read-symlink-target [linkPath] {
+  let parent = ($linkPath | path dirname)
+  let basename = ($linkPath | path basename)
+  let matches = try {
+    ls --long $parent | where { |r| ($r.name | path basename) == $basename }
+  } catch { [] }
+  if ($matches | is-empty) { '' } else { ($matches | first | get target? | default '') }
+}
+
+# True if two paths point to the same location (case/slash-insensitive on Windows)
+def same-path [a: string, b: string] {
+  if ($nu.os-info.family =~ windows) {
+    ($a | str replace --all '\' '/' | str downcase) == ($b | str replace --all '\' '/' | str downcase)
+  } else {
+    $a == $b
+  }
+}
+
 # Creates a symlink, replacing existing file/dir; on Windows clears stale ancestor reparse points first
 def create-symbolic-link [target, linkPath, description] {
   # Remove any ancestor reparse point first so rm/mkdir below don't follow it
@@ -77,7 +96,7 @@ def create-symbolic-link [target, linkPath, description] {
     mut anc = ($linkPath | path dirname)
     mut stale = ''
     loop {
-      if ($anc | path exists -n) and (windows-is-reparse-point $anc) {
+      if ($anc | path exists -n) and (($anc | path type) == 'symlink') {
         $stale = $anc
         break
       }
@@ -87,22 +106,28 @@ def create-symbolic-link [target, linkPath, description] {
     }
     if ($stale | is-not-empty) {
       print $'Removing stale directory symlink before linking ($description): ($stale)'
-      let delScript = '(Get-Item -Force -LiteralPath $env:DEL_PATH).Delete()'
-      with-env { DEL_PATH: ($stale | str replace --all '/' '\') } {
-        ^powershell -NoProfile -Command $delScript
-      }
+      windows-delete-reparse $stale
     }
   }
 
   let isSymlink = if ($nu.os-info.family =~ windows) {
-    ($linkPath | path exists) and ($linkPath | path type) == 'symlink'
+    ($linkPath | path exists -n) and ($linkPath | path type) == 'symlink'
   } else {
     (do { ^test -L $linkPath } | complete).exit_code == 0
   }
 
   if $isSymlink {
-    print $'($description) (ansi blue)symbolic link already exists.(ansi reset)'
-    return
+    let currentTarget = (read-symlink-target $linkPath)
+    if (same-path $currentTarget $target) {
+      print $'($description) (ansi blue)symbolic link already exists.(ansi reset)'
+      return
+    }
+    print $'(ansi yellow)Updating(ansi reset) ($description) — was: ($currentTarget)'
+    if ($nu.os-info.family =~ windows) {
+      windows-delete-reparse $linkPath
+    } else {
+      ^rm -f $linkPath
+    }
   }
 
   if ($linkPath | path exists) {
@@ -185,6 +210,14 @@ def ensure-gitconfig-local [homeDir] {
 
 # -------------- WINDOWS --------------
 
+# Deletes a symlink or junction without touching its target
+def windows-delete-reparse [path] {
+  let delScript = '(Get-Item -Force -LiteralPath $env:DEL_PATH).Delete()'
+  with-env { DEL_PATH: ($path | str replace --all '/' '\') } {
+    ^powershell -NoProfile -Command $delScript
+  }
+}
+
 # True if the current process is running as Administrator
 def windows-is-admin [] {
   (^powershell -NoProfile -Command "([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)" | str trim) == "True"
@@ -204,16 +237,6 @@ def windows-cfa-enabled [] {
     warn $'Could not check Controlled Folder Access state: ($e.msg | str trim). Skipping CFA allow-list step.'
     false
   }
-}
-
-# True if path is a symlink or junction (reparse point)
-def windows-is-reparse-point [path] {
-  if not ($path | path exists -n) { return false }
-  let script = 'try { (Get-Item -Force -LiteralPath $env:CHECK_PATH -ErrorAction Stop).Attributes.HasFlag([System.IO.FileAttributes]::ReparsePoint) } catch { "False" }'
-  let r = (with-env { CHECK_PATH: ($path | str replace --all '/' '\') } {
-    ^powershell -NoProfile -Command $script | complete
-  })
-  ($r.stdout | str trim) == "True"
 }
 
 # Errors out unless admin or Developer Mode is enabled
