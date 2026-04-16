@@ -4,46 +4,42 @@
 
 let repoDir = (get-dotfiles-repo-dir)
 
-let isWindows = $nu.os-info.family =~ windows
-let isAndroid = $nu.os-info.name == 'android'
-
-let homeDir = if $isWindows { $env.USERPROFILE } else { $env.HOME }
-let configDir = if $isWindows { $env.LOCALAPPDATA } else { $'($env.HOME)/.config' }
-let appdataDir = if $isWindows { $env.APPDATA } else { $'($env.HOME)/.config' }
-let yaziConfigDir = if $isWindows { $'($env.APPDATA)/yazi/config' } else { $'($configDir)/yazi' }
+let homeDir = if (is-windows) { $env.USERPROFILE } else { $env.HOME }
+let configDir = if (is-windows) { $env.LOCALAPPDATA } else { $'($env.HOME)/.config' }
+let appdataDir = if (is-windows) { $env.APPDATA } else { $'($env.HOME)/.config' }
+let yaziConfigDir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $'($configDir)/yazi' }
 
 let symlinks = [
-  { src: 'nvim',                          desc: 'nvim',                       target: $'($configDir)/nvim' }
-  { src: '.gitconfig',                    desc: '.gitconfig',                 target: $'($homeDir)/.gitconfig' }
-  { src: '.ideavimrc',                    desc: '.ideavimrc',                 target: $'($homeDir)/.ideavimrc',                  skipOnAndroid: true }
-  { src: '.wezterm.lua',                  desc: '.wezterm.lua',               target: $'($homeDir)/.wezterm.lua',                skipOnAndroid: true }
-  { src: '.zshrc',                        desc: '.zshrc',                     target: $'($homeDir)/.zshrc' }
-  { src: 'yazi/yazi.toml',                desc: 'yazi yazi.toml',             target: $'($yaziConfigDir)/yazi.toml' }
-  { src: 'yazi/keymap.toml',              desc: 'yazi keymap.toml',           target: $'($yaziConfigDir)/keymap.toml' }
-  { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            target: $'($yaziConfigDir)/theme.toml' }
-  { src: 'yazi/package.toml',             desc: 'yazi package.toml',          target: $'($yaziConfigDir)/package.toml' }
-  { src: 'yazi/init.lua',                 desc: 'yazi init.lua',              target: $'($yaziConfigDir)/init.lua' }
-  { src: 'yazi/local-plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',   target: $'($yaziConfigDir)/plugins/tab-hover.yazi' }
-  { src: 'yazi/local-plugins/disk-info.yazi',   desc: 'yazi disk-info plugin',   target: $'($yaziConfigDir)/plugins/disk-info.yazi' }
-  { src: 'yazi/local-plugins/file-info.yazi',   desc: 'yazi file-info plugin',   target: $'($yaziConfigDir)/plugins/file-info.yazi' }
-  { src: 'yazi/local-plugins/system-info.yazi', desc: 'yazi system-info plugin', target: $'($yaziConfigDir)/plugins/system-info.yazi' }
-  { src: 'starship.toml',                 desc: 'starship.toml',              target: $'($homeDir)/.config/starship.toml' }
-  { src: 'nushell/config.nu',             desc: 'nushell config.nu',          target: $'($appdataDir)/nushell/config.nu' }
-  { src: 'nushell/env.nu',                desc: 'nushell env.nu',             target: $'($appdataDir)/nushell/env.nu' }
-  { src: 'nushell/scripts',               desc: 'nushell scripts',            target: $'($appdataDir)/nushell/scripts' }
-  { src: 'claude/CLAUDE.md',              desc: 'claude CLAUDE.md',           target: $'($homeDir)/.claude/CLAUDE.md' }
-  { src: 'claude/settings.json',          desc: 'claude settings.json',       target: $'($homeDir)/.claude/settings.json' }
-  { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', target: $'($homeDir)/.claude/statusline-command.sh' }
-  { src: 'claude/skills',                 desc: 'claude skills',              target: $'($homeDir)/.claude/skills' }
-  { src: 'claude/agents',                 desc: 'claude agents',              target: $'($homeDir)/.claude/agents' }
+  { src: 'nvim',                          desc: 'nvim',                       dest: $'($configDir)/nvim' }
+  { src: '.gitconfig',                    desc: '.gitconfig',                 dest: $'($homeDir)/.gitconfig' }
+  { src: '.ideavimrc',                    desc: '.ideavimrc',                 dest: $'($homeDir)/.ideavimrc',                  skipOnAndroid: true }
+  { src: '.wezterm.lua',                  desc: '.wezterm.lua',               dest: $'($homeDir)/.wezterm.lua',                skipOnAndroid: true }
+  { src: '.zshrc',                        desc: '.zshrc',                     dest: $'($homeDir)/.zshrc' }
+  { src: 'yazi/yazi.toml',                desc: 'yazi yazi.toml',             dest: $'($yaziConfigDir)/yazi.toml' }
+  { src: 'yazi/keymap.toml',              desc: 'yazi keymap.toml',           dest: $'($yaziConfigDir)/keymap.toml' }
+  { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            dest: $'($yaziConfigDir)/theme.toml' }
+  { src: 'yazi/package.toml',             desc: 'yazi package.toml',          dest: $'($yaziConfigDir)/package.toml' }
+  { src: 'yazi/init.lua',                 desc: 'yazi init.lua',              dest: $'($yaziConfigDir)/init.lua' }
+  { src: 'yazi/local-plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',   dest: $'($yaziConfigDir)/plugins/tab-hover.yazi' }
+  { src: 'yazi/local-plugins/disk-info.yazi',   desc: 'yazi disk-info plugin',   dest: $'($yaziConfigDir)/plugins/disk-info.yazi' }
+  { src: 'yazi/local-plugins/file-info.yazi',   desc: 'yazi file-info plugin',   dest: $'($yaziConfigDir)/plugins/file-info.yazi' }
+  { src: 'yazi/local-plugins/system-info.yazi', desc: 'yazi system-info plugin', dest: $'($yaziConfigDir)/plugins/system-info.yazi' }
+  { src: 'starship.toml',                 desc: 'starship.toml',              dest: $'($homeDir)/.config/starship.toml' }
+  { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdataDir)/nushell/config.nu' }
+  { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdataDir)/nushell/env.nu' }
+  { src: 'nushell/scripts',               desc: 'nushell scripts',            dest: $'($appdataDir)/nushell/scripts' }
+  { src: 'claude/CLAUDE.md',              desc: 'claude CLAUDE.md',           dest: $'($homeDir)/.claude/CLAUDE.md' }
+  { src: 'claude/settings.json',          desc: 'claude settings.json',       dest: $'($homeDir)/.claude/settings.json' }
+  { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', dest: $'($homeDir)/.claude/statusline-command.sh' }
+  { src: 'claude/skills',                 desc: 'claude skills',              dest: $'($homeDir)/.claude/skills' }
+  { src: 'claude/agents',                 desc: 'claude agents',              dest: $'($homeDir)/.claude/agents' }
 ]
 
-if $isWindows { windows-require-symlink-capability }
+if (is-windows) { windows-require-symlink-capability }
 
-$symlinks
-  | where { |s| not (($s.skipOnAndroid? | default false) and $isAndroid) }
-  | each { |s| create-symbolic-link $'($repoDir)/($s.src)' $s.target $s.desc }
-  | ignore
+for s in ($symlinks | where { |s| not (($s.skipOnAndroid? | default false) and (is-android)) }) {
+  create-symbolic-link $'($repoDir)/($s.src)' $s.dest $s.desc
+}
 
 install-yazi-packages
 
@@ -51,9 +47,13 @@ install-bat-syntaxes
 
 ensure-gitconfig-local $homeDir
 
-if $isWindows { allow-cfa-apps-if-needed }
+if (is-windows) { allow-cfa-apps-if-needed }
 
 # -------------- FUNCTIONS --------------
+
+def is-windows [] { $nu.os-info.family == 'windows' }
+def is-android [] { $nu.os-info.name == 'android' }
+def is-macos   [] { $nu.os-info.name == 'macos' }
 
 # Prints a yellow warning to stderr
 def warn [msg: string] {
@@ -62,7 +62,7 @@ def warn [msg: string] {
 
 # Returns the dotfiles repo directory for this platform
 def get-dotfiles-repo-dir [] {
-  if $nu.os-info.family =~ windows {
+  if (is-windows) {
     $'($env.USERPROFILE)/stuff/repo/.dotfiles'
   } else {
     $'($env.HOME)/stuff/repo/.dotfiles'
@@ -81,7 +81,7 @@ def read-symlink-target [linkPath] {
 
 # True if two paths point to the same location (case/slash-insensitive on Windows)
 def same-path [a: string, b: string] {
-  if ($nu.os-info.family =~ windows) {
+  if (is-windows) {
     ($a | str replace --all '\' '/' | str downcase) == ($b | str replace --all '\' '/' | str downcase)
   } else {
     $a == $b
@@ -92,7 +92,7 @@ def same-path [a: string, b: string] {
 def create-symbolic-link [target, linkPath, description] {
   # Remove any ancestor reparse point first so rm/mkdir below don't follow it
   # into its target.
-  if ($nu.os-info.family =~ windows) {
+  if (is-windows) {
     mut anc = ($linkPath | path dirname)
     mut stale = ''
     loop {
@@ -110,11 +110,7 @@ def create-symbolic-link [target, linkPath, description] {
     }
   }
 
-  let isSymlink = if ($nu.os-info.family =~ windows) {
-    ($linkPath | path exists -n) and ($linkPath | path type) == 'symlink'
-  } else {
-    (do { ^test -L $linkPath } | complete).exit_code == 0
-  }
+  let isSymlink = ($linkPath | path exists -n) and (($linkPath | path type) == 'symlink')
 
   if $isSymlink {
     let currentTarget = (read-symlink-target $linkPath)
@@ -123,7 +119,7 @@ def create-symbolic-link [target, linkPath, description] {
       return
     }
     print $'(ansi yellow)Updating(ansi reset) ($description) — was: ($currentTarget)'
-    if ($nu.os-info.family =~ windows) {
+    if (is-windows) {
       windows-delete-reparse $linkPath
     } else {
       ^rm -f $linkPath
@@ -141,7 +137,7 @@ def create-symbolic-link [target, linkPath, description] {
   }
 
   print $'(ansi green)Creating symbolic link for(ansi reset) ($description)'
-  if ($nu.os-info.family =~ windows) {
+  if (is-windows) {
     let t = ($target | str replace --all '/' '\')
     let l = ($linkPath | str replace --all '/' '\')
     if ($target | path type) == 'dir' {
@@ -267,10 +263,10 @@ def allow-cfa-apps-if-needed [] {
   if ($resolved | is-empty) { return }
 
   if (windows-is-admin) {
-    $resolved | each { |a| allow-cfa-app $a.path $a.name } | ignore
+    for a in $resolved { allow-cfa-app $a.path $a.name }
     return
   }
 
   warn 'Controlled Folder Access is enabled. Run in an elevated PowerShell to allow these:'
-  $resolved | each { |a| print $"  Add-MpPreference -ControlledFolderAccessAllowedApplications '($a.path)'" } | ignore
+  for a in $resolved { print $"  Add-MpPreference -ControlledFolderAccessAllowedApplications '($a.path)'" }
 }

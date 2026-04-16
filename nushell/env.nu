@@ -1,4 +1,8 @@
-if $nu.os-info.family =~ windows {
+def is-windows [] { $nu.os-info.family == 'windows' }
+def is-android [] { $nu.os-info.name == 'android' }
+def is-macos   [] { $nu.os-info.name == 'macos' }
+
+if (is-windows) {
   $env.repo = $"($env.USERPROFILE)/stuff/repo"
   $env.games = $"($env.USERPROFILE)/stuff/games"
   $env.downloads = $"($env.USERPROFILE)/stuff/downloads"
@@ -20,12 +24,13 @@ $env.NU_PLUGIN_DIRS = [
     ($nu.default-config-dir | path join 'plugins') # add <nushell-config-dir>/plugins
 ]
 
-if $nu.os-info.family =~ windows {
+if (is-windows) {
   $env.Path = ($env.Path | split row (char esep) | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')
   let aseprite_dir = 'C:\Program Files\Aseprite'
   if ($aseprite_dir | path exists) {
     $env.Path = ($env.Path | prepend $aseprite_dir)
   }
+  $env.Path = ($env.Path | prepend ($nu.home-dir | path join 'go' 'bin'))
 }
 
 
@@ -34,7 +39,7 @@ $env.FZF_DEFAULT_COMMAND = 'fd -H'
 $env.GIT_EDITOR = 'nvim'
 
 # Setup Android env
-if $nu.os-info.name =~ android {
+if (is-android) {
   $env.storage = "~/storage"
   $env.camera = "~/storage/dcim/camera"
 }
@@ -48,7 +53,7 @@ if $nu.os-info.name =~ android {
     | into record
     | load-env
 
-if $nu.os-info.name == 'android' {
+if (is-android) {
   do { ^ssh-add ~/.ssh/andrd } | ignore
 }
 

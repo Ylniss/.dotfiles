@@ -26,7 +26,7 @@ alias vim = nvim
 
 # Remove stale nvim shada temp files
 def virmtmp [] {
-  let shada_dir = if $nu.os-info.family =~ windows {
+  let shada_dir = if (is-windows) {
     $"($env.LOCALAPPDATA)/nvim-data/shada"
   } else {
     $"($nu.home-dir)/.local/share/nvim/shada"
@@ -58,9 +58,9 @@ alias yazi = yazicd
 # Pipe input to system clipboard
 def clip [] {
   let input = $in
-  if $nu.os-info.family == 'windows' {
+  if (is-windows) {
     $input | ^clip
-  } else if $nu.os-info.name == 'macos' {
+  } else if (is-macos) {
     $input | pbcopy
   } else {
     $input | xclip -selection clipboard
@@ -85,7 +85,7 @@ def extract [file: path] {
   } else if ($ext | str ends-with ".tar") {
     tar -xf $file -C $dir
   } else if ($ext | str ends-with ".zip") {
-    if $nu.os-info.family == 'windows' {
+    if (is-windows) {
       tar -xf $file -C $dir
     } else {
       unzip $file -d $dir
@@ -116,7 +116,7 @@ def layout-dev [] {
 def ip [] {
   let public_ip = (http get https://ifconfig.me/ip | str trim)
   mut local_ip = "unknown"
-  if $nu.os-info.family == 'windows' {
+  if (is-windows) {
     $local_ip = (ipconfig | rg "IPv4" | rg '\d+\.\d+\.\d+\.\d+' -oN | lines | first)
   } else {
     $local_ip = (hostname -I | split row ' ' | first)

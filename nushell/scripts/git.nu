@@ -1,3 +1,4 @@
+alias gi = lazygit
 alias gits = git status
 
 # Git Add changes in a specified path, or the current directory if no path is given.
