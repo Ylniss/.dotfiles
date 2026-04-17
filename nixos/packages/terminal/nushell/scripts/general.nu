@@ -66,8 +66,8 @@ def virmtmp [] {
 
 # -------------- YAZI ---------------
 
-# Change directory into path that yazi exits on.
-# Defined as `yazi` (not aliased) so it always shadows the external binary.
+# cd into yazi's exit path. On termux this is overridden by an extern in
+# `/usr/share/nushell/vendor/autoload/yazi.nu`; see `android-vendor-autoload/yazi.nu`.
 def --env yazi [...args] {
   let tmp = (mktemp)
   ^yazi ...$args --cwd-file $tmp

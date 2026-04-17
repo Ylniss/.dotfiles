@@ -29,6 +29,7 @@ let symlinks = [
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdata_dir)/nushell/env.nu' }
   { src: 'nushell/scripts',               desc: 'nushell scripts',            dest: $'($appdata_dir)/nushell/scripts' }
+  { src: 'nushell/android-vendor-autoload/yazi.nu', desc: 'android yazi vendor-autoload override', dest: $'($home_dir)/.local/share/nushell/vendor/autoload/yazi.nu', android_only: true }
   { src: 'claude/CLAUDE.md',              desc: 'claude CLAUDE.md',           dest: $'($home_dir)/.claude/CLAUDE.md' }
   { src: 'claude/settings.json',          desc: 'claude settings.json',       dest: $'($home_dir)/.claude/settings.json' }
   { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', dest: $'($home_dir)/.claude/statusline-command.sh' }
@@ -38,7 +39,11 @@ let symlinks = [
 
 if (is-windows) { windows-require-symlink-capability }
 
-for s in ($symlinks | where { |s| not (($s.skip_on_android? | default false) and (is-android)) }) {
+for s in ($symlinks | where { |s|
+  let skip_android = ($s.skip_on_android? | default false) and (is-android)
+  let android_only = ($s.android_only? | default false) and (not (is-android))
+  not ($skip_android or $android_only)
+}) {
   create-symbolic-link $'($repo_dir)/($s.src)' $s.dest $s.desc
 }
 
