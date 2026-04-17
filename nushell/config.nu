@@ -182,6 +182,7 @@ source docker.nu
 source fzf.nu
 source general.nu
 source git.nu
+source mobile-ssh.nu
 source weather.nu
 source robes-and-steel.nu
 

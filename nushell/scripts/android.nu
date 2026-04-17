@@ -1,45 +1,26 @@
-# if (is-android) {
-#   alias strg = cd $env.STORAGE
-#   alias cam = cd $env.CAMERA
-# }
+def android-only [] {
+  if not (is-android) {
+    error make { msg: 'this command is android-only' }
+  }
+}
 
-# currently not able to set conditional aliases in nushell
-# https://github.com/nushell/nushell/issues/5068
-# when problem is resolved bring back alias lines on top of this script into if statement
-alias strg = cd $env.STORAGE
-alias cam = cd $env.CAMERA
+# -------------- NAV --------------
 
-# -------------- APT -------------- 
+def --env strg [] {
+  android-only
+  cd $env.STORAGE
+}
+
+def --env cam [] {
+  android-only
+  cd $env.CAMERA
+}
+
+# -------------- APT --------------
 
 # Update apt db and all installed packages
 def 'apt up' [] {
+  android-only
   apt update
   apt upgrade
 }
-
-# -------------- SSH -------------- 
-
-let username = 'u0_a344'
-let ip_address = '192.168.1.100'
-let port = 8022
-
-# SSH into mobile phone
-def 'ssh mob' [] {
-  ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/personal 
-}
-
-# Copy to clipboard file contents from mobile phone
-def 'ssh mob clip' [file_path: string] {
-  ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/personal $"cat ($file_path)" | clip
-}
-
-# Copy file from mobile phone to current machine
-def 'ssh mob cp' [file_path: string target_path: string] {
-  let parent_dir = ($target_path | path dirname)
-  if (not ($parent_dir | path exists)) {
-    mkdir $parent_dir
-  }
-
-  (ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/personal $"cp ($file_path) ($target_path)")
-}
-
