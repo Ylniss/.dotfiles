@@ -32,5 +32,8 @@ return {
 				additional_vim_regex_highlighting = false,
 			},
 		})
+
+		-- Map markdown fence names to parser names where they differ.
+		vim.treesitter.language.register("c_sharp", { "csharp", "cs" })
 	end,
 }
