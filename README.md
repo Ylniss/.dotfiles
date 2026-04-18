@@ -23,7 +23,7 @@ Nushell + Wezterm + Neovim config for Windows and NixOS. Bootstrap with `install
 
 | Command | Action |
 |---------|--------|
-| `rns imgprocess <file>` | Process sprite image into silhouette via `process_image.py` |
+| `rns imgprocess <file>` | Process sprite image into silhouette via `process_image.cs` |
 
 ## Wezterm
 
