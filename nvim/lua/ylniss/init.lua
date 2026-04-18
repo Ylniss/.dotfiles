@@ -17,3 +17,4 @@ require("lazy").setup({ import = "ylniss.plugins" })
 
 require("ylniss.remap")
 require("ylniss.tabs")
+require("ylniss.notes-autosync")

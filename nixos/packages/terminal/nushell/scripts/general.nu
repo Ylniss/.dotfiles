@@ -14,30 +14,44 @@ alias knowtes = cd $env.NOTES
 
 def --env notes [] { cd $env.NOTES }
 
-# Sync notes repo: commit local changes as "update", rebase onto remote, then push.
-# Reports how many commits were uploaded and downloaded.
+# Sync notes with remote: commit dirty changes, rebase, push.
+# Toasts via `notify` and exits non-zero on failure.
 def "notes up" [] {
   cd $env.NOTES
 
-  git fetch --quiet
+  try { git fetch --quiet } catch { |e|
+    notify "notes up" $"fetch failed: ($e.msg)"
+    error make { msg: "notes up: fetch failed" }
+  }
 
   let branch = (git rev-parse --abbrev-ref HEAD | str trim)
   let upstream = $"origin/($branch)"
 
   let dirty = (git status --porcelain | str trim)
   if ($dirty | is-not-empty) {
-    git add .
-    git commit --quiet -m "update"
+    try {
+      git add .
+      git commit --quiet -m "update"
+    } catch { |e|
+      notify "notes up" $"commit failed: ($e.msg)"
+      error make { msg: "notes up: commit failed" }
+    }
   }
 
   let behind = (git rev-list --count $"HEAD..($upstream)" | str trim | into int)
   if $behind > 0 {
-    git rebase --quiet $upstream
+    try { git rebase --quiet $upstream } catch { |e|
+      notify "notes up" "rebase failed — resolve manually"
+      error make { msg: "notes up: rebase failed" }
+    }
   }
 
   let ahead = (git rev-list --count $"($upstream)..HEAD" | str trim | into int)
   if $ahead > 0 {
-    git push --quiet
+    try { git push --quiet } catch { |e|
+      notify "notes up" $"push failed: ($e.msg)"
+      error make { msg: "notes up: push failed" }
+    }
   }
 
   print $"(ansi green_bold)notes synced(ansi reset) — (ansi cyan)↑ ($ahead)(ansi reset) uploaded, (ansi yellow)↓ ($behind)(ansi reset) downloaded"
