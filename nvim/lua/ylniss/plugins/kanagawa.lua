@@ -15,6 +15,7 @@ return {
 
 				overrides = function(colors)
 					local theme = colors.theme
+					local p = colors.palette
 					return {
 						NormalFloat = { bg = "none" },
 						FloatBorder = { bg = "none" },
@@ -22,6 +23,13 @@ return {
 						NormalDark = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m3 },
 						LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
 						MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
+
+						["@markup.heading.1.markdown"] = { fg = p.autumnRed, bold = true },
+						["@markup.heading.2.markdown"] = { fg = p.surimiOrange, bold = true },
+						["@markup.heading.3.markdown"] = { fg = p.carpYellow, bold = true },
+						["@markup.heading.4.markdown"] = { fg = p.autumnGreen, bold = true },
+						["@markup.heading.5.markdown"] = { fg = p.crystalBlue, bold = true },
+						["@markup.heading.6.markdown"] = { fg = p.oniViolet, bold = true },
 					}
 				end,
 			})
