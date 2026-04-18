@@ -8,28 +8,26 @@ return {
 	config = function()
 		local fzf = require("fzf-lua")
 		fzf.setup({
-			files = { fd_opts = "--type f --hidden --exclude .git" },
+			files = {
+				fd_opts = "--type f --hidden --exclude .git",
+				git_icons = false,
+			},
+			grep = {
+				git_icons = false,
+			},
 			keymap = { fzf = { ["ctrl-q"] = "select-all+accept" } },
 			defaults = { formatter = "path.filename_first" },
 		})
 
 		local function find_git_root()
 			local current_file = vim.api.nvim_buf_get_name(0)
-			local current_dir
-			local cwd = vim.fn.getcwd()
-			if current_file == "" then
-				current_dir = cwd
-			else
-				current_dir = vim.fn.fnamemodify(current_file, ":h")
-			end
-			local git_root = vim.fn.systemlist(
-				"git -C " .. vim.fn.escape(current_dir, " ") .. " rev-parse --show-toplevel"
-			)[1]
-			if vim.v.shell_error ~= 0 then
+			local start = current_file == "" and vim.fn.getcwd() or vim.fn.fnamemodify(current_file, ":h")
+			local found = vim.fs.find(".git", { upward = true, path = start })[1]
+			if not found then
 				print("Not a git repository. Searching on current working directory")
-				return cwd
+				return vim.fn.getcwd()
 			end
-			return git_root
+			return vim.fs.dirname(found)
 		end
 
 		local function live_grep_git_root()
@@ -73,7 +71,9 @@ return {
 
 			local diags = vim.diagnostic.get(nil)
 			table.sort(diags, function(a, b)
-				if a.severity ~= b.severity then return a.severity < b.severity end
+				if a.severity ~= b.severity then
+					return a.severity < b.severity
+				end
 				return a.lnum < b.lnum
 			end)
 
@@ -87,9 +87,13 @@ return {
 			local entries = {}
 			for _, d in ipairs(diags) do
 				local bufname = vim.api.nvim_buf_get_name(d.bufnr)
-				if bufname == "" then goto continue end
+				if bufname == "" then
+					goto continue
+				end
 				local s = sev_map[d.severity]
-				if not s then goto continue end
+				if not s then
+					goto continue
+				end
 
 				local rel_path = vim.fn.fnamemodify(bufname, ":~:.")
 				local msg = d.message:match("^[^\n]+") or d.message
@@ -97,18 +101,20 @@ return {
 				local col = d.col + 1
 
 				local icon = fzf_utils.ansi_from_hl(s.hl, s.icon)
-				local dim_path = fzf_utils.ansi_from_hl("Comment",
-					string.format("%s:%d:%d", rel_path, lnum, col))
+				local dim_path = fzf_utils.ansi_from_hl("Comment", string.format("%s:%d:%d", rel_path, lnum, col))
 
 				-- entry_to_file() splits by nbsp, finds first part matching :%d+:
 				-- Field 1 (hidden): path:lnum:col: for parsing/preview/actions
 				-- Field 2: severity icon
 				-- Field 3: message + dimmed path
-				table.insert(entries, table.concat({
-					string.format("%s:%d:%d:", rel_path, lnum, col),
-					icon,
-					string.format("%s  %s", msg, dim_path),
-				}, nbsp))
+				table.insert(
+					entries,
+					table.concat({
+						string.format("%s:%d:%d:", rel_path, lnum, col),
+						icon,
+						string.format("%s  %s", msg, dim_path),
+					}, nbsp)
+				)
 
 				::continue::
 			end
