@@ -31,8 +31,13 @@ return {
 			enter_note = function(_)
 				-- Set before del so a failed del doesn't skip our mappings.
 				local actions = require("obsidian.actions")
+				local api = require("obsidian.api")
 				vim.keymap.set("n", "gd", function()
-					actions.follow_link(nil, { open_strategy = "current" })
+					-- actions.follow_link doesn't resolve nil → cursor link; do it ourselves.
+					local link = api.cursor_link()
+					if link then
+						actions.follow_link(link)
+					end
 				end, { buffer = true, desc = "obsidian: follow link under cursor" })
 				vim.keymap.set(
 					"n",
