@@ -26,6 +26,7 @@ return {
 				"markdown_inline",
 				"gitignore",
 				"c_sharp",
+				"nix",
 			},
 			highlight = {
 				enable = true,
