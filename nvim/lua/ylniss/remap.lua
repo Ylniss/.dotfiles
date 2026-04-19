@@ -72,7 +72,8 @@ vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc =
 vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole file" })
 
 -- ====================================== Yazi ========================================
-vim.keymap.set("n", "<leader>e", "<cmd>Yazi cwd<CR>", { desc = "open yazi at cwd" })
+vim.keymap.set("n", "<leader>e", "<cmd>Yazi<CR>", { desc = "open yazi at current file" })
+vim.keymap.set("n", "<leader>E", "<cmd>Yazi cwd<CR>", { desc = "open yazi at cwd" })
 
 -- ================================= Git actions =================================
 vim.keymap.set("n", "<leader>g>", "<cmd>!git push<CR>", { noremap = true, desc = "git push" })
