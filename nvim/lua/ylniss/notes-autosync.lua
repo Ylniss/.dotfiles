@@ -10,13 +10,15 @@
 --   android: termux-notification    (pkg install termux-api)
 
 local knowtes_path = vim.uv.fs_realpath(vim.fn.expand("~/stuff/knowtes"))
-if not knowtes_path then return end
+if not knowtes_path then
+	return
+end
 
 local is_windows = vim.uv.os_uname().sysname:match("Windows") ~= nil
 
 local DEBOUNCE_MS = 30000
 local SYNC_TIMEOUT_MS = 15000
-local SLOW_SYNC_NOTIFY_MS = 2000
+local SLOW_SYNC_NOTIFY_MS = 500
 
 local debounce_timer
 local dirty = false
@@ -25,16 +27,22 @@ local pulled_this_session = false
 
 local function read_file(path)
 	local f = io.open(path, "rb")
-	if not f then return nil end
+	if not f then
+		return nil
+	end
 	local content = f:read("*a")
 	f:close()
 	return content
 end
 
 local function write_if_changed(path, content)
-	if read_file(path) == content then return end
+	if read_file(path) == content then
+		return
+	end
 	local f = io.open(path, "wb")
-	if not f then return end
+	if not f then
+		return
+	end
 	f:write(content)
 	f:close()
 end
@@ -125,16 +133,21 @@ end
 -- detached=true — it sets DETACHED_PROCESS which silently breaks PowerShell.
 local function spawn_quiet(cmd_args, on_exit)
 	local handle
+	---@diagnostic disable-next-line: missing-fields
 	handle = vim.uv.spawn(cmd_args[1], {
 		args = vim.list_slice(cmd_args, 2),
 		hide = true,
 		stdio = { nil, nil, nil },
-	}, function(_code, _signal)
+	}, function()
 		handle:close()
-		if on_exit then vim.schedule(on_exit) end
+		if on_exit then
+			vim.schedule(on_exit)
+		end
 	end)
 	if not handle then
-		if on_exit then vim.schedule(on_exit) end
+		if on_exit then
+			vim.schedule(on_exit)
+		end
 		return
 	end
 end
@@ -145,12 +158,22 @@ end
 -- if the sync runs long so user knows why nvim is hanging.
 local function spawn_quiet_sync(timeout_ms)
 	local done = false
-	local slow_timer = vim.uv.new_timer()
-	slow_timer:start(SLOW_SYNC_NOTIFY_MS, 0, vim.schedule_wrap(function()
-		if not done then vim.notify("knowtes: syncing…", vim.log.levels.INFO) end
-	end))
-	spawn_quiet(sync_cmd, function() done = true end)
-	vim.wait(timeout_ms, function() return done end)
+	local slow_timer = assert(vim.uv.new_timer())
+	slow_timer:start(
+		SLOW_SYNC_NOTIFY_MS,
+		0,
+		vim.schedule_wrap(function()
+			if not done then
+				vim.notify("knowtes: syncing…", vim.log.levels.INFO)
+			end
+		end)
+	)
+	spawn_quiet(sync_cmd, function()
+		done = true
+	end)
+	vim.wait(timeout_ms, function()
+		return done
+	end)
 	slow_timer:stop()
 	slow_timer:close()
 end
@@ -165,32 +188,44 @@ end
 
 local function in_knowtes(bufnr)
 	local path = vim.api.nvim_buf_get_name(bufnr)
-	if path == "" then return false end
+	if path == "" then
+		return false
+	end
 	-- Fast reject before realpath syscall (runs on every save anywhere).
-	if not path:lower():find("knowtes", 1, true) then return false end
+	if not path:lower():find("knowtes", 1, true) then
+		return false
+	end
 	local real = vim.uv.fs_realpath(path)
 	return real ~= nil and vim.startswith(real, knowtes_path)
 end
 
 local function trigger_sync()
-	if sync_in_flight then return end
+	if sync_in_flight then
+		return
+	end
 	sync_in_flight = true
 	dirty = false
 	spawn_quiet(sync_cmd, function()
 		sync_in_flight = false
 		-- Reload any buffer whose disk file was updated by rebase.
 		vim.cmd("silent! checktime")
-		if dirty then trigger_sync() end
+		if dirty then
+			trigger_sync()
+		end
 	end)
 end
 
 local function debounce_sync()
 	cancel_timer()
-	debounce_timer = vim.uv.new_timer()
-	debounce_timer:start(DEBOUNCE_MS, 0, vim.schedule_wrap(function()
-		cancel_timer()
-		trigger_sync()
-	end))
+	debounce_timer = assert(vim.uv.new_timer())
+	debounce_timer:start(
+		DEBOUNCE_MS,
+		0,
+		vim.schedule_wrap(function()
+			cancel_timer()
+			trigger_sync()
+		end)
+	)
 end
 
 local group = vim.api.nvim_create_augroup("NotesAutosync", { clear = true })
@@ -198,13 +233,19 @@ local group = vim.api.nvim_create_augroup("NotesAutosync", { clear = true })
 vim.api.nvim_create_autocmd("BufReadPre", {
 	group = group,
 	callback = function(ev)
-		if not in_knowtes(ev.buf) then return end
-		if pulled_this_session then return end
+		if not in_knowtes(ev.buf) then
+			return
+		end
+		if pulled_this_session then
+			return
+		end
 		pulled_this_session = true
 		spawn_quiet_sync(SYNC_TIMEOUT_MS)
 		-- Re-stat after BufReadPost so b_mtime reflects the post-sync file.
 		-- Without this, :wq on an unmodified buffer warns about external change.
-		vim.schedule(function() vim.cmd("silent! checktime") end)
+		vim.schedule(function()
+			vim.cmd("silent! checktime")
+		end)
 	end,
 	desc = "knowtes: sync before first file read (prevents stale overwrite)",
 })
@@ -212,7 +253,9 @@ vim.api.nvim_create_autocmd("BufReadPre", {
 vim.api.nvim_create_autocmd("BufWritePost", {
 	group = group,
 	callback = function(ev)
-		if not in_knowtes(ev.buf) then return end
+		if not in_knowtes(ev.buf) then
+			return
+		end
 		dirty = true
 		debounce_sync()
 	end,
@@ -222,7 +265,9 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 vim.api.nvim_create_autocmd("VimLeavePre", {
 	group = group,
 	callback = function()
-		if not dirty then return end
+		if not dirty then
+			return
+		end
 		cancel_timer()
 		spawn_quiet(sync_cmd)
 	end,

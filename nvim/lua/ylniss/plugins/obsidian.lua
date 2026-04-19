@@ -11,8 +11,6 @@ return {
 	init = function()
 		vim.o.conceallevel = 2
 	end,
-	---@module 'obsidian'
-	---@type obsidian.config
 	opts = {
 		legacy_commands = false,
 		workspaces = {
