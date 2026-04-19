@@ -71,8 +71,8 @@ vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc =
 
 vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole file" })
 
--- ===================================== NeoTree ======================================
-vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "open/close explorer" })
+-- ====================================== Yazi ========================================
+vim.keymap.set("n", "<leader>e", "<cmd>Yazi cwd<CR>", { desc = "open yazi at cwd" })
 
 -- ================================= Git actions =================================
 vim.keymap.set("n", "<leader>g>", "<cmd>!git push<CR>", { noremap = true, desc = "git push" })

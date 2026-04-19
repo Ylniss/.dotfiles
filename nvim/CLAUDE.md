@@ -43,5 +43,5 @@ Every plugin needs a lazy trigger unless immediately visible (colorscheme, statu
 - **HJKL heavily remapped**: `H`/`L` = word, `J`/`K` = paragraph, `Z`/`X` = line start/end. NOT standard vim motions.
 - **Reversed paste**: `p` and `P` swapped.
 - **Error handling**: `pcall()` for commands that may fail (e.g., `:wq` on unnamed buffers). Check `vim.v.shell_error` after `vim.fn.system()`.
-- **Git root detection**: NeoTree and fzf-lua resolve git root first. Follow `find_git_root()` in `plugins/fzf-lua.lua`.
+- **Git root detection**: fzf-lua resolves git root first. Follow `find_git_root()` in `plugins/fzf-lua.lua`.
 - **Format toggle**: `vim.g.disable_autoformat` / `vim.b[bufnr].disable_autoformat` control conform.nvim format-on-save.
