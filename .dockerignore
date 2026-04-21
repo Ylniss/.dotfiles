@@ -1,0 +1,9 @@
+.git
+.gitignore
+.gitattributes
+.claude/
+nixos/
+Microsoft.PowerShell_profile.ps1
+Dockerfile
+.dockerignore
+README.md
