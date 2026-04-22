@@ -2,9 +2,9 @@
 FROM archlinux:latest
 
 RUN pacman -Syu --noconfirm --needed \
-	git openssh xdg-utils btop \
+	git openssh xdg-utils \
 	nushell neovim yazi starship \
-	bat ripgrep fd fzf \
+	bat ripgrep fd fzf tldr \
 	ffmpeg imagemagick poppler resvg lazygit \
 	gcc make unzip \
 	nodejs npm \
