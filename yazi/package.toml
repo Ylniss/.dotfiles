@@ -1,7 +1,7 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:mime-ext"
 rev = "06b1921"
-hash = "bb679534fb2dfe71eabc81d9cf464991"
+hash = "a29bbe224547baa2ba65eb257a77f274"
 
 [[plugin.deps]]
 use = "Rolv-Apneseth/starship"
@@ -16,12 +16,12 @@ hash = "337b5aa2662d0500625d3807c695229a"
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
 rev = "06b1921"
-hash = "2ede7b0f1beade8390be1b52cfed6a49"
+hash = "3328f67bf1c335a76699ed794a4a41fd"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
 rev = "06b1921"
-hash = "bef05511fab6c6414990eb48003582b9"
+hash = "9a82f68e88309b447300f1a19ff113e8"
 
 [[flavor.deps]]
 use = "BennyOe/tokyo-night"
