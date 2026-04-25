@@ -8,6 +8,8 @@ let home_dir = if (is-windows) { $env.USERPROFILE } else { $env.HOME }
 let config_dir = if (is-windows) { $env.LOCALAPPDATA } else { $'($env.HOME)/.config' }
 let appdata_dir = if (is-windows) { $env.APPDATA } else { $'($env.HOME)/.config' }
 let yazi_config_dir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $'($config_dir)/yazi' }
+let niri_config_dir = $'($config_dir)/niri'
+let qutebrowser_config_dir = if (is-windows) { $'($env.APPDATA)/qutebrowser/config' } else { $'($config_dir)/qutebrowser' }
 let obsidian_data_dir = if (is-windows) { $'($env.APPDATA)/obsidian' } else if (is-macos) { $'($env.HOME)/Library/Application Support/obsidian' } else { $'($env.HOME)/.config/obsidian' }
 
 let symlinks = [
