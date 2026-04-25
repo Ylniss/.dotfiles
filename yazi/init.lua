@@ -24,6 +24,7 @@ require("mime-ext.local"):setup({
 		ahk = "text/plain",
 		config = "text/plain",
 		nu = "text/plain",
+		kdl = "text/plain",
 	},
 	with_files = {
 		[".editorconfig"] = "text/plain",

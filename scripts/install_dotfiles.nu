@@ -27,6 +27,8 @@ let symlinks = [
   { src: 'yazi/local-plugins/disk-info.yazi',   desc: 'yazi disk-info plugin',   dest: $'($yazi_config_dir)/plugins/disk-info.yazi' }
   { src: 'yazi/local-plugins/file-info.yazi',   desc: 'yazi file-info plugin',   dest: $'($yazi_config_dir)/plugins/file-info.yazi' }
   { src: 'yazi/local-plugins/system-info.yazi', desc: 'yazi system-info plugin', dest: $'($yazi_config_dir)/plugins/system-info.yazi' }
+  { src: 'niri/config.kdl',               desc: 'niri config.kdl',            dest: $'($niri_config_dir)/config.kdl',           linux_only: true }
+  { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
   { src: 'starship.toml',                 desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdata_dir)/nushell/env.nu' }
@@ -44,7 +46,8 @@ if (is-windows) { windows-require-symlink-capability }
 for s in ($symlinks | where { |s|
   let skip_android = ($s.skip_on_android? | default false) and (is-android)
   let android_only = ($s.android_only? | default false) and (not (is-android))
-  not ($skip_android or $android_only)
+  let linux_only = ($s.linux_only? | default false) and (not (is-linux))
+  not ($skip_android or $android_only or $linux_only)
 }) {
   create-symbolic-link $'($repo_dir)/($s.src)' $s.dest $s.desc
 }
@@ -66,6 +69,7 @@ if (is-windows) { allow-cfa-apps-if-needed }
 def is-windows [] { $nu.os-info.family == 'windows' }
 def is-android [] { $nu.os-info.name == 'android' }
 def is-macos   [] { $nu.os-info.name == 'macos' }
+def is-linux   [] { $nu.os-info.name == 'linux' }
 
 # Prints a yellow warning to stderr
 def warn [msg: string] {
