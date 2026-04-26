@@ -28,6 +28,8 @@ let symlinks = [
   { src: 'yazi/local-plugins/file-info.yazi',   desc: 'yazi file-info plugin',   dest: $'($yazi_config_dir)/plugins/file-info.yazi' }
   { src: 'yazi/local-plugins/system-info.yazi', desc: 'yazi system-info plugin', dest: $'($yazi_config_dir)/plugins/system-info.yazi' }
   { src: 'niri/config.kdl',               desc: 'niri config.kdl',            dest: $'($niri_config_dir)/config.kdl',           linux_only: true }
+  { src: 'niri/scripts',                  desc: 'niri scripts',               dest: $'($niri_config_dir)/scripts',              linux_only: true }
+  { src: 'foot/foot.ini',                 desc: 'foot foot.ini',              dest: $'($config_dir)/foot/foot.ini',             linux_only: true }
   { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
   { src: 'starship.toml',                 desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }

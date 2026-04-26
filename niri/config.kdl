@@ -289,6 +289,12 @@ window-rule {
     open-floating true
 }
 
+// Float the foot window spawned for the wiremix mixer (Mod+M).
+window-rule {
+    match app-id=r#"^wiremix-float$"#
+    open-floating true
+}
+
 // Example: block out two password managers from screen capture.
 // (This example rule is commented out with a "/-" in front.)
 /-window-rule {
@@ -343,6 +349,9 @@ binds {
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
     XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+
+    // Toggle wiremix (PipeWire mixer) in a floating foot window.
+    Mod+M hotkey-overlay-title="Toggle wiremix mixer (floating)" { spawn-sh "~/.config/niri/scripts/wiremix-toggle.sh"; }
 
     // Example media keys mapping using playerctl.
     // This will work with any MPRIS-enabled media player.
