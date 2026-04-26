@@ -63,8 +63,8 @@ config.font = wezterm.font("JetBrains Mono")
 config.font_size = 11
 config.line_height = 1
 
-config.window_decorations = "RESIZE"
-config.window_background_opacity = 0.88
+config.window_decorations = "NONE"
+config.window_background_opacity = 0.85
 if is_windows then
 	config.win32_system_backdrop = "Acrylic"
 end
