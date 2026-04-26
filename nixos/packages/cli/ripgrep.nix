@@ -8,7 +8,7 @@
   };
 
   home.file = {
-    ".ripgreprc".source = ../../../.ripgreprc;
+    ".ripgreprc".source = ../../../ripgrep/.ripgreprc;
   };
 
   # RIPGREP_CONFIG_PATH is set in nushell/default.nix

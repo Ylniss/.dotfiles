@@ -14,10 +14,10 @@ let obsidian_data_dir = if (is-windows) { $'($env.APPDATA)/obsidian' } else if (
 
 let symlinks = [
   { src: 'nvim',                          desc: 'nvim',                       dest: $'($config_dir)/nvim' }
-  { src: '.gitconfig',                    desc: '.gitconfig',                 dest: $'($home_dir)/.gitconfig' }
-  { src: '.ideavimrc',                    desc: '.ideavimrc',                 dest: $'($home_dir)/.ideavimrc',                  skip_on_android: true }
-  { src: '.wezterm.lua',                  desc: '.wezterm.lua',               dest: $'($home_dir)/.wezterm.lua',                skip_on_android: true }
-  { src: '.zshrc',                        desc: '.zshrc',                     dest: $'($home_dir)/.zshrc' }
+  { src: 'git/.gitconfig',                desc: '.gitconfig',                 dest: $'($home_dir)/.gitconfig' }
+  { src: 'ideavim/.ideavimrc',            desc: '.ideavimrc',                 dest: $'($home_dir)/.ideavimrc',                  skip_on_android: true }
+  { src: 'wezterm/.wezterm.lua',          desc: '.wezterm.lua',               dest: $'($home_dir)/.wezterm.lua',                skip_on_android: true }
+  { src: 'zsh/.zshrc',                    desc: '.zshrc',                     dest: $'($home_dir)/.zshrc' }
   { src: 'yazi/yazi.toml',                desc: 'yazi yazi.toml',             dest: $'($yazi_config_dir)/yazi.toml' }
   { src: 'yazi/keymap.toml',              desc: 'yazi keymap.toml',           dest: $'($yazi_config_dir)/keymap.toml' }
   { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            dest: $'($yazi_config_dir)/theme.toml' }
@@ -31,7 +31,7 @@ let symlinks = [
   { src: 'niri/scripts',                  desc: 'niri scripts',               dest: $'($niri_config_dir)/scripts',              linux_only: true }
   { src: 'foot/foot.ini',                 desc: 'foot foot.ini',              dest: $'($config_dir)/foot/foot.ini',             linux_only: true }
   { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
-  { src: 'starship.toml',                 desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
+  { src: 'starship/starship.toml',        desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
   { src: 'btop/btop.conf',                desc: 'btop btop.conf',             dest: $'($config_dir)/btop/btop.conf' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdata_dir)/nushell/env.nu' }

@@ -34,7 +34,7 @@ if (is-windows) {
 }
 
 
-$env.RIPGREP_CONFIG_PATH = $'($env.REPO)/.dotfiles/.ripgreprc'
+$env.RIPGREP_CONFIG_PATH = $'($env.REPO)/.dotfiles/ripgrep/.ripgreprc'
 $env.FZF_DEFAULT_COMMAND = 'fd -H'
 $env.GIT_EDITOR = 'nvim'
 

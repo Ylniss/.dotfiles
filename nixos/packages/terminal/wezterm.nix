@@ -9,6 +9,6 @@
     enableZshIntegration = true;
     enableBashIntegration = true;
     package = inputs.wezterm.packages.${pkgs.system}.default;
-    extraConfig = builtins.readFile ../../../.wezterm.lua;
+    extraConfig = builtins.readFile ../../../wezterm/.wezterm.lua;
   };
 }
