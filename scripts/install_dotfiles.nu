@@ -32,6 +32,7 @@ let symlinks = [
   { src: 'foot/foot.ini',                 desc: 'foot foot.ini',              dest: $'($config_dir)/foot/foot.ini',             linux_only: true }
   { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
   { src: 'starship.toml',                 desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
+  { src: 'btop/btop.conf',                desc: 'btop btop.conf',             dest: $'($config_dir)/btop/btop.conf' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdata_dir)/nushell/env.nu' }
   { src: 'nushell/scripts',               desc: 'nushell scripts',            dest: $'($appdata_dir)/nushell/scripts' }
