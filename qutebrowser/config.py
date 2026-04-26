@@ -3,6 +3,14 @@
 ##   qute://help/settings.html
 
 # === User config ===
+import catppuccin
+
+# Theme
+catppuccin.setup(c, 'mocha', True)
+
+# Theme accents — match niri's orange focus ring
+c.colors.statusbar.url.fg = '#ffb86c'
+c.colors.completion.match.fg = '#ffb86c'
 
 # This is here so configs done via the GUI are not loaded.
 config.load_autoconfig(False)
@@ -30,10 +38,6 @@ c.tabs.width = '10%'
 c.tabs.show = 'multiple'
 c.tabs.background = True
 
-# Theme accents — match niri's orange focus ring
-c.colors.statusbar.url.fg = '#ffb86c'
-c.colors.completion.match.fg = '#ffb86c'
-
 # Match terminal/editor font
 c.fonts.default_family = 'JetBrainsMono Nerd Font'
 
@@ -46,7 +50,7 @@ c.content.blocking.method = 'both'
 c.content.cookies.accept = 'no-3rdparty'
 
 # Downloads
-c.downloads.location.directory = '~/Downloads'
+c.downloads.location.directory = '~/stuff/downloads'
 
 # Hide scrollbars
 c.scrolling.bar = 'never'

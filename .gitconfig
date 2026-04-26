@@ -1,5 +1,5 @@
 [core]
-	autocrlf = true
+	autocrlf = false
 	pager = delta
 [include]
 	path = ~/.gitconfig-local
