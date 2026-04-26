@@ -41,32 +41,7 @@ vim.keymap.set("n", "<A-Up>", "<C-w>K", { desc = "move window up" })
 vim.keymap.set("n", "<leader>v", vim.cmd.vsplit, { desc = "open new vertical split window" })
 vim.keymap.set("n", "<leader>h", vim.cmd.split, { desc = "open new horizontal split window" })
 
--- ===================================== Commands =====================================
-local function saveAndClose()
-	local status, _ = pcall(vim.cmd.wq)
-	if not status then
-		vim.cmd.q()
-	end
-end
-
-vim.keymap.set("n", "<leader>q", saveAndClose, { desc = "save and close window" })
-vim.keymap.set("n", "<leader>Q", "<cmd>q!<CR>", { desc = "close window without saving" })
-local function smart_save()
-	local current_file = vim.fn.expand("%:p")
-	if current_file == "" then
-		-- File has no name, open command line with saveas and current directory
-		local current_dir = vim.fn.expand("%:p:h") .. "/"
-		local saveas_cmd = ":saveas " .. current_dir
-		vim.api.nvim_feedkeys(saveas_cmd, "n", true)
-	else
-		-- File already has a name, just write
-		vim.cmd.update()
-	end
-end
-
-vim.keymap.set({ "n", "v" }, "<C-s>", smart_save, { desc = "save file" })
-vim.keymap.set({ "n", "v" }, "<C-S-s>", vim.cmd.wa, { noremap = true, desc = "save all changes" })
-
+-- ======================================= Misc =======================================
 vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc = "find and replace" })
 
 vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole file" })

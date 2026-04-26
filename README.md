@@ -111,10 +111,6 @@ On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -
 
 | Key | Action |
 |-----|--------|
-| `Ctrl+S` | Save file |
-| `Ctrl+Shift+S` | Save all |
-| `<leader>q` | Save and close |
-| `<leader>Q` | Close without saving |
 | `<leader>e` | Toggle NeoTree |
 | `<leader>v` / `<leader>h` | Vertical / horizontal split |
 | `Ctrl+H/J/K/L` | Navigate windows |
