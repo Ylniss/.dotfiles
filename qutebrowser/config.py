@@ -12,6 +12,9 @@ catppuccin.setup(c, 'mocha', True)
 c.colors.statusbar.url.fg = '#ffb86c'
 c.colors.completion.match.fg = '#ffb86c'
 
+# Dark Theme
+c.colors.webpage.preferred_color_scheme = 'auto'
+
 # This is here so configs done via the GUI are not loaded.
 config.load_autoconfig(False)
 
