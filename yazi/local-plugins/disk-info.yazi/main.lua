@@ -15,8 +15,15 @@ $"Drive: ($d.mount)\nLabel: ($d.device)\nTotal: ($d.total)\nUsed:  ($used)\nFree
 
 return {
 	entry = function()
-		local cwd = get_cwd():gsub("/", "\\")
-		local drive = cwd:sub(1, 2):upper()
+		local raw_cwd = get_cwd()
+		local cwd, title
+		if ya.target_family() == "windows" then
+			cwd = raw_cwd:gsub("/", "\\")
+			title = "Disk " .. cwd:sub(1, 2):upper()
+		else
+			cwd = raw_cwd
+			title = "Disk"
+		end
 
 		local child, err = Command("nu")
 			:arg("-c"):arg(nu_snippet)
@@ -36,7 +43,7 @@ return {
 		end
 
 		if output.status.success then
-			ya.notify { title = "Disk " .. drive, content = output.stdout or "", timeout = 5, level = "info" }
+			ya.notify { title = title, content = output.stdout or "", timeout = 5, level = "info" }
 		else
 			ya.notify {
 				title = "Disk info error",

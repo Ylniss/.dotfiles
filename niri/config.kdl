@@ -228,9 +228,9 @@ layout {
 // which may be more convenient to use.
 // See the binds section below for more spawn examples.
 
-// This line starts waybar, a commonly used bar for Wayland compositors.
-spawn-at-startup "waybar"
-spawn-at-startup "wezterm"
+spawn-at-startup "waybar" // Wayland status bar
+spawn-at-startup "wezterm" // terminal emulator
+spawn-at-startup "wvkbd-mobintl" "--hidden" // virtual keyboard daemon (Super+Alt+K to toggle)
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
@@ -332,6 +332,8 @@ binds {
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
     // For example, this is a standard bind to toggle the screen reader (orca).
     Super+Alt+S allow-when-locked=true hotkey-overlay-title=null { spawn-sh "pkill orca || exec orca"; }
+
+    Super+Alt+K hotkey-overlay-title="Toggle Virtual Keyboard: wvkbd" { spawn "pkill" "-RTMIN" "wvkbd-mobintl"; }
 
     // Example volume keys mappings for PipeWire & WirePlumber.
     // The allow-when-locked=true property makes them work even when the session is locked.
