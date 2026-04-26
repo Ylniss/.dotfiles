@@ -295,6 +295,14 @@ window-rule {
     open-floating true
 }
 
+// Float mpv (used for video playback via Space-w in qutebrowser).
+// Fullscreen is handled by mpv itself (fs=yes in mpv.conf) so its OSC knows
+// it's fullscreen and auto-hides correctly.
+window-rule {
+    match app-id=r#"^mpv$"#
+    open-floating true
+}
+
 // Example: block out two password managers from screen capture.
 // (This example rule is commented out with a "/-" in front.)
 /-window-rule {

@@ -180,3 +180,40 @@ To save new words from Obsidian into the repo:
 1. Close Obsidian.
 2. Run `nu scripts/sync_obsidian_dictionary.nu` — merges words from Obsidian and repo, writes to both.
 3. Reopen Obsidian and commit the change.
+
+## qutebrowser
+
+### Video playback (mpv)
+
+YouTube and other video links open in **mpv** instead of qutebrowser's web player — bypasses ads completely (yt-dlp grabs the raw stream, no JS, no DOM). Includes [SponsorBlock](https://sponsor.ajay.app/) for skipping in-video sponsor segments.
+
+Auto-fetches YouTube auto-generated English captions via yt-dlp; subs are off by default — toggle with `v` in mpv.
+
+#### Dependencies
+
+**Linux (pacman)**
+
+```
+sudo pacman -S mpv yt-dlp
+```
+
+#### Keys
+
+| Key | Action |
+|-----|--------|
+| `<Space>w` | Watch video — spawn mpv with current page URL |
+| `<Space>gs` | Search via DuckDuckGo |
+| `<Space>gh` | Open GitHub |
+| `<Space>gy` | Open YouTube |
+| `<Space>gr` | Open Reddit |
+| `<Space>m` | Mute current tab |
+| `<Space>p` | Pin current tab |
+
+In mpv:
+
+| Key | Action |
+|-----|--------|
+| `v` | Toggle subtitle visibility |
+| `j` | Cycle subtitle tracks |
+| `b` | Toggle SponsorBlock skipping |
+| `q` | Quit mpv |

@@ -61,8 +61,22 @@ c.scrolling.bar = 'never'
 # Custom bindings (Space as chord prefix, vim-style "leader")
 config.bind('<Space>gs', 'cmd-set-text -s :open s')
 config.bind('<Space>gh', 'open https://github.com')
+config.bind('<Space>gy', 'open https://youtube.com')
+config.bind('<Space>gr', 'open https://reddit.com')
 config.bind('<Space>m', 'tab-mute')
 config.bind('<Space>p', 'tab-pin')
+
+# Watch video — spawn mpv with current page URL (yt-dlp under the hood, ad-free)
+config.bind('<Space>w', 'spawn mpv {url}')
+
+# Google blocks QtWebEngine's UA on OAuth ("browser may not be secure").
+# Spoof Firefox only on Google auth/account domains.
+_google_ua = ('Mozilla/5.0 ({os_info}; rv:128.0) '
+              'Gecko/20100101 Firefox/128.0')
+for _pat in ('https://accounts.google.com/*',
+             'https://accounts.youtube.com/*',
+             'https://*.google.com/*'):
+    config.set('content.headers.user_agent', _google_ua, _pat)
 
 ## Aliases for commands. The keys of the given dictionary are the
 ## aliases, while the values are the commands they map to.

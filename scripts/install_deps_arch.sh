@@ -12,4 +12,5 @@ pacman -Syu --noconfirm --needed \
   git openssh xdg-utils btop \
   nushell neovim yazi starship \
   bat ripgrep fd fzf \
-  lazygit unzip
+  lazygit unzip \
+  mpv yt-dlp

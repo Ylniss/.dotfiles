@@ -6,4 +6,8 @@ CLAUDE.local.md
 # Windows
 *.stackdump
 
+# Python
+__pycache__/
+*.pyc
+
 

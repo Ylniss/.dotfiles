@@ -10,6 +10,7 @@ let appdata_dir = if (is-windows) { $env.APPDATA } else { $'($env.HOME)/.config'
 let yazi_config_dir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $'($config_dir)/yazi' }
 let niri_config_dir = $'($config_dir)/niri'
 let qutebrowser_config_dir = if (is-windows) { $'($env.APPDATA)/qutebrowser/config' } else { $'($config_dir)/qutebrowser' }
+let mpv_config_dir = if (is-windows) { $'($env.APPDATA)/mpv' } else { $'($config_dir)/mpv' }
 let obsidian_data_dir = if (is-windows) { $'($env.APPDATA)/obsidian' } else if (is-macos) { $'($env.HOME)/Library/Application Support/obsidian' } else { $'($env.HOME)/.config/obsidian' }
 
 let symlinks = [
@@ -31,6 +32,9 @@ let symlinks = [
   { src: 'niri/scripts',                  desc: 'niri scripts',               dest: $'($niri_config_dir)/scripts',              linux_only: true }
   { src: 'foot/foot.ini',                 desc: 'foot foot.ini',              dest: $'($config_dir)/foot/foot.ini',             linux_only: true }
   { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
+  { src: 'mpv/mpv.conf',                  desc: 'mpv mpv.conf',               dest: $'($mpv_config_dir)/mpv.conf',                       skip_on_android: true }
+  { src: 'mpv/scripts/sponsorblock.lua',  desc: 'mpv sponsorblock.lua',       dest: $'($mpv_config_dir)/scripts/sponsorblock.lua',       skip_on_android: true }
+  { src: 'mpv/script-opts/sponsorblock.conf', desc: 'mpv sponsorblock.conf',  dest: $'($mpv_config_dir)/script-opts/sponsorblock.conf',  skip_on_android: true }
   { src: 'starship/starship.toml',        desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
   { src: 'btop/btop.conf',                desc: 'btop btop.conf',             dest: $'($config_dir)/btop/btop.conf' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }
