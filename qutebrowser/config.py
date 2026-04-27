@@ -37,7 +37,7 @@ c.window.hide_decoration = True
 
 # Tabs
 c.tabs.position = 'left'
-c.tabs.width = '10%'
+c.tabs.width = '5%'
 c.tabs.show = 'multiple'
 c.tabs.background = True
 

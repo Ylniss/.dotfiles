@@ -1,12 +1,12 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 24,
-    "spacing": 5,
+    "height": 32,
+    "spacing": 24,
 
-    "modules-left": ["niri/workspaces", "custom/platform-profile", "temperature"],
-    "modules-center": ["clock"],
-    "modules-right": ["wireplumber", "battery", "niri/language", "idle_inhibitor", "network", "bluetooth", "tray"],
+    "modules-left": ["niri/workspaces"],
+    "modules-center": ["temperature", "cpu", "memory"],
+    "modules-right": ["wireplumber", "battery", "backlight", "idle_inhibitor", "network", "bluetooth", "clock", "tray"],
 
     "niri/workspaces": {
         "format": "<span size='larger'>{icon}</span>",
@@ -15,7 +15,7 @@
             "active": "\uf444",
             "default": "\uf4c3"
         },
-        "icon-size": 10,
+        "icon-size": 12,
         "sort-by-number": true,
         "persistent-workspaces": {
             "1": [],
@@ -27,11 +27,11 @@
     },
 
     "clock": {
-        "format": "{:%d.%m.%Y | %H:%M}"
+        "format": "{:%a, %d %b | %H:%M}"
     },
 
     "wireplumber": {
-        "format": "\udb81\udd7e  {volume}%",
+        "format": "\udb81\udd7e {volume}%",
         "max-volume": 100,
         "scroll-step": 5
     },
@@ -39,25 +39,29 @@
     "battery": {
         "bat": "BAT1",
         "interval": 60,
-        "format": "{icon}  {capacity}%",
+        "format": "{icon} {capacity}%",
         "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"]
     },
 
     "memory": {
         "interval": 30,
-        "format": "\uf4bc  {used:0.1f}G"
+        "format": "\uf0c9 {percentage}%"
+    },
+
+    "cpu": {
+        "interval": 5,
+        "format": " {usage}%"
     },
 
     "temperature": {
-        "format": "{temperatureC}°C"
+        "format": " {temperatureC}°C"
     },
 
     "network": {
         "format": "",
-        "format-ethernet": "\udb83\udc9d",
-        "format-wifi": "{icon}",
-        "format-disconnected": "\udb83\udc9c",
-        "format-icons": ["\udb82\udd2f", "\udb82\udd1f", "\udb82\udd22", "\udb82\udd25", "\udb82\udd28"],
+        "format-ethernet": "\uf6ff",
+        "format-wifi": "\uf1eb",
+        "format-disconnected": "\uf127",
         "tooltip-format-wifi": "{essid} ({signalStrength}%)",
         "tooltip-format-ethernet": "{ifname}",
         "tooltip-format-disconnected": "Disconnected"
@@ -72,8 +76,9 @@
         "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}"
     },
 
-    "niri/language": {
-        "format": "{short}"
+    "backlight": {
+        "format": "{icon} {percent}%",
+        "format-icons": ["󰃜", "󰃝", "󰃞"]
     },
 
     "tray": {
@@ -81,24 +86,11 @@
         "spacing": 16
     },
 
-    "custom/platform-profile": {
-	"format": "{icon} ",
-	"exec": "~/.config/waybar/platform_profile.sh",
-	"return-type": "json",
-	"restart-interval": 1,
-	"format-icons": {
-	    "quiet": "\udb80\udf2a",
-	    "balanced": "\udb80\ude10",
-	    "performance": "\uf427",
-            "default": "?"
-	}
-    },
-
     "idle_inhibitor": {
         "format": "{icon}",
         "format-icons": {
-            "activated": "\udb80\udd76",
-            "deactivated": "\udb83\udfaa"
+            "activated": "\uf06e",
+            "deactivated": "\uf070"
         }
     }
 }
