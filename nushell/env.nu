@@ -37,6 +37,7 @@ if (is-windows) {
 $env.RIPGREP_CONFIG_PATH = $'($env.REPO)/.dotfiles/ripgrep/.ripgreprc'
 $env.FZF_DEFAULT_COMMAND = 'fd -H'
 $env.GIT_EDITOR = 'nvim'
+$env.EDITOR = 'nvim'
 
 # Setup Android env
 if (is-android) {
@@ -54,7 +55,7 @@ if (is-android) {
     | load-env
 
 if (is-android) {
-  do { ^ssh-add ~/.ssh/andrd } | ignore
+  do { ^ssh-add ~/.ssh } | ignore
 }
 
 # Setup custom prompt - Starship (delete cache file to regenerate after starship update)
