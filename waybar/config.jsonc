@@ -4,9 +4,9 @@
     "height": 32,
     "spacing": 24,
 
-    "modules-left": ["niri/workspaces"],
-    "modules-center": ["temperature", "cpu", "memory"],
-    "modules-right": ["wireplumber", "battery", "backlight", "idle_inhibitor", "network", "bluetooth", "clock", "tray"],
+    "modules-left": ["battery", "temperature", "cpu", "memory"],
+    "modules-center": ["niri/workspaces"],
+    "modules-right": ["wireplumber", "backlight", "idle_inhibitor", "network", "bluetooth", "tray", "clock"],
 
     "niri/workspaces": {
         "format": "<span size='larger'>{icon}</span>",
@@ -15,7 +15,6 @@
             "active": "\uf444",
             "default": "\uf4c3"
         },
-        "icon-size": 12,
         "sort-by-number": true,
         "persistent-workspaces": {
             "1": [],
@@ -54,13 +53,16 @@
     },
 
     "temperature": {
+        "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+        "input-filename": "temp1_input",
+        "critical-threshold": 85,
         "format": " {temperatureC}°C"
     },
 
     "network": {
         "format": "",
         "format-ethernet": "\uf6ff",
-        "format-wifi": "\uf1eb",
+        "format-wifi": "<span font_family='Symbols Nerd Font'>\uf1eb</span>",
         "format-disconnected": "\uf127",
         "tooltip-format-wifi": "{essid} ({signalStrength}%)",
         "tooltip-format-ethernet": "{ifname}",
@@ -89,8 +91,8 @@
     "idle_inhibitor": {
         "format": "{icon}",
         "format-icons": {
-            "activated": "\uf06e",
-            "deactivated": "\uf070"
+            "activated": "<span font_family='Symbols Nerd Font'>\uf06e</span>",
+            "deactivated": "<span font_family='Symbols Nerd Font'>\uf070</span>"
         }
     }
 }
