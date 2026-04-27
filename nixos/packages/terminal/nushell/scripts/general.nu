@@ -171,14 +171,17 @@ def layout-dev [] {
 
 # -------------- NETWORK --------------
 
-# Show local and public IP addresses
-def ip [] {
+# Show LAN and public IP addresses (LAN = source IP of the default route,
+# so VPN/VM virtual adapters are skipped).
+def lsip [] {
   let public_ip = (http get https://ifconfig.me/ip | str trim)
-  mut local_ip = "unknown"
-  if (is-windows) {
-    $local_ip = (ipconfig | rg "IPv4" | rg '\d+\.\d+\.\d+\.\d+' -oN | lines | first)
+  let local_ip = if (is-windows) {
+    ^powershell -NoProfile -Command "(Find-NetRoute -RemoteIPAddress '1.1.1.1' | Select-Object -First 1).IPAddress" | str trim
+  } else if (is-macos) {
+    let iface = (^route -n get 1.1.1.1 | parse --regex 'interface:\s+(?P<i>\S+)' | get 0.i)
+    ^ipconfig getifaddr $iface | str trim
   } else {
-    $local_ip = (hostname -I | split row ' ' | first)
+    ^ip route get 1.1.1.1 | parse --regex 'src\s+(?P<ip>\d+\.\d+\.\d+\.\d+)' | get 0.ip
   }
   {local: $local_ip, public: $public_ip}
 }
