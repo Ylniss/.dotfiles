@@ -180,6 +180,10 @@ def lsip [] {
   } else if (is-macos) {
     let iface = (^route -n get 1.1.1.1 | parse --regex 'interface:\s+(?P<i>\S+)' | get 0.i)
     ^ipconfig getifaddr $iface | str trim
+  } else if (is-android) {
+    # Android SELinux blocks unprivileged netlink, so `ip route get` fails.
+    # UDP connect() picks the egress IP without sending; getsockname() reads it.
+    ^python3 -c "import socket;s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM);s.connect(('1.1.1.1',80));print(s.getsockname()[0])" | str trim
   } else {
     ^ip route get 1.1.1.1 | parse --regex 'src\s+(?P<ip>\d+\.\d+\.\d+\.\d+)' | get 0.ip
   }
