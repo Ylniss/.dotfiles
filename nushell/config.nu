@@ -1,61 +1,62 @@
+# Named ANSI colors only — theme follows the active terminal palette.
 let dark_theme = {
-    separator: "#9094a4"
+    separator: "dark_gray"
     leading_trailing_space_bg: { attr: n }
-    header: { fg: "#ffe585" attr: b }
-    empty: "#e9c1ff"
-    bool: "#ff8b92"
-    int: "#c5f2ff"
-    filesize: "#89ebff"
-    duration: "#f4d69f"
-    date: "#82aaff"
-    range: "#c5f2ff"
-    float: "#c5f2ff"
-    string: "#c5f2ff"
-    nothing: "#9094a4"
-    binary: "#c5f2ff"
-    cell-path: "#c5f2ff"
-    row_index: { fg: "#9094a4" attr: b }
-    record: "#c5f2ff"
-    list: "#c5f2ff"
-    block: "#c5f2ff"
-    hints: "#9094a4"
-    search_result: { bg: "#ffcc00" fg: "#292d3e" }
-    shape_and: { fg: "#82aaff" attr: b }
-    shape_binary: { fg: "#82aaff" attr: b }
-    shape_block: { fg: "#e9c1ff" attr: b }
-    shape_bool: "#ff8b92"
-    shape_closure: { fg: "#b4e88d" attr: b }
-    shape_custom: "#b4e88d"
-    shape_datetime: { fg: "#89ebff" attr: b }
-    shape_directory: "#89ebff"
-    shape_external: "#89ebff"
-    shape_externalarg: "#c5f2ff"
-    shape_external_resolved: { fg: "#ffe585" attr: b }
-    shape_filepath: "#89ebff"
-    shape_flag: { fg: "#9cc4ff" attr: b }
-    shape_float: "#ddb0f6"
-    shape_garbage: { fg: "#c5f2ff" bg: "#ff8288" attr: b }
-    shape_globpattern: { fg: "#e9c1ff" attr: b }
-    shape_int: "#ddb0f6"
-    shape_internalcall: { fg: "#e9c1ff" attr: b }
-    shape_keyword: { fg: "#82aaff" attr: b }
-    shape_list: { fg: "#e9c1ff" attr: b }
-    shape_literal: "#ff8b92"
-    shape_match_pattern: "#b4e88d"
+    header: { fg: "light_yellow" attr: b }
+    empty: "light_purple"
+    bool: "red"
+    int: "cyan"
+    filesize: "light_cyan"
+    duration: "yellow"
+    date: "light_blue"
+    range: "cyan"
+    float: "cyan"
+    string: "cyan"
+    nothing: "dark_gray"
+    binary: "cyan"
+    cell-path: "cyan"
+    row_index: { fg: "dark_gray" attr: b }
+    record: "cyan"
+    list: "cyan"
+    block: "cyan"
+    hints: "dark_gray"
+    search_result: { bg: "yellow" fg: "black" }
+    shape_and: { fg: "light_blue" attr: b }
+    shape_binary: { fg: "light_blue" attr: b }
+    shape_block: { fg: "light_purple" attr: b }
+    shape_bool: "red"
+    shape_closure: { fg: "green" attr: b }
+    shape_custom: "green"
+    shape_datetime: { fg: "light_cyan" attr: b }
+    shape_directory: "light_cyan"
+    shape_external: "light_cyan"
+    shape_externalarg: "cyan"
+    shape_external_resolved: { fg: "light_yellow" attr: b }
+    shape_filepath: "light_cyan"
+    shape_flag: { fg: "blue" attr: b }
+    shape_float: "purple"
+    shape_garbage: { fg: "cyan" bg: "red" attr: b }
+    shape_globpattern: { fg: "light_purple" attr: b }
+    shape_int: "purple"
+    shape_internalcall: { fg: "light_purple" attr: b }
+    shape_keyword: { fg: "light_blue" attr: b }
+    shape_list: { fg: "light_purple" attr: b }
+    shape_literal: "red"
+    shape_match_pattern: "green"
     shape_matching_brackets: { attr: u }
-    shape_nothing: "#9094a4"
-    shape_operator: "#f4d69f"
-    shape_or: { fg: "#82aaff" attr: b }
-    shape_pipe: { fg: "#82aaff" attr: b }
-    shape_range: { fg: "#f4d69f" attr: b }
-    shape_record: { fg: "#89ebff" attr: b }
-    shape_redirection: { fg: "#82aaff" attr: b }
-    shape_signature: { fg: "#b4e88d" attr: b }
-    shape_string: "#b4e88d"
-    shape_string_interpolation: { fg: "#ffe585" attr: b }
-    shape_table: { fg: "#e9c1ff" attr: b }
-    shape_variable: "#c5f2ff"
-    shape_vardecl: "#ff8b92"
+    shape_nothing: "dark_gray"
+    shape_operator: "yellow"
+    shape_or: { fg: "light_blue" attr: b }
+    shape_pipe: { fg: "light_blue" attr: b }
+    shape_range: { fg: "yellow" attr: b }
+    shape_record: { fg: "light_cyan" attr: b }
+    shape_redirection: { fg: "light_blue" attr: b }
+    shape_signature: { fg: "green" attr: b }
+    shape_string: "green"
+    shape_string_interpolation: { fg: "light_yellow" attr: b }
+    shape_table: { fg: "light_purple" attr: b }
+    shape_variable: "cyan"
+    shape_vardecl: "red"
 }
 
 let carapace_completer = {|spans|
