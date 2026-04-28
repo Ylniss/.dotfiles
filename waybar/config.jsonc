@@ -6,7 +6,7 @@
 
     "modules-left": ["battery", "temperature", "cpu", "memory"],
     "modules-center": ["niri/workspaces"],
-    "modules-right": ["wireplumber", "backlight", "idle_inhibitor", "network", "bluetooth", "tray", "clock"],
+    "modules-right": ["wireplumber", "backlight", "idle_inhibitor", "network", "bluetooth", "tray", "clock", "custom/power"],
 
     "niri/workspaces": {
         "format": "<span size='larger'>{icon}</span>",
@@ -94,5 +94,11 @@
             "activated": "<span font_family='Symbols Nerd Font'>\uf06e</span>",
             "deactivated": "<span font_family='Symbols Nerd Font'>\uf070</span>"
         }
+    },
+
+    "custom/power": {
+        "format": "\udb81\udc25",
+        "tooltip": false,
+        "on-click": "~/.config/waybar/scripts/power-menu.nu"
     }
 }
