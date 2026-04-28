@@ -37,9 +37,11 @@ c.window.hide_decoration = True
 
 # Tabs
 c.tabs.position = 'left'
-c.tabs.width = '5%'
+c.tabs.width = 45
 c.tabs.show = 'multiple'
 c.tabs.background = True
+c.tabs.title.format = '{index}'
+c.tabs.title.elide = 'none'
 
 # Match terminal/editor font
 c.fonts.default_family = 'JetBrainsMono Nerd Font'
@@ -62,9 +64,9 @@ c.scrolling.bar = 'never'
 config.unbind('<Ctrl-h>')
 config.bind('<Space>h', 'home')
 config.bind('<Space>gs', 'cmd-set-text -s :open s')
-config.bind('<Space>gh', 'open https://github.com')
-config.bind('<Space>gy', 'open https://youtube.com')
-config.bind('<Space>gr', 'open https://reddit.com')
+config.bind('<Space>gh', 'open -t https://github.com')
+config.bind('<Space>gy', 'open -t https://youtube.com')
+config.bind('<Space>gr', 'open -t https://reddit.com')
 config.bind('<Space>m', 'tab-mute')
 config.bind('<Space>p', 'tab-pin')
 
