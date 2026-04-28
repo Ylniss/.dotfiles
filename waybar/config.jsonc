@@ -9,7 +9,7 @@
     "modules-right": ["wireplumber", "backlight", "idle_inhibitor", "network", "bluetooth", "tray", "clock", "custom/power"],
 
     "niri/workspaces": {
-        "format": "<span size='larger'>{icon}</span>",
+        "format": "<span font_family='Symbols Nerd Font' size='larger'>{icon}</span>",
         "on-click": "activate",
         "format-icons": {
             "active": "\uf444",
@@ -32,7 +32,8 @@
     "wireplumber": {
         "format": "\udb81\udd7e {volume}%",
         "max-volume": 100,
-        "scroll-step": 5
+        "scroll-step": 5,
+        "on-click": "~/.config/niri/scripts/wiremix-toggle.nu"
     },
 
     "battery": {
@@ -66,7 +67,8 @@
         "format-disconnected": "\uf127",
         "tooltip-format-wifi": "{essid} ({signalStrength}%)",
         "tooltip-format-ethernet": "{ifname}",
-        "tooltip-format-disconnected": "Disconnected"
+        "tooltip-format-disconnected": "Disconnected",
+        "on-click": "~/.config/niri/scripts/wifi-menu.nu"
     },
 
     "bluetooth": {

@@ -144,7 +144,7 @@ layout {
         // - CSS-like notation: "rgb(255, 127, 0)", rgba(), hsl() and a few others.
 
         // Color of the ring on the active monitor.
-        active-color "#ffb86c"
+        active-color "#ffffff77"
 
         // Color of the ring on inactive monitors.
         //
@@ -364,7 +364,7 @@ binds {
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
     // Toggle wiremix (PipeWire mixer) in a floating foot window.
-    Mod+M hotkey-overlay-title="Toggle wiremix mixer (floating)" { spawn-sh "~/.config/niri/scripts/wiremix-toggle.sh"; }
+    Mod+M hotkey-overlay-title="Toggle wiremix mixer (floating)" { spawn-sh "~/.config/niri/scripts/wiremix-toggle.nu"; }
 
     // Example media keys mapping using playerctl.
     // This will work with any MPRIS-enabled media player.
