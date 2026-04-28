@@ -40,6 +40,7 @@ let symlinks = [
   { src: 'mpv/script-opts/sponsorblock.conf', desc: 'mpv sponsorblock.conf',  dest: $'($mpv_config_dir)/script-opts/sponsorblock.conf',  skip_on_android: true }
   { src: 'starship/starship.toml',        desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
   { src: 'btop/btop.conf',                desc: 'btop btop.conf',             dest: $'($config_dir)/btop/btop.conf' }
+  { src: 'fastfetch',                     desc: 'fastfetch',                  dest: $'($config_dir)/fastfetch' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdata_dir)/nushell/env.nu' }
   { src: 'nushell/scripts',               desc: 'nushell scripts',            dest: $'($appdata_dir)/nushell/scripts' }

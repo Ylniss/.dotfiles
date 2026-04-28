@@ -57,11 +57,15 @@ local scheme = wezterm.color.get_builtin_schemes()[config.color_scheme]
 config.initial_cols = 135
 config.initial_rows = 34
 
-config.font = wezterm.font("JetBrainsMonoNerdFont")
+-- Windows registers the Nerd Font under a different family name than Linux
+local nerd_font = is_windows and "JetBrainsMono NF" or "JetBrainsMonoNerdFont"
+
+config.font = wezterm.font(nerd_font)
 config.font_size = 11
 config.line_height = 1
 
-config.window_decorations = "NONE"
+-- Windows: RESIZE keeps the resize border (NONE strips it). Linux/Wayland: NONE hides the CSD titlebar.
+config.window_decorations = is_windows and "RESIZE" or "NONE"
 config.window_background_opacity = 0.70
 if is_windows then
 	config.win32_system_backdrop = "Acrylic"
@@ -76,7 +80,7 @@ local function with_alpha(hex, alpha)
 end
 
 config.window_frame = {
-	font = wezterm.font({ family = "JetBrainsMonoNerdFont" }),
+	font = wezterm.font({ family = nerd_font }),
 	font_size = 10,
 	active_titlebar_bg = with_alpha(scheme.background, config.window_background_opacity),
 	inactive_titlebar_bg = with_alpha(scheme.background, config.window_background_opacity),
