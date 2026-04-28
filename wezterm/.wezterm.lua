@@ -49,43 +49,27 @@ end
 
 -- =========== APPEARANCE ===========
 
-config.color_scheme = "Banana Blueberry"
-
-config.colors = {
-	selection_fg = "black",
-	selection_bg = "#fe965b",
-}
+config.color_scheme = "astromouse (terminal.sexy)"
+-- config.color_scheme = "Atelierheath (dark) (terminal.sexy)"
 
 config.initial_cols = 135
 config.initial_rows = 34
 
-config.font = wezterm.font("JetBrains Mono")
+config.font = wezterm.font("JetBrainsMonoNerdFont")
 config.font_size = 11
 config.line_height = 1
 
 config.window_decorations = "NONE"
-config.window_background_opacity = 0.85
+config.window_background_opacity = 0.65
 if is_windows then
 	config.win32_system_backdrop = "Acrylic"
 end
 
-config.window_background_gradient = {
-	colors = {
-		"#0b0014",
-		"#17003e",
-		"#0b0014",
-	},
-	blend = "Hsv",
-	orientation = "Vertical",
-}
-
-local titlebar_color = "#0B0022"
-
 config.window_frame = {
-	font = wezterm.font({ family = "JetBrainsMono NF" }),
-	font_size = 12.0,
-	active_titlebar_bg = titlebar_color,
-	inactive_titlebar_bg = titlebar_color,
+	font = wezterm.font({ family = "JetBrainsMonoNerdFont" }),
+	font_size = 10,
+	-- active_titlebar_bg = titlebar_color,
+	-- inactive_titlebar_bg = titlebar_color,
 }
 
 local function tab_title(tab)
@@ -126,7 +110,7 @@ local function tab_title(tab)
 end
 
 wezterm.on("format-tab-title", function(tab, _, _, _, hover, _)
-	local edge_background = titlebar_color
+	-- local edge_background = titlebar_color
 	local background = "#1b1032"
 	local foreground = "#808080"
 	local edge_foreground = background

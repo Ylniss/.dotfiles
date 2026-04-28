@@ -59,6 +59,8 @@ c.downloads.location.directory = '~/stuff/downloads'
 c.scrolling.bar = 'never'
 
 # Custom bindings (Space as chord prefix, vim-style "leader")
+config.unbind('<Ctrl-h>')
+config.bind('<Space>h', 'home')
 config.bind('<Space>gs', 'cmd-set-text -s :open s')
 config.bind('<Space>gh', 'open https://github.com')
 config.bind('<Space>gy', 'open https://youtube.com')

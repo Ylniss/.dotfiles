@@ -55,8 +55,12 @@ vim.keymap.set("n", "<leader>g>", "<cmd>!git push<CR>", { noremap = true, desc =
 vim.keymap.set("n", "<leader>g<", "<cmd>!git pull<CR>", { noremap = true, desc = "git pull" })
 
 -- =================================== Commenting ===================================
+-- Map both forms: terminals using legacy xterm encoding send 0x1f (<C-_>); terminals
+-- using kitty keyboard protocol / CSI u (recent wezterm) send the modern <C-/> form.
 vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "toggle line comment" })
 vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "toggle line comment" })
+vim.keymap.set("n", "<C-/>", "gcc", { remap = true, desc = "toggle line comment" })
+vim.keymap.set("v", "<C-/>", "gc", { remap = true, desc = "toggle line comment" })
 
 -- ================================= LSP keymaps ==================================
 vim.api.nvim_create_autocmd("LspAttach", {

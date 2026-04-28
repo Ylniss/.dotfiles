@@ -32,6 +32,7 @@ let symlinks = [
   { src: 'niri/scripts',                  desc: 'niri scripts',               dest: $'($niri_config_dir)/scripts',              linux_only: true }
   { src: 'waybar',                        desc: 'waybar',                     dest: $'($config_dir)/waybar',                    linux_only: true }
   { src: 'swaylock',                      desc: 'swaylock',                   dest: $'($config_dir)/swaylock',                  linux_only: true }
+  { src: 'wpaperd',                       desc: 'wpaperd',                    dest: $'($config_dir)/wpaperd',                   linux_only: true }
   { src: 'foot/foot.ini',                 desc: 'foot foot.ini',              dest: $'($config_dir)/foot/foot.ini',             linux_only: true }
   { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
   { src: 'mpv/mpv.conf',                  desc: 'mpv mpv.conf',               dest: $'($mpv_config_dir)/mpv.conf',                       skip_on_android: true }
