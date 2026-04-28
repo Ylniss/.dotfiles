@@ -52,6 +52,8 @@ end
 config.color_scheme = "astromouse (terminal.sexy)"
 -- config.color_scheme = "Atelierheath (dark) (terminal.sexy)"
 
+local scheme = wezterm.color.get_builtin_schemes()[config.color_scheme]
+
 config.initial_cols = 135
 config.initial_rows = 34
 
@@ -60,16 +62,24 @@ config.font_size = 11
 config.line_height = 1
 
 config.window_decorations = "NONE"
-config.window_background_opacity = 0.65
+config.window_background_opacity = 0.70
 if is_windows then
 	config.win32_system_backdrop = "Acrylic"
+end
+
+-- titlebar bg only honors opacity if given an explicit alpha
+local function with_alpha(hex, alpha)
+	local r = tonumber(hex:sub(2, 3), 16)
+	local g = tonumber(hex:sub(4, 5), 16)
+	local b = tonumber(hex:sub(6, 7), 16)
+	return string.format("rgba(%d,%d,%d,%.3f)", r, g, b, alpha)
 end
 
 config.window_frame = {
 	font = wezterm.font({ family = "JetBrainsMonoNerdFont" }),
 	font_size = 10,
-	-- active_titlebar_bg = titlebar_color,
-	-- inactive_titlebar_bg = titlebar_color,
+	active_titlebar_bg = with_alpha(scheme.background, config.window_background_opacity),
+	inactive_titlebar_bg = with_alpha(scheme.background, config.window_background_opacity),
 }
 
 local function tab_title(tab)
@@ -109,33 +119,22 @@ local function tab_title(tab)
 	return t:gsub("%.exe", "")
 end
 
-wezterm.on("format-tab-title", function(tab, _, _, _, hover, _)
-	-- local edge_background = titlebar_color
-	local background = "#1b1032"
-	local foreground = "#808080"
-	local edge_foreground = background
+local dark = "#1c1c1c"
+local light_dark = "#3a3a3a"
 
-	if tab.is_active then
-		background = "#2B2042"
-		foreground = "#C0C0C0"
-		edge_foreground = background
-	elseif hover then
-		background = "#3b3052"
-		foreground = "#909090"
-		edge_foreground = background
-	end
-
-	local title = tab_title(tab)
+wezterm.on("format-tab-title", function(tab)
+	local bg = tab.is_active and light_dark or dark
+	local fg = tab.is_active and "#ffffff" or "#808080"
 
 	return {
-		{ Background = { Color = edge_background } },
-		{ Foreground = { Color = edge_foreground } },
+		{ Background = { Color = dark } },
+		{ Foreground = { Color = bg } },
 		{ Text = wezterm.nerdfonts.pl_right_hard_divider },
-		{ Background = { Color = background } },
-		{ Foreground = { Color = foreground } },
-		{ Text = " " .. tostring(tab.tab_index + 1) .. ": " .. title .. " " },
-		{ Background = { Color = edge_background } },
-		{ Foreground = { Color = edge_foreground } },
+		{ Background = { Color = bg } },
+		{ Foreground = { Color = fg } },
+		{ Text = " " .. tostring(tab.tab_index + 1) .. ": " .. tab_title(tab) .. " " },
+		{ Background = { Color = dark } },
+		{ Foreground = { Color = bg } },
 		{ Text = wezterm.nerdfonts.pl_left_hard_divider },
 	}
 end)

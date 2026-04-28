@@ -136,7 +136,7 @@ layout {
         // off
 
         // How many logical pixels the ring extends out from the windows.
-        width 2
+        width 1
 
         // Colors can be set in a variety of ways:
         // - CSS named colors: "red"
@@ -232,6 +232,7 @@ spawn-at-startup "waybar" // Wayland status bar
 spawn-at-startup "wezterm" // terminal emulator
 spawn-at-startup "wvkbd-mobintl" "--hidden" // virtual keyboard daemon (Super+Alt+K to toggle)
 spawn-at-startup "wlsunset" "-l" "50.26" "-L" "19.02" // night light (Katowice)
+spawn-at-startup "wpaperd" "-d" // wall paper changer daemon
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
 // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"

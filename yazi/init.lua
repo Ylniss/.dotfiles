@@ -25,6 +25,7 @@ require("mime-ext.local"):setup({
 		config = "text/plain",
 		nu = "text/plain",
 		kdl = "text/plain",
+		mod = "text/plain",
 	},
 	with_files = {
 		[".editorconfig"] = "text/plain",
