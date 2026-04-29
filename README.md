@@ -1,8 +1,6 @@
-# .dotfiles
+Nushell + Wezterm + Neovim config for Windows and Linux. Bootstrap with `scripts/install_dotfiles.nu`.
 
-Nushell + Wezterm + Neovim config for Windows and NixOS. Bootstrap with `install_dotfiles.nu`.
-
-## Git (Nushell)
+# Git (Nushell)
 
 | Command | Action |
 |---------|--------|
@@ -19,17 +17,17 @@ Nushell + Wezterm + Neovim config for Windows and NixOS. Bootstrap with `install
 | `gitwta <branch>` | add worktree, cd into it, open layout-dev |
 | `gitwtf <path>` | push branch, merge into base, remove worktree |
 
-## Robes & Steel (Nushell)
+# Robes & Steel (Nushell)
 
 | Command | Action |
 |---------|--------|
 | `rns imgprocess <file>` | Process sprite image into silhouette via `process_image.cs` |
 
-## Wezterm
+# Wezterm
 
 Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.
 
-### Panes
+## Panes
 
 | Key | Action |
 |-----|--------|
@@ -40,7 +38,7 @@ Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.
 | `Ctrl+Shift+T` | Small bottom pane |
 | `Ctrl+Shift+Q` | Close pane |
 
-### Tabs
+## Tabs
 
 | Key | Action |
 |-----|--------|
@@ -48,7 +46,7 @@ Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.
 | `Ctrl+Shift+W` | Close tab |
 | `Ctrl+1-9` | Switch to tab |
 
-### Other
+## Other
 
 `layout-dev` — 3-pane layout: left 60%, right 40% (split 80/20)
 
@@ -57,9 +55,9 @@ Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.
 | `Ctrl+E / Ctrl+Y` | Scroll up / down |
 | `Shift+Alt+L` | Launcher |
 
-## Yazi
+# Yazi
 
-### Dependencies
+## Dependencies
 
 **Windows**
 
@@ -82,7 +80,7 @@ sudo pacman -S ffmpeg imagemagick poppler resvg bat inkscape lazygit
 
 On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -s /usr/bin/batcat /usr/local/bin/bat` if so.
 
-### Keys
+## Keys
 
 | Key | Action |
 |-----|--------|
@@ -91,11 +89,11 @@ On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -
 | `g s/n/r/a/m//` | Jump to stuff / knowtes / repo / games / movies / root |
 | `g i` | Open lazygit |
 
-## Neovim
+# Neovim
 
 > **HJKL is remapped.** `H`/`L` = word, `J`/`K` = paragraph, `Z`/`X` = line start/end.
 
-### Navigation
+## Navigation
 
 | Key | Action |
 |-----|--------|
@@ -107,26 +105,26 @@ On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -
 | `]` / `[` | Next / prev buffer |
 | `<leader>n` | Previous file |
 
-### File & Window
+## File & Window
 
 | Key | Action |
 |-----|--------|
-| `<leader>e` | Toggle NeoTree |
+| `<leader>e` | Open Yazi at current file |
+| `<leader>E` | Open Yazi at cwd |
 | `<leader>v` / `<leader>h` | Vertical / horizontal split |
 | `Ctrl+H/J/K/L` | Navigate windows |
 | `Alt+H/J/K/L` | Resize windows |
 | `yf` | Yank whole file |
 
-### Git
+## Git
 
 | Key | Action |
 |-----|--------|
-| `<leader>gs` | Git status (right split) |
+| `<leader>gs` | Toggle Diffview |
 | `<leader>gr` | Toggle show deleted lines |
-| `=` | Toggle inline diff (in `:Git` status) |
-| `dh` | Horizontal diff split (in `:Git` status) |
+| `<leader>gi` | Open lazygit |
 
-### Search (fzf-lua)
+## Search (fzf-lua)
 
 | Key | Action |
 |-----|--------|
@@ -136,9 +134,9 @@ On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -
 | `<leader>/` | Search current buffer |
 | `<leader>sd` | Search diagnostics |
 
-## Obsidian
+# Obsidian
 
-### Neovim Integration
+## Neovim Integration
 
 Uses [obsidian.nvim](https://github.com/obsidian-nvim/obsidian.nvim) — wikilink following, backlinks, completion for `[[...]]` and `#tags`. Loads on markdown files or `:Obsidian` commands. Picker: fzf-lua.
 
@@ -167,7 +165,7 @@ Useful commands from any buffer:
 |---------|--------|
 | `:Obsidian new [title]` | Create a new note |
 
-### Custom Dictionary
+## Custom Dictionary
 
 `Custom Dictionary.txt` is copied (not symlinked) — Obsidian rewrites it with a checksum and would reject a symlinked file.
 
@@ -177,15 +175,15 @@ To save new words from Obsidian into the repo:
 2. Run `nu scripts/sync_obsidian_dictionary.nu` — merges words from Obsidian and repo, writes to both.
 3. Reopen Obsidian and commit the change.
 
-## qutebrowser
+# qutebrowser
 
-### Video playback (mpv)
+## Video playback (mpv)
 
 YouTube and other video links open in **mpv** instead of qutebrowser's web player — bypasses ads completely (yt-dlp grabs the raw stream, no JS, no DOM). Includes [SponsorBlock](https://sponsor.ajay.app/) for skipping in-video sponsor segments.
 
 Auto-fetches YouTube auto-generated English captions via yt-dlp; subs are off by default — toggle with `v` in mpv.
 
-#### Dependencies
+### Dependencies
 
 **Linux (pacman)**
 
@@ -193,7 +191,7 @@ Auto-fetches YouTube auto-generated English captions via yt-dlp; subs are off by
 sudo pacman -S mpv yt-dlp
 ```
 
-#### Keys
+### Keys
 
 | Key | Action |
 |-----|--------|
@@ -213,3 +211,20 @@ In mpv:
 | `j` | Cycle subtitle tracks |
 | `b` | Toggle SponsorBlock skipping |
 | `q` | Quit mpv |
+
+# Docker
+
+Build the dotfiles image (Arch base + nushell, neovim, yazi, lazygit, Mason LSPs preinstalled):
+
+```
+docker build -t ghcr.io/ylniss/dotfiles:latest .
+```
+
+Push to GitHub Container Registry:
+
+```
+gh auth token | docker login ghcr.io -u ylniss --password-stdin
+docker push ghcr.io/ylniss/dotfiles:latest
+```
+
+> **TODO:** move the build + push to GitHub Actions.

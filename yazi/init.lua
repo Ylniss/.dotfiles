@@ -32,6 +32,7 @@ require("mime-ext.local"):setup({
 		[".gitattributes"] = "text/plain",
 		[".ideavimrc"] = "text/plain",
 		[".ripgreprc"] = "text/plain",
+		[".dockerignore"] = "text/plain",
 		dockerfile = "text/plain",
 		makefile = "text/plain",
 	},
