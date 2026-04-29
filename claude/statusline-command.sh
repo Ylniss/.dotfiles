@@ -11,6 +11,19 @@ five_h_reset=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty'
 week_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
 week_reset=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
 
+# --- Colors (ANSI named — follow terminal palette, like starship.toml)
+GREEN=$'\033[32m'                       # git staged
+YELLOW=$'\033[33m'                      # git modified
+WHITE=$'\033[37m'                       # git untracked
+RED=$'\033[31m'                         # "in ", git branch
+BOLD_RED=$'\033[1;31m'                  # git ahead/behind (git_status default style)
+BRIGHT_WHITE=$'\033[97m'                # username
+BRIGHT_WHITE_ITALIC=$'\033[3;97m'       # directory
+DIM=$'\033[2;37m'
+BOLD=$'\033[1m'
+BLUE=$'\033[94m'
+RST=$'\033[0m'
+
 # --- User
 user=$(whoami)
 
@@ -54,22 +67,14 @@ if [ "$in_repo" = "1" ]; then
         behind=$(git -C "$cwd" --no-optional-locks rev-list --count 'HEAD..@{u}' 2>/dev/null || echo 0)
     fi
 
-    # Colors matching starship.toml [git_status]
-    GREEN=$'\033[32m'
-    AMBER=$'\033[38;2;253;198;52m'      # #fdc634 modified
-    GRAY=$'\033[38;2;193;193;193m'      # #c1c1c1 untracked
-    BOLD_RED=$'\033[1;31m'              # default git_status style for ahead/behind
-    RST_S=$'\033[0m'
-
     status_str=""
-    [ "$staged" -gt 0 ]    && status_str="${status_str}${GREEN}+${staged} ${RST_S}"
-    [ "$modified" -gt 0 ]  && status_str="${status_str}${AMBER}*${modified} ${RST_S}"
-    [ "$untracked" -gt 0 ] && status_str="${status_str}${GRAY}?${untracked} ${RST_S}"
-    [ "$ahead" -gt 0 ]     && status_str="${status_str}${BOLD_RED}⇡${ahead} ${RST_S}"
-    [ "$behind" -gt 0 ]    && status_str="${status_str}${BOLD_RED}⇣${behind} ${RST_S}"
+    [ "$staged" -gt 0 ]    && status_str="${status_str}${GREEN}+${staged} ${RST}"
+    [ "$modified" -gt 0 ]  && status_str="${status_str}${YELLOW}*${modified} ${RST}"
+    [ "$untracked" -gt 0 ] && status_str="${status_str}${WHITE}?${untracked} ${RST}"
+    [ "$ahead" -gt 0 ]     && status_str="${status_str}${BOLD_RED}⇡${ahead} ${RST}"
+    [ "$behind" -gt 0 ]    && status_str="${status_str}${BOLD_RED}⇣${behind} ${RST}"
 
-    BOLD_PURPLE=$'\033[1;35m'
-    branch_seg="${BOLD_PURPLE} $(printf '\xee\x82\xa0') ${branch}${RST_S}"
+    branch_seg="${RED} $(printf '\xee\x82\xa0') ${branch}${RST}"
     git_part="${branch_seg}${status_str:+ ${status_str}}"
 fi
 
@@ -89,19 +94,9 @@ fmt_reset() {
 }
 
 # --- Assemble
-DIM=$'\033[2;37m'
-BOLD=$'\033[1m'
-BLUE=$'\033[94m'
-RST=$'\033[0m'
-
-# Colors matching starship.toml top-line modules
-YELLOW_BOLD=$'\033[1;38;2;251;238;96m'        # #fbee60 bold (username)
-YELLOW_BOLD_ITALIC=$'\033[1;3;38;2;251;238;96m' # #fbee60 bold italic (directory)
-RED_IN=$'\033[38;2;255;79;88m'                 # #ff4f58 ("in ")
-
-printf '%s%s%s' "$YELLOW_BOLD" "$user" "$RST"
-printf '%s in %s' "$RED_IN" "$RST"
-printf '%s%s%s' "$YELLOW_BOLD_ITALIC" "$short_dir" "$RST"
+printf '%s%s%s' "$BRIGHT_WHITE" "$user" "$RST"
+printf '%s in %s' "$RED" "$RST"
+printf '%s%s%s' "$BRIGHT_WHITE_ITALIC" "$short_dir" "$RST"
 [ -n "$git_part" ] && printf ' %s' "$git_part"
 printf '\n'
 
@@ -139,7 +134,7 @@ if [ -n "$week_pct" ]; then
     week_int=$(printf '%.0f' "$week_pct")
     paren=""
     [ -n "$week_reset" ] && paren=$(fmt_reset "$week_reset")
-    emit_section "weekly" "$week_int" "$paren"
+    emit_section "7d" "$week_int" "$paren"
 fi
 
 printf '%s]%s' "$DIM" "$RST"
