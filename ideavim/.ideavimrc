@@ -20,18 +20,6 @@ map p P
 vnoremap <A-j> :m '>+1<CR>gv=gv
 vnoremap <A-k> :m '<-2<CR>gv=gv
 
-" Move down by 1 paragraph
-map <S-j> }
-
-" Move up by 1 paragraph
-map <S-k> {
-
-" Move right by 1 word
-map <S-l> w
-
-" Move left by 1 word
-map <S-h> b
-
 " Move window down
 map <C-j> <C-w>j
 
@@ -75,11 +63,6 @@ set clipboard+=unnamedplus
 Plug 'machakann/vim-highlightedyank'
 
 " -- Map IDE actions to IdeaVim -- https://jb.gg/abva4t
-" Map \r to the Reformat Code action
-"map \r <Action>(ReformatCode)
-
-" Map <leader>d to start debug
-"map <leader>d <Action>(Debug)
 
 " Open solution explorer
 map <leader>e <Action>(ActivateProjectToolWindow)
