@@ -5,11 +5,6 @@ vim.keymap.set({ "n", "v" }, "<C-b>", "%", { desc = "jump to matching bracket" }
 vim.keymap.set({ "n", "v" }, "<CR>", "o<ESC>", { desc = "add new line in normal mode" })
 vim.keymap.set({ "n", "v" }, "<leader>n", "<C-6>", { desc = "go back to previous file" })
 
-vim.keymap.set({ "n", "v" }, "J", "}", { desc = "move down by 1 paragraph" })
-vim.keymap.set({ "n", "v" }, "K", "{", { noremap = true, desc = "move up by 1 paragraph" })
-vim.keymap.set({ "n", "v" }, "L", "w", { desc = "move right by 1 word" })
-vim.keymap.set({ "n", "v" }, "H", "b", { desc = "move left by 1 word" })
-
 vim.keymap.set({ "n", "v" }, "<C-d>", "<C-d>zz", { desc = "scroll half screen down" })
 vim.keymap.set({ "n", "v" }, "<C-u>", "<C-u>zz", { desc = "scroll half screen up" })
 

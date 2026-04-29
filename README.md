@@ -91,8 +91,6 @@ On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -
 
 # Neovim
 
-> **HJKL is remapped.** `H`/`L` = word, `J`/`K` = paragraph, `Z`/`X` = line start/end.
-
 ## Navigation
 
 | Key | Action |
