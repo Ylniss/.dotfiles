@@ -112,6 +112,8 @@ def --env yazi [...args] {
   }
 }
 
+alias e = yazi
+
 # -------------- CLIPBOARD --------------
 
 # Pipe input to system clipboard
