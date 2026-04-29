@@ -52,7 +52,7 @@
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
   },
-  "effortLevel": "high",
+  "effortLevel": "max",
   "autoUpdatesChannel": "latest",
   "skipAutoPermissionPrompt": true
 }

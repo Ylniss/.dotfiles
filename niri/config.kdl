@@ -229,7 +229,7 @@ layout {
 // See the binds section below for more spawn examples.
 
 spawn-at-startup "waybar" // Wayland status bar
-spawn-at-startup "wezterm" // terminal emulator
+spawn-at-startup "wezterm start -- nu -e 'fastfetch'" // terminal emulator, start with fastfetch
 spawn-at-startup "wvkbd-mobintl" "--hidden" // virtual keyboard daemon (Super+Alt+K to toggle)
 spawn-at-startup "wlsunset" "-l" "50.26" "-L" "19.02" // night light (Katowice)
 spawn-at-startup "wpaperd" "-d" // wall paper changer daemon

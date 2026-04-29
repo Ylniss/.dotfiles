@@ -35,6 +35,7 @@ let symlinks = [
   { src: 'wpaperd',                       desc: 'wpaperd',                    dest: $'($config_dir)/wpaperd',                   linux_only: true }
   { src: 'foot/foot.ini',                 desc: 'foot foot.ini',              dest: $'($config_dir)/foot/foot.ini',             linux_only: true }
   { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
+  { src: 'qutebrowser/styles',            desc: 'qutebrowser styles',         dest: $'($qutebrowser_config_dir)/styles',        skip_on_android: true }
   { src: 'mpv/mpv.conf',                  desc: 'mpv mpv.conf',               dest: $'($mpv_config_dir)/mpv.conf',                       skip_on_android: true }
   { src: 'mpv/scripts/sponsorblock.lua',  desc: 'mpv sponsorblock.lua',       dest: $'($mpv_config_dir)/scripts/sponsorblock.lua',       skip_on_android: true }
   { src: 'mpv/script-opts/sponsorblock.conf', desc: 'mpv sponsorblock.conf',  dest: $'($mpv_config_dir)/script-opts/sponsorblock.conf',  skip_on_android: true }

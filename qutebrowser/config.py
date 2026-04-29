@@ -49,10 +49,30 @@ c.fonts.default_family = 'JetBrainsMono Nerd Font'
 # Spellcheck (English + Polish)
 c.spellcheck.languages = ['en-US', 'pl-PL']
 
-# Privacy / annoyance
+# Privacy / annoyance, adblock
 c.content.autoplay = False
 c.content.blocking.method = 'both'
 c.content.cookies.accept = 'no-3rdparty'
+c.content.blocking.adblock.lists = [
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/legacy.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2020.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2021.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2022.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/filters-2023.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/badware.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/privacy.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/badlists.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/annoyances.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/annoyances-cookies.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/annoyances-others.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/quick-fixes.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/resource-abuse.txt",
+        "https://github.com/uBlockOrigin/uAssets/raw/master/filters/unbreak.txt"]
+
+# Cosmetic ad hiding — qutebrowser's adblocker is network-only, so first-party
+# ads (Reddit promoted posts, YouTube shelves) need CSS to disappear.
+c.content.user_stylesheets = ['styles/adblock.css']
 
 # Downloads
 c.downloads.location.directory = '~/stuff/downloads'
