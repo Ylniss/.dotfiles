@@ -1,8 +1,26 @@
 # tinty config — owns ~/.local/share/tinted-theming/tinty/current_scheme.
 #
-# Subscribers (no [[items]] entry needed — they read current_scheme themselves):
-#   wezterm  — .wezterm.lua parses scheme YAML directly, watches current_scheme
+# Pattern A — canonical [[items]]:
+#   wezterm  — symlinks repo's themes/wezterm dir → ~/.config/wezterm/colors;
+#              wezterm.lua reads current_scheme slug + auto-discovers TOML
+#
+# Pattern B — subscriber (no [[items]] entry, tool watches current_scheme):
 #   nvim     — tinted-nvim plugin selector watches current_scheme
 #
-# Static-config tools (foot, fuzzel, mako, fzf, yazi) will get [[items]] entries
-# in Phase 2b/2c once a build pipeline is set up.
+# Phase 2b will add waybar, qutebrowser, lazygit (all canonical).
+# Phase 2c will add foot, fzf, yazi, fuzzel, mako (canonical where upstream exists).
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-terminal"
+name = "tinted-wezterm"
+themes-dir = "themes/wezterm"
+supported-systems = ["base16", "base24"]
+hook = """
+SRC=$HOME/.local/share/tinted-theming/tinty/repos/tinted-wezterm/themes/wezterm
+WEZTERM_DIR="$HOME/.config/wezterm"
+if [ -d "$SRC" ]; then
+    mkdir -p "$WEZTERM_DIR"
+    ln -sfn "$SRC" "$WEZTERM_DIR/colors"
+    touch -c "$WEZTERM_DIR/wezterm.lua"
+fi
+"""

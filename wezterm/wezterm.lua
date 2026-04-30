@@ -19,16 +19,35 @@ local home = os.getenv("HOME") or os.getenv("USERPROFILE") or ""
 
 local scheme
 
+local function read_tinty_scheme_slug()
+	local f = io.open(home .. "/.local/share/tinted-theming/tinty/current_scheme", "r")
+	if not f then
+		return nil
+	end
+	local slug = (f:read("*l") or ""):gsub("%s+$", "")
+	f:close()
+	if slug == "" then
+		return nil
+	end
+	return slug
+end
+
 if is_windows then
 	config.color_scheme = "Ef-Cherie"
 	scheme = wezterm.color.get_builtin_schemes()[config.color_scheme]
 else
-	scheme = require("tinty").load_tinty_scheme()
-	if scheme then
-		config.color_schemes = { tinty = scheme }
-		config.color_scheme = "tinty"
-		wezterm.add_to_config_reload_watch_list(home .. "/.local/share/tinted-theming/tinty/current_scheme")
-	else
+	-- Canonical tinted-wezterm flow: the hook symlinks ~/.config/wezterm/colors →
+	-- repo's themes dir; wezterm auto-discovers it. We load_scheme manually so
+	-- tabs/titlebar can read the palette below.
+	local slug = read_tinty_scheme_slug()
+	if slug then
+		local loaded = wezterm.color.load_scheme(home .. "/.config/wezterm/colors/" .. slug .. ".toml")
+		if loaded then
+			config.color_scheme = slug
+			scheme = loaded
+		end
+	end
+	if not scheme then
 		config.color_scheme = "Ef-Cherie"
 		scheme = wezterm.color.get_builtin_schemes()[config.color_scheme]
 	end

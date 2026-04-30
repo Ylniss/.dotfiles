@@ -18,7 +18,6 @@ let symlinks = [
   { src: 'git/.gitconfig',                desc: '.gitconfig',                 dest: $'($home_dir)/.gitconfig' }
   { src: 'ideavim/.ideavimrc',            desc: '.ideavimrc',                 dest: $'($home_dir)/.ideavimrc',                  skip_on_android: true }
   { src: 'wezterm/wezterm.lua',           desc: 'wezterm wezterm.lua',        dest: $'($home_dir)/.config/wezterm/wezterm.lua',     skip_on_android: true }
-  { src: 'wezterm/tinty.lua',             desc: 'wezterm tinty.lua',          dest: $'($home_dir)/.config/wezterm/tinty.lua',       linux_only: true }
   { src: 'wezterm/nvim-splits.lua',       desc: 'wezterm nvim-splits.lua',    dest: $'($home_dir)/.config/wezterm/nvim-splits.lua', skip_on_android: true }
   { src: 'wezterm/tabs.lua',              desc: 'wezterm tabs.lua',           dest: $'($home_dir)/.config/wezterm/tabs.lua',        skip_on_android: true }
   { src: 'wezterm/keys.lua',              desc: 'wezterm keys.lua',           dest: $'($home_dir)/.config/wezterm/keys.lua',        skip_on_android: true }
