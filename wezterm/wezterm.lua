@@ -42,6 +42,8 @@ else
 	if slug then
 		local loaded = wezterm.color.load_scheme(home .. "/.config/wezterm/colors/" .. slug .. ".toml")
 		if loaded then
+			-- keep 256-color index 16 as default black (LS_COLORS expects it)
+			if loaded.indexed then loaded.indexed[16] = nil end
 			config.color_schemes = { [slug] = loaded }
 			config.color_scheme = slug
 			scheme = loaded
