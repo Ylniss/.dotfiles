@@ -36,13 +36,13 @@ if is_windows then
 	config.color_scheme = "Ef-Cherie"
 	scheme = wezterm.color.get_builtin_schemes()[config.color_scheme]
 else
-	-- Canonical tinted-wezterm flow: the hook symlinks ~/.config/wezterm/colors →
-	-- repo's themes dir; wezterm auto-discovers it. We load_scheme manually so
-	-- tabs/titlebar can read the palette below.
+	-- Register inline so reloads resolve the slug even if wezterm started
+	-- before the colors/ symlink existed.
 	local slug = read_tinty_scheme_slug()
 	if slug then
 		local loaded = wezterm.color.load_scheme(home .. "/.config/wezterm/colors/" .. slug .. ".toml")
 		if loaded then
+			config.color_schemes = { [slug] = loaded }
 			config.color_scheme = slug
 			scheme = loaded
 		end

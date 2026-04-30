@@ -26,7 +26,8 @@ local function tab_title(tab, is_windows)
 	-- If a foreground process is running, use its name and the last part of the current path
 	if fg_process_name and #fg_process_name > 0 and (fg_process_name == "lazydocker" or fg_process_name == "nu") then
 		if not is_windows then
-			local cwd = pane:get_current_working_dir()
+			-- pane is PaneInformation here, cwd is a property (Url), not a method
+			local cwd = pane.current_working_dir
 			if cwd then
 				local path_segments = {}
 				for segment in string.gmatch(cwd.path, "[^/]+") do
@@ -45,11 +46,14 @@ local function tab_title(tab, is_windows)
 end
 
 function M.setup(scheme, is_windows)
+	-- indexed[19] = base02, indexed[20] = base04 (builtin schemes lack indexed).
+	local active_bg = (scheme.indexed and scheme.indexed[19]) or scheme.selection_bg or "#3a3a3a"
+	local inactive_fg = (scheme.indexed and scheme.indexed[20]) or "#808080"
+
 	wezterm.on("format-tab-title", function(tab)
 		local outer = scheme.background
-		local active = scheme.selection_bg or "#3a3a3a"
-		local bg = tab.is_active and active or outer
-		local fg = tab.is_active and scheme.foreground or "#808080"
+		local bg = tab.is_active and active_bg or outer
+		local fg = tab.is_active and scheme.foreground or inactive_fg
 
 		return {
 			{ Background = { Color = outer } },
