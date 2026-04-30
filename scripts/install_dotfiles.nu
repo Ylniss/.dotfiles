@@ -17,7 +17,11 @@ let symlinks = [
   { src: 'nvim',                          desc: 'nvim',                       dest: $'($config_dir)/nvim' }
   { src: 'git/.gitconfig',                desc: '.gitconfig',                 dest: $'($home_dir)/.gitconfig' }
   { src: 'ideavim/.ideavimrc',            desc: '.ideavimrc',                 dest: $'($home_dir)/.ideavimrc',                  skip_on_android: true }
-  { src: 'wezterm/.wezterm.lua',          desc: '.wezterm.lua',               dest: $'($home_dir)/.wezterm.lua',                skip_on_android: true }
+  { src: 'wezterm/wezterm.lua',           desc: 'wezterm wezterm.lua',        dest: $'($home_dir)/.config/wezterm/wezterm.lua',     skip_on_android: true }
+  { src: 'wezterm/tinty.lua',             desc: 'wezterm tinty.lua',          dest: $'($home_dir)/.config/wezterm/tinty.lua',       linux_only: true }
+  { src: 'wezterm/nvim-splits.lua',       desc: 'wezterm nvim-splits.lua',    dest: $'($home_dir)/.config/wezterm/nvim-splits.lua', skip_on_android: true }
+  { src: 'wezterm/tabs.lua',              desc: 'wezterm tabs.lua',           dest: $'($home_dir)/.config/wezterm/tabs.lua',        skip_on_android: true }
+  { src: 'wezterm/keys.lua',              desc: 'wezterm keys.lua',           dest: $'($home_dir)/.config/wezterm/keys.lua',        skip_on_android: true }
   { src: 'zsh/.zshrc',                    desc: '.zshrc',                     dest: $'($home_dir)/.zshrc' }
   { src: 'yazi/yazi.toml',                desc: 'yazi yazi.toml',             dest: $'($yazi_config_dir)/yazi.toml' }
   { src: 'yazi/keymap.toml',              desc: 'yazi keymap.toml',           dest: $'($yazi_config_dir)/keymap.toml' }
@@ -40,6 +44,7 @@ let symlinks = [
   { src: 'mpv/scripts/sponsorblock.lua',  desc: 'mpv sponsorblock.lua',       dest: $'($mpv_config_dir)/scripts/sponsorblock.lua',       skip_on_android: true }
   { src: 'mpv/script-opts/sponsorblock.conf', desc: 'mpv sponsorblock.conf',  dest: $'($mpv_config_dir)/script-opts/sponsorblock.conf',  skip_on_android: true }
   { src: 'starship/starship.toml',        desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
+  { src: 'tinted-theming/tinty/config.toml', desc: 'tinty config.toml',       dest: $'($config_dir)/tinted-theming/tinty/config.toml',  linux_only: true }
   { src: 'btop/btop.conf',                desc: 'btop btop.conf',             dest: $'($config_dir)/btop/btop.conf' }
   { src: 'fastfetch',                     desc: 'fastfetch',                  dest: $'($config_dir)/fastfetch' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }

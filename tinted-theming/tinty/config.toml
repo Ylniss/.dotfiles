@@ -1,0 +1,8 @@
+# tinty config — owns ~/.local/share/tinted-theming/tinty/current_scheme.
+#
+# Subscribers (no [[items]] entry needed — they read current_scheme themselves):
+#   wezterm  — .wezterm.lua parses scheme YAML directly, watches current_scheme
+#   nvim     — tinted-nvim plugin selector watches current_scheme
+#
+# Static-config tools (foot, fuzzel, mako, fzf, yazi) will get [[items]] entries
+# in Phase 2b/2c once a build pipeline is set up.
