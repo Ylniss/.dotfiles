@@ -1,6 +1,6 @@
 [default]
-duration = "30m"
+duration = "20m"
 mode = "center"
 
 [any]
-path = "~/stuff/wallpapers/sun/"
+path = "~/stuff/wallpapers/desktop"

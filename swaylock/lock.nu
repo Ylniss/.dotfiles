@@ -1,6 +1,6 @@
 #!/usr/bin/env nu
 
-let dir = ($env.HOME | path join "stuff/wallpapers/moon")
+let dir = ($env.HOME | path join "stuff/wallpapers/swaylock")
 
 let images = if ($dir | path exists) {
     ls $dir

@@ -46,7 +46,7 @@ config.line_height = 1
 
 -- Windows: RESIZE keeps the resize border (NONE strips it). Linux/Wayland: NONE hides the CSD titlebar.
 config.window_decorations = is_windows and "RESIZE" or "NONE"
-config.window_background_opacity = 0.95
+config.window_background_opacity = 0.75
 if is_windows then
 	config.win32_system_backdrop = "Acrylic"
 end
