@@ -3,14 +3,15 @@
 ##   qute://help/settings.html
 
 # === User config ===
-import catppuccin
+import os
 
-# Theme
-catppuccin.setup(c, 'mocha', True)
+# Apply tinty's base16 theme + capture palette (config.source isolates scope).
+_palette = {'c': c, 'config': config}
+with open(os.path.expanduser('~/.config/qutebrowser/colors.config.py')) as _f:
+    exec(_f.read(), _palette)
 
-# Theme accents — match niri's orange focus ring
-c.colors.statusbar.url.fg = '#ffb86c'
-c.colors.completion.match.fg = '#ffb86c'
+c.colors.statusbar.url.fg = _palette['base09']
+c.colors.completion.match.fg = _palette['base09']
 
 # Dark Theme
 c.colors.webpage.preferred_color_scheme = 'auto'

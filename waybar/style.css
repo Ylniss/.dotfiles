@@ -1,6 +1,4 @@
-@define-color foreground #eeeeee;
-@define-color foreground-inactive #aaaaaa;
-@define-color background #000000;
+@import "colors.css";
 
 * {
     font-family: JetBrainsMono Nerd Font;
@@ -10,19 +8,19 @@
 }
 
 #waybar {
-    color: @foreground;
-    background-color: rgba(0, 0, 0, 0.6);
+    color: @base05;
+    background-color: alpha(@base00, 0.75);
     padding: 0 0;
 }
 
 #workspaces button {
-    color: @foreground;
+    color: @base05;
     padding: 0;
     min-width: 2em;
 }
 
 #workspaces button.empty {
-    color: @foreground-inactive;
+    color: @base04;
 }
 
 #battery {

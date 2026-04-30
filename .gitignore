@@ -10,4 +10,7 @@ CLAUDE.local.md
 __pycache__/
 *.pyc
 
+# tinty-generated theme files (hook writes into symlinked dotfile dirs)
+waybar/colors.css
+
 

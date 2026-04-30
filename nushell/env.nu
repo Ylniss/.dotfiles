@@ -39,6 +39,11 @@ $env.FZF_DEFAULT_COMMAND = 'fd -H'
 $env.GIT_EDITOR = 'nvim'
 $env.EDITOR = 'nvim'
 
+# lazygit base16 theme via tinty
+if not (is-windows) and not (is-android) {
+  $env.LG_CONFIG_FILE = $"($env.HOME)/.local/share/tinted-theming/tinty/tinted-lazygit-themes-file.yml"
+}
+
 # Setup Android env
 if (is-android) {
   $env.STORAGE = "~/storage"
