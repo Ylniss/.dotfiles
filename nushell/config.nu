@@ -96,6 +96,11 @@ $env.config = {
     }
     hooks: {
         display_output: { if (term size).columns >= 100 { table -e } else { table } }
+        pre_prompt: [{||
+            let cwd = pwd
+            let title = if $cwd == $nu.home-dir { "nu in ~" } else { $"nu in ($cwd | path basename)" }
+            print -n $"\u{1b}]0;($title)\u{07}"
+        }]
     }
     keybindings: [
         {

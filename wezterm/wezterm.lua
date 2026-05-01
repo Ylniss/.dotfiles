@@ -12,6 +12,8 @@ config.canonicalize_pasted_newlines = "LineFeed"
 
 config.show_new_tab_button_in_tab_bar = false
 config.switch_to_last_active_tab_when_closing_tab = true
+config.use_fancy_tab_bar = false
+config.tab_max_width = 32
 
 -- =========== APPEARANCE ===========
 
@@ -87,7 +89,27 @@ config.window_frame = {
 	inactive_titlebar_bg = with_alpha(scheme.background, config.window_background_opacity),
 }
 
-require("tabs").setup(scheme, is_windows)
+local outer = with_alpha(scheme.background, config.window_background_opacity)
+local active_bg = (scheme.indexed and scheme.indexed[19]) or scheme.selection_bg or "#3a3a3a"
+local inactive_fg = (scheme.indexed and scheme.indexed[20]) or "#808080"
+
+config.colors = {
+	tab_bar = {
+		background = outer,
+		active_tab = {
+			bg_color = active_bg,
+			fg_color = scheme.foreground,
+		},
+		inactive_tab = {
+			bg_color = outer,
+			fg_color = inactive_fg,
+		},
+		inactive_tab_hover = {
+			bg_color = active_bg,
+			fg_color = scheme.foreground,
+		},
+	},
+}
 
 -- ========== KEY BINDINGS ==========
 

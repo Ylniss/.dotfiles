@@ -19,7 +19,6 @@ let symlinks = [
   { src: 'ideavim/.ideavimrc',            desc: '.ideavimrc',                 dest: $'($home_dir)/.ideavimrc',                  skip_on_android: true }
   { src: 'wezterm/wezterm.lua',           desc: 'wezterm wezterm.lua',        dest: $'($home_dir)/.config/wezterm/wezterm.lua',     skip_on_android: true }
   { src: 'wezterm/nvim-splits.lua',       desc: 'wezterm nvim-splits.lua',    dest: $'($home_dir)/.config/wezterm/nvim-splits.lua', skip_on_android: true }
-  { src: 'wezterm/tabs.lua',              desc: 'wezterm tabs.lua',           dest: $'($home_dir)/.config/wezterm/tabs.lua',        skip_on_android: true }
   { src: 'wezterm/keys.lua',              desc: 'wezterm keys.lua',           dest: $'($home_dir)/.config/wezterm/keys.lua',        skip_on_android: true }
   { src: 'zsh/.zshrc',                    desc: '.zshrc',                     dest: $'($home_dir)/.zshrc' }
   { src: 'yazi/yazi.toml',                desc: 'yazi yazi.toml',             dest: $'($yazi_config_dir)/yazi.toml' }
