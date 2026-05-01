@@ -1,7 +1,7 @@
 #!/usr/bin/env nu
 
-# Updates background opacity (0.0–1.0) across wezterm, waybar, foot, fuzzel, mako.
-# Re-renders fuzzel/mako outputs and signals foot/waybar to reload.
+# Updates background opacity (0.0–1.0) across wezterm, waybar, foot, fuzzel, mako, qutebrowser.
+# Re-renders fuzzel/mako outputs and signals foot/waybar/qutebrowser to reload.
 #
 # Usage: nu set-opacity.nu 0.85
 
@@ -37,10 +37,8 @@ def main [opacity: float] {
 
   try { ^pkill -USR1 foot err> /dev/null }
   try { ^pkill -USR2 waybar err> /dev/null }
-  try {
-    if (^pgrep -x qutebrowser | complete).exit_code == 0 {
-      ^qutebrowser ':config-source' err> /dev/null
-    }
+  if (^pgrep -x qutebrowser | complete | get exit_code) == 0 {
+    try { ^qutebrowser ':config-source' err> /dev/null }
   }
 
   print "done."

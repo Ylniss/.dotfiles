@@ -28,14 +28,9 @@ name = "tinted-waybar"
 themes-dir = "colors"
 supported-systems = ["base16"]
 hook = """
-SLUG=$(cat $HOME/.local/share/tinted-theming/tinty/current_scheme)
-SRC=$HOME/.local/share/tinted-theming/tinty/repos/tinted-waybar/colors/${SLUG}.css
-DST=$HOME/.config/waybar/colors.css
-if [ -f "$SRC" ]; then
-    mkdir -p "$(dirname "$DST")"
-    cp "$SRC" "$DST"
-    pkill -SIGUSR2 waybar 2>/dev/null || true
-fi
+mkdir -p "$HOME/.config/waybar"
+cp -f "$TINTY_THEME_FILE_PATH" "$HOME/.config/waybar/colors.css"
+pkill -SIGUSR2 waybar 2>/dev/null || true
 """
 
 [[items]]
@@ -45,15 +40,10 @@ themes-dir = "themes/default"
 theme-file-extension = ".config.py"
 supported-systems = ["base16"]
 hook = """
-SLUG=$(cat $HOME/.local/share/tinted-theming/tinty/current_scheme)
-SRC=$HOME/.local/share/tinted-theming/tinty/repos/tinted-qutebrowser/themes/default/${SLUG}.config.py
-DST=$HOME/.config/qutebrowser/colors.config.py
-if [ -f "$SRC" ]; then
-    mkdir -p "$(dirname "$DST")"
-    cp "$SRC" "$DST"
-    if pgrep -x qutebrowser >/dev/null; then
-        qutebrowser :config-source 2>/dev/null || true
-    fi
+mkdir -p "$HOME/.config/qutebrowser"
+cp -f "$TINTY_THEME_FILE_PATH" "$HOME/.config/qutebrowser/colors.config.py"
+if pgrep -x qutebrowser >/dev/null; then
+    qutebrowser :config-source 2>/dev/null || true
 fi
 """
 
@@ -71,14 +61,9 @@ name = "tinted-foot"
 themes-dir = "themes/foot"
 supported-systems = ["base16", "base24"]
 hook = """
-SLUG=$(cat $HOME/.local/share/tinted-theming/tinty/current_scheme)
-SRC=$HOME/.local/share/tinted-theming/tinty/repos/tinted-foot/themes/foot/${SLUG}.ini
-DST=$HOME/.config/foot/colors.ini
-if [ -f "$SRC" ]; then
-    mkdir -p "$(dirname "$DST")"
-    cp "$SRC" "$DST"
-    pkill -USR1 foot 2>/dev/null || true
-fi
+mkdir -p "$HOME/.config/foot"
+cp -f "$TINTY_THEME_FILE_PATH" "$HOME/.config/foot/colors.ini"
+pkill -USR1 foot 2>/dev/null || true
 """
 
 # Hook sources the `export FZF_DEFAULT_OPTS=...` snippet, writes the opts to a plain file env.nu reads.
@@ -88,14 +73,9 @@ name = "tinted-fzf"
 themes-dir = "sh"
 supported-systems = ["base16"]
 hook = """
-SLUG=$(cat $HOME/.local/share/tinted-theming/tinty/current_scheme)
-SRC=$HOME/.local/share/tinted-theming/tinty/repos/tinted-fzf/sh/${SLUG}.sh
-DST=$HOME/.local/share/tinted-theming/tinty/fzf-colors
-if [ -f "$SRC" ]; then
-    FZF_DEFAULT_OPTS=""
-    . "$SRC"
-    echo "$FZF_DEFAULT_OPTS" > "$DST"
-fi
+FZF_DEFAULT_OPTS=""
+. "$TINTY_THEME_FILE_PATH"
+echo "$FZF_DEFAULT_OPTS" > "$HOME/.local/share/tinted-theming/tinty/fzf-colors"
 """
 
 # theme.toml references this flavor as `tinted`.
@@ -105,13 +85,8 @@ name = "tinted-yazi"
 themes-dir = "flavors"
 supported-systems = ["base16"]
 hook = """
-SLUG=$(cat $HOME/.local/share/tinted-theming/tinty/current_scheme)
-SRC=$HOME/.local/share/tinted-theming/tinty/repos/tinted-yazi/flavors/${SLUG}.toml
-DST=$HOME/.config/yazi/flavors/tinted.yazi/flavor.toml
-if [ -f "$SRC" ]; then
-    mkdir -p "$(dirname "$DST")"
-    cp "$SRC" "$DST"
-fi
+mkdir -p "$HOME/.config/yazi/flavors/tinted.yazi"
+cp -f "$TINTY_THEME_FILE_PATH" "$HOME/.config/yazi/flavors/tinted.yazi/flavor.toml"
 """
 
 # Sentinel — tinted-shell is just a stub for tinty's per-item lookup; hook runs the nu render scripts.

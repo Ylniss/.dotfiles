@@ -76,9 +76,7 @@ end
 
 -- titlebar bg only honors opacity if given an explicit alpha
 local function with_alpha(hex, alpha)
-	local r = tonumber(hex:sub(2, 3), 16)
-	local g = tonumber(hex:sub(4, 5), 16)
-	local b = tonumber(hex:sub(6, 7), 16)
+	local r, g, b = wezterm.color.parse(hex):srgba_u8()
 	return string.format("rgba(%d,%d,%d,%.3f)", r, g, b, alpha)
 end
 
@@ -90,6 +88,7 @@ config.window_frame = {
 }
 
 local outer = with_alpha(scheme.background, config.window_background_opacity)
+-- indexed[19]=base03, [20]=base04 (base24 extended palette)
 local active_bg = (scheme.indexed and scheme.indexed[19]) or scheme.selection_bg or "#3a3a3a"
 local inactive_fg = (scheme.indexed and scheme.indexed[20]) or "#808080"
 
