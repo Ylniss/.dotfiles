@@ -37,6 +37,8 @@ let symlinks = [
   { src: 'swaylock',                      desc: 'swaylock',                   dest: $'($config_dir)/swaylock',                  linux_only: true }
   { src: 'wpaperd',                       desc: 'wpaperd',                    dest: $'($config_dir)/wpaperd',                   linux_only: true }
   { src: 'foot/foot.ini',                 desc: 'foot foot.ini',              dest: $'($config_dir)/foot/foot.ini',             linux_only: true }
+  { src: 'fuzzel/fuzzel.ini',             desc: 'fuzzel fuzzel.ini',          dest: $'($config_dir)/fuzzel/fuzzel.ini',         linux_only: true }
+  { src: 'mako/config',                   desc: 'mako config',                dest: $'($config_dir)/mako/config',               linux_only: true }
   { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
   { src: 'qutebrowser/styles',            desc: 'qutebrowser styles',         dest: $'($qutebrowser_config_dir)/styles',        skip_on_android: true }
   { src: 'mpv/mpv.conf',                  desc: 'mpv mpv.conf',               dest: $'($mpv_config_dir)/mpv.conf',                       skip_on_android: true }

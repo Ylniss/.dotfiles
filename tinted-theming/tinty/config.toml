@@ -118,3 +118,17 @@ if [ -f "$SRC" ]; then
     cp "$SRC" "$DST"
 fi
 """
+
+# Sentinel item — tinted-shell only satisfies tinty's per-item theme-file
+# lookup; the hook ignores it and runs nu scripts that render fuzzel/mako
+# color partials from the active scheme yaml.
+[[items]]
+path = "https://github.com/tinted-theming/tinted-shell"
+name = "tinted-base16-extras"
+themes-dir = "scripts"
+supported-systems = ["base16"]
+hook = """
+DOTFILES=$HOME/stuff/repo/.dotfiles
+nu "$DOTFILES/tinted-theming/render-fuzzel.nu" || true
+nu "$DOTFILES/tinted-theming/render-mako.nu" || true
+"""
