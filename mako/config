@@ -1,1 +1,3 @@
 include=~/.config/mako/colors.config
+border-size=0
+default-timeout=10000

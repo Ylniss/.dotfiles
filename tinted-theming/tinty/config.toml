@@ -6,8 +6,6 @@
 #
 # Pattern B — subscriber (no [[items]] entry, tool watches current_scheme):
 #   nvim     — tinted-nvim plugin selector watches current_scheme
-#
-# Phase 2d will add fuzzel, mako (no upstream — community repos or custom templates).
 
 [[items]]
 path = "https://github.com/tinted-theming/tinted-terminal"
@@ -83,9 +81,7 @@ if [ -f "$SRC" ]; then
 fi
 """
 
-# tinted-fzf renders an `export FZF_DEFAULT_OPTS=...` shell snippet. Nushell
-# can't source sh, so the hook sources it in a subshell and writes the
-# resulting opts string to a plain file that env.nu reads.
+# Hook sources the `export FZF_DEFAULT_OPTS=...` snippet, writes the opts to a plain file env.nu reads.
 [[items]]
 path = "https://github.com/tinted-theming/tinted-fzf"
 name = "tinted-fzf"
@@ -102,8 +98,7 @@ if [ -f "$SRC" ]; then
 fi
 """
 
-# yazi flavors are directories: ~/.config/yazi/flavors/<name>.yazi/flavor.toml.
-# theme.toml references the flavor name `tinted`.
+# theme.toml references this flavor as `tinted`.
 [[items]]
 path = "https://github.com/tinted-theming/tinted-yazi"
 name = "tinted-yazi"
@@ -119,9 +114,7 @@ if [ -f "$SRC" ]; then
 fi
 """
 
-# Sentinel item — tinted-shell only satisfies tinty's per-item theme-file
-# lookup; the hook ignores it and runs nu scripts that render fuzzel/mako
-# color partials from the active scheme yaml.
+# Sentinel — tinted-shell is just a stub for tinty's per-item lookup; hook runs the nu render scripts.
 [[items]]
 path = "https://github.com/tinted-theming/tinted-shell"
 name = "tinted-base16-extras"

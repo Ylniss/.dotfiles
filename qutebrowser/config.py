@@ -13,8 +13,32 @@ with open(os.path.expanduser('~/.config/qutebrowser/colors.config.py')) as _f:
 c.colors.statusbar.url.fg = _palette['base09']
 c.colors.completion.match.fg = _palette['base09']
 
+# Translucent chrome (kept in sync via tinted-theming/set-opacity.nu).
+# Qt parses #RRGGBBAA as #AARRGGBB, so we have to use rgba(...) for alpha.
+c.window.transparent = True
+_opacity = 0.75
+
+def _hex_to_rgba(hex_color, alpha):
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+    return f'rgba({r}, {g}, {b}, {alpha})'
+
+_translucent_bg = _hex_to_rgba(_palette['base00'], _opacity)
+_translucent_bg_alt = _hex_to_rgba(_palette['base01'], _opacity)
+
+c.colors.statusbar.normal.bg = _translucent_bg
+c.colors.statusbar.command.bg = _translucent_bg
+c.colors.statusbar.command.private.bg = _translucent_bg
+c.colors.tabs.bar.bg = _translucent_bg
+c.colors.tabs.even.bg = _translucent_bg
+c.colors.tabs.odd.bg = _translucent_bg_alt
+c.colors.completion.even.bg = _translucent_bg
+c.colors.completion.odd.bg = _translucent_bg_alt
+c.colors.completion.category.bg = _translucent_bg
+
 # Dark Theme
-c.colors.webpage.preferred_color_scheme = 'auto'
+c.colors.webpage.preferred_color_scheme = 'dark'
 
 # This is here so configs done via the GUI are not loaded.
 config.load_autoconfig(False)

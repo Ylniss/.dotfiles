@@ -44,7 +44,7 @@ if not (is-windows) and not (is-android) {
   $env.LG_CONFIG_FILE = $"($env.HOME)/.local/share/tinted-theming/tinty/tinted-lazygit-themes-file.yml"
 }
 
-# fzf base16 colors via tinty (hook writes a clean opts string for nu to read)
+# fzf base16 colors via tinty
 if not (is-windows) and not (is-android) {
   let fzf_colors_file = $"($env.HOME)/.local/share/tinted-theming/tinty/fzf-colors"
   if ($fzf_colors_file | path exists) {
