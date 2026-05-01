@@ -13,7 +13,7 @@ config.canonicalize_pasted_newlines = "LineFeed"
 config.show_new_tab_button_in_tab_bar = false
 config.switch_to_last_active_tab_when_closing_tab = true
 config.use_fancy_tab_bar = false
-config.tab_max_width = 32
+config.tab_max_width = 48
 
 -- =========== APPEARANCE ===========
 
@@ -45,7 +45,9 @@ else
 		local loaded = wezterm.color.load_scheme(home .. "/.config/wezterm/colors/" .. slug .. ".toml")
 		if loaded then
 			-- keep 256-color index 16 as default black (LS_COLORS expects it)
-			if loaded.indexed then loaded.indexed[16] = nil end
+			if loaded.indexed then
+				loaded.indexed[16] = nil
+			end
 			config.color_schemes = { [slug] = loaded }
 			config.color_scheme = slug
 			scheme = loaded
