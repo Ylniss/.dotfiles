@@ -7,7 +7,7 @@
 # Pattern B — subscriber (no [[items]] entry, tool watches current_scheme):
 #   nvim     — tinted-nvim plugin selector watches current_scheme
 #
-# Phase 2c will add foot, fzf, yazi, fuzzel, mako (canonical where upstream exists).
+# Phase 2d will add fuzzel, mako (no upstream — community repos or custom templates).
 
 [[items]]
 path = "https://github.com/tinted-theming/tinted-terminal"
@@ -66,3 +66,55 @@ path = "https://github.com/tinted-theming/tinted-lazygit"
 name = "tinted-lazygit"
 themes-dir = "themes"
 supported-systems = ["base16"]
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-terminal"
+name = "tinted-foot"
+themes-dir = "themes/foot"
+supported-systems = ["base16", "base24"]
+hook = """
+SLUG=$(cat $HOME/.local/share/tinted-theming/tinty/current_scheme)
+SRC=$HOME/.local/share/tinted-theming/tinty/repos/tinted-foot/themes/foot/${SLUG}.ini
+DST=$HOME/.config/foot/colors.ini
+if [ -f "$SRC" ]; then
+    mkdir -p "$(dirname "$DST")"
+    cp "$SRC" "$DST"
+    pkill -USR1 foot 2>/dev/null || true
+fi
+"""
+
+# tinted-fzf renders an `export FZF_DEFAULT_OPTS=...` shell snippet. Nushell
+# can't source sh, so the hook sources it in a subshell and writes the
+# resulting opts string to a plain file that env.nu reads.
+[[items]]
+path = "https://github.com/tinted-theming/tinted-fzf"
+name = "tinted-fzf"
+themes-dir = "sh"
+supported-systems = ["base16"]
+hook = """
+SLUG=$(cat $HOME/.local/share/tinted-theming/tinty/current_scheme)
+SRC=$HOME/.local/share/tinted-theming/tinty/repos/tinted-fzf/sh/${SLUG}.sh
+DST=$HOME/.local/share/tinted-theming/tinty/fzf-colors
+if [ -f "$SRC" ]; then
+    FZF_DEFAULT_OPTS=""
+    . "$SRC"
+    echo "$FZF_DEFAULT_OPTS" > "$DST"
+fi
+"""
+
+# yazi flavors are directories: ~/.config/yazi/flavors/<name>.yazi/flavor.toml.
+# theme.toml references the flavor name `tinted`.
+[[items]]
+path = "https://github.com/tinted-theming/tinted-yazi"
+name = "tinted-yazi"
+themes-dir = "flavors"
+supported-systems = ["base16"]
+hook = """
+SLUG=$(cat $HOME/.local/share/tinted-theming/tinty/current_scheme)
+SRC=$HOME/.local/share/tinted-theming/tinty/repos/tinted-yazi/flavors/${SLUG}.toml
+DST=$HOME/.config/yazi/flavors/tinted.yazi/flavor.toml
+if [ -f "$SRC" ]; then
+    mkdir -p "$(dirname "$DST")"
+    cp "$SRC" "$DST"
+fi
+"""
