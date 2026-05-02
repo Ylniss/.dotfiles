@@ -9,7 +9,7 @@ return {
 	cmd = { "Obsidian" },
 	-- Set before plugin loads; else conceallevel warning fires first.
 	init = function()
-		vim.o.conceallevel = 2
+		vim.o.conceallevel = 1
 	end,
 	opts = {
 		legacy_commands = false,
