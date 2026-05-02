@@ -188,6 +188,9 @@ source docker.nu
 source fzf.nu
 source notify.nu
 source general.nu
+source nvim.nu
+source yazi.nu
+source wezterm.nu
 source git.nu
 source mobile-ssh.nu
 source ssh.nu

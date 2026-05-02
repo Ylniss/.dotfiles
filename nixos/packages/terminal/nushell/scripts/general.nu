@@ -12,6 +12,9 @@ alias games = cd $env.GAMES
 alias dwn = cd $env.DOWNLOADS
 alias knowtes = cd $env.NOTES
 
+# List files with mode permissions
+def lsmod [] { ls -al | select name type size modified mode }
+
 def --env notes [] { cd $env.NOTES }
 
 # Sync notes with remote: commit dirty changes, rebase, push.
@@ -63,57 +66,6 @@ def mkdircd --env [dir_name: string] {
   cd $dir_name
 }
 
-# -------------- NVIM --------------
-
-alias vi = nvim
-alias vim = nvim
-
-# Remove stale nvim temp files: shada tmp + swap files orphaned by dead nvim processes.
-def virmtmp [] {
-  let shada_dir = if (is-windows) {
-    $"($env.LOCALAPPDATA)/nvim-data/shada"
-  } else {
-    $"($nu.home-dir)/.local/share/nvim/shada"
-  }
-  glob ($shada_dir | path join "main.shada.tmp.*" | str replace --all '\' '/') | each { rm $in } | ignore
-
-  let swap_dir = if (is-windows) {
-    $"($env.LOCALAPPDATA)/nvim-data/swap"
-  } else {
-    $"($nu.home-dir)/.local/share/nvim/swap"
-  }
-  let live_pids = (ps | where name =~ "nvim" | get pid)
-  # nvim's ZeroBlock header stores owner PID as u32 LE at offset 24 (b0_id + b0_version + b0_page_size + b0_mtime + b0_ino = 24 bytes)
-  let removed = glob ($swap_dir | path join "*.sw?" | str replace --all '\' '/') | each { |f|
-    try {
-      let pid = (open --raw $f | bytes at 24..<28 | into int --endian little)
-      if $pid not-in $live_pids { rm $f; $f }
-    } catch { }
-  } | compact
-  let count = ($removed | length)
-  if $count > 0 { print $"virmtmp: removed ($count) orphaned swap file\(s\)" }
-}
-
-# -------------- YAZI ---------------
-
-# cd into yazi's exit path. On termux this is overridden by an extern in
-# `/usr/share/nushell/vendor/autoload/yazi.nu`; see `android-vendor-autoload/yazi.nu`.
-def --env yazi [...args] {
-  let tmp = (mktemp)
-  ^yazi ...$args --cwd-file $tmp
-  try {
-    let target_dir = (open --raw $tmp | str trim)
-    rm -f $tmp
-    try {
-      if ($target_dir != "" and $target_dir != $env.PWD) { cd $target_dir }
-    } catch { |e| print -e $'yazi: Can not change to ($target_dir): ($e | get debug)' }
-  } catch {
-    |e| print -e $'yazi: Reading ($tmp) returned an error: ($e | get debug)'
-  }
-}
-
-alias e = yazi
-
 # -------------- CLIPBOARD --------------
 
 # Pipe input to system clipboard
@@ -159,16 +111,6 @@ def extract [file: path] {
     rm -r $dir
     print $"Unsupported archive format: ($file)"
   }
-}
-
-# -------------- WEZTERM LAYOUTS --------------
-
-# Create dev layout: 60/40 vertical split, right pane split 80/20 horizontal
-def layout-dev [] {
-  let pane_id = $env.WEZTERM_PANE
-  let right_pane = (wezterm cli split-pane --right --percent 40 --pane-id $pane_id)
-  wezterm cli split-pane --bottom --percent 20 --pane-id $right_pane
-  wezterm cli activate-pane --pane-id $pane_id
 }
 
 # -------------- NETWORK --------------
