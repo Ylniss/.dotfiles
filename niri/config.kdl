@@ -176,7 +176,7 @@ window-rule {
 
 // Same focus-ring fix for foot and qutebrowser (translucent backgrounds).
 window-rule {
-    match app-id=r#"^foot$"#
+    match app-id=r#"foot|float"#
     match app-id=r#"^org\.qutebrowser\.qutebrowser$"#
     draw-border-with-background false
 }
