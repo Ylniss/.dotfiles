@@ -36,8 +36,12 @@ if (is-windows) {
 
 $env.RIPGREP_CONFIG_PATH = $'($env.REPO)/.dotfiles/ripgrep/.ripgreprc'
 $env.FZF_DEFAULT_COMMAND = 'fd -H'
+
 $env.GIT_EDITOR = 'nvim'
 $env.EDITOR = 'nvim'
+
+$env.MANPAGER = "sh -c 'col -bx | bat -l man -p'"
+$env.MANROFFOPT = "-c"
 
 # lazygit base16 theme via tinty
 if not (is-windows) and not (is-android) {

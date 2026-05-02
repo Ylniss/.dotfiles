@@ -38,6 +38,9 @@ $env.RIPGREP_CONFIG_PATH = $'($env.REPO)/.dotfiles/ripgrep/.ripgreprc'
 $env.FZF_DEFAULT_COMMAND = 'fd -H'
 $env.GIT_EDITOR = 'nvim'
 
+$env.MANPAGER = "sh -c 'col -bx | bat -l man -p'"
+$env.MANROFFOPT = "-c"
+
 # Setup Android env
 if (is-android) {
   $env.STORAGE = "~/storage"
