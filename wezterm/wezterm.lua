@@ -10,6 +10,13 @@ config.default_prog = { "nu" }
 config.window_close_confirmation = "NeverPrompt"
 config.canonicalize_pasted_newlines = "LineFeed"
 
+-- Wayland: re-copy clipboard on focus change so paste works between wezterm windows.
+if os.getenv("WAYLAND_DISPLAY") then
+	wezterm.on("window-focus-changed", function()
+		wezterm.run_child_process({ "sh", "-c", "wl-paste -n | wl-copy" })
+	end)
+end
+
 config.show_new_tab_button_in_tab_bar = false
 config.switch_to_last_active_tab_when_closing_tab = true
 config.use_fancy_tab_bar = false
