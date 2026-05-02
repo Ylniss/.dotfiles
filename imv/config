@@ -1,0 +1,4 @@
+[options]
+overlay = true
+overlay_position_bottom = true
+overlay_font = JetBrainsMono Nerd Font:12

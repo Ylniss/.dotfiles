@@ -36,7 +36,7 @@ require("mime-ext.local"):setup({
 		dockerfile = "text/plain",
 		makefile = "text/plain",
 	},
-	fallback_file1 = false,
+	fallback_file1 = true,
 })
 
 -- Linemode showing file size + mtime (e.g. "4.2 KB Apr 15 10:30")
