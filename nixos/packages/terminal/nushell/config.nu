@@ -189,5 +189,6 @@ source git.nu
 source mobile-ssh.nu
 source weather.nu
 source robes-and-steel.nu
+source tinty.nu
 
 use ~/.cache/starship/init.nu

@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 # Claude Code status line — mirrors Starship prompt key elements
 
-input=$(cat)
-
-cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd')
-model=$(echo "$input" | jq -r '.model.display_name')
-used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
-five_h_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
-five_h_reset=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
-week_pct=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty')
-week_reset=$(echo "$input" | jq -r '.rate_limits.seven_day.resets_at // empty')
+IFS=$'\t' read -r cwd model used_pct five_h_pct five_h_reset week_pct week_reset < <(
+    jq -r '[
+        (.workspace.current_dir // .cwd),
+        .model.display_name,
+        (.context_window.used_percentage // ""),
+        (.rate_limits.five_hour.used_percentage // ""),
+        (.rate_limits.five_hour.resets_at // ""),
+        (.rate_limits.seven_day.used_percentage // ""),
+        (.rate_limits.seven_day.resets_at // "")
+    ] | @tsv'
+)
+model="${model% (*)}"
 
 # --- Colors (ANSI named — follow terminal palette, like starship.toml)
 GREEN=$'\033[32m'                       # git staged
@@ -20,19 +23,22 @@ BOLD_RED=$'\033[1;31m'                  # git ahead/behind (git_status default s
 BRIGHT_WHITE=$'\033[97m'                # username
 BRIGHT_WHITE_ITALIC=$'\033[3;97m'       # directory
 DIM=$'\033[2;37m'
+DIM_ITALIC=$'\033[2;3;37m'
 BOLD=$'\033[1m'
 BLUE=$'\033[94m'
 RST=$'\033[0m'
+BRANCH_ICON=$''
 
 # --- User
 user=$(whoami)
 
-# --- Detect git repo (shared by directory + git_part below)
+# --- Detect git repo + grab status in one call
 in_repo=0
 repo_root=""
-if git -C "$cwd" rev-parse --git-dir > /dev/null 2>&1; then
+git_status_raw=""
+if repo_root=$(git -C "$cwd" --no-optional-locks rev-parse --show-toplevel 2>/dev/null); then
     in_repo=1
-    repo_root=$(git -C "$cwd" --no-optional-locks rev-parse --show-toplevel 2>/dev/null)
+    git_status_raw=$(git -C "$cwd" --no-optional-locks status --porcelain=v2 --branch 2>/dev/null)
 fi
 
 # --- Directory
@@ -50,22 +56,33 @@ else
     fi
 fi
 
-# --- Git branch + status
+# --- Git branch + status (parsed from the single porcelain=v2 call)
 git_part=""
 if [ "$in_repo" = "1" ]; then
-    branch=$(git -C "$cwd" --no-optional-locks symbolic-ref --short HEAD 2>/dev/null \
-             || git -C "$cwd" --no-optional-locks rev-parse --short HEAD 2>/dev/null)
+    branch=""; ahead=0; behind=0
+    staged=0; modified=0; untracked=0
+    while IFS= read -r line; do
+        case "$line" in
+            "# branch.head "*)
+                branch="${line#\# branch.head }"
+                ;;
+            "# branch.ab "*)
+                ab="${line#\# branch.ab }"
+                ahead="${ab%% *}"; ahead="${ahead#+}"
+                behind="${ab##* }"; behind="${behind#-}"
+                ;;
+            "1 "*|"2 "*|"u "*)
+                xy="${line:2:2}"
+                [ "${xy:0:1}" != "." ] && ((staged++))
+                [ "${xy:1:1}" != "." ] && ((modified++))
+                ;;
+            "? "*)
+                ((untracked++))
+                ;;
+        esac
+    done <<<"$git_status_raw"
 
-    staged=$(git -C "$cwd" --no-optional-locks diff --cached --name-only 2>/dev/null | wc -l | tr -d ' ')
-    modified=$(git -C "$cwd" --no-optional-locks diff --name-only 2>/dev/null | wc -l | tr -d ' ')
-    untracked=$(git -C "$cwd" --no-optional-locks ls-files --others --exclude-standard 2>/dev/null | wc -l | tr -d ' ')
-
-    ahead=0; behind=0
-    upstream=$(git -C "$cwd" --no-optional-locks rev-parse --abbrev-ref '@{u}' 2>/dev/null)
-    if [ -n "$upstream" ]; then
-        ahead=$(git -C "$cwd" --no-optional-locks rev-list --count '@{u}..HEAD' 2>/dev/null || echo 0)
-        behind=$(git -C "$cwd" --no-optional-locks rev-list --count 'HEAD..@{u}' 2>/dev/null || echo 0)
-    fi
+    [ "$branch" = "(detached)" ] && branch=$(git -C "$cwd" --no-optional-locks rev-parse --short HEAD 2>/dev/null)
 
     status_str=""
     [ "$staged" -gt 0 ]    && status_str="${status_str}${GREEN}+${staged} ${RST}"
@@ -74,7 +91,7 @@ if [ "$in_repo" = "1" ]; then
     [ "$ahead" -gt 0 ]     && status_str="${status_str}${BOLD_RED}⇡${ahead} ${RST}"
     [ "$behind" -gt 0 ]    && status_str="${status_str}${BOLD_RED}⇣${behind} ${RST}"
 
-    branch_seg="${RED} $(printf '\xee\x82\xa0') ${branch}${RST}"
+    branch_seg="${RED}${BRANCH_ICON} ${branch}${RST}"
     git_part="${branch_seg}${status_str:+ ${status_str}}"
 fi
 
@@ -101,7 +118,7 @@ printf '%s%s%s' "$BRIGHT_WHITE_ITALIC" "$short_dir" "$RST"
 printf '\n'
 
 # Bottom line: model + usage sections, joined by " | "
-printf '%s[%s%s' "$DIM" "$model" "$RST"
+printf '%s%s%s' "$DIM" "$model" "$RST"
 
 need_sep=0
 emit_sep() {
@@ -114,10 +131,10 @@ emit_sep() {
 }
 
 emit_section() {
-    local label=$1 value=$2 paren=$3
+    local label=$1 value=$2 suffix=$3
     emit_sep
-    printf '%s%s:%s %s%s%%%s' "$BOLD" "$label" "$RST" "$BLUE" "$value" "$RST"
-    [ -n "$paren" ] && printf ' %s(%s)%s' "$DIM" "$paren" "$RST"
+    printf '%s%s%s %s%s%%%s' "$BOLD" "$label" "$RST" "$BLUE" "$value" "$RST"
+    [ -n "$suffix" ] && printf ' %s%s%s' "$DIM_ITALIC" "$suffix" "$RST"
 }
 
 if [ -n "$used_pct" ]; then
@@ -126,15 +143,13 @@ if [ -n "$used_pct" ]; then
 fi
 if [ -n "$five_h_pct" ]; then
     five_int=$(printf '%.0f' "$five_h_pct")
-    paren=""
-    [ -n "$five_h_reset" ] && paren=$(fmt_reset "$five_h_reset")
-    emit_section "5h" "$five_int" "$paren"
+    suffix=""
+    [ -n "$five_h_reset" ] && suffix=$(fmt_reset "$five_h_reset")
+    emit_section "5h" "$five_int" "$suffix"
 fi
 if [ -n "$week_pct" ]; then
     week_int=$(printf '%.0f' "$week_pct")
-    paren=""
-    [ -n "$week_reset" ] && paren=$(fmt_reset "$week_reset")
-    emit_section "7d" "$week_int" "$paren"
+    suffix=""
+    [ -n "$week_reset" ] && suffix=$(fmt_reset "$week_reset")
+    emit_section "7d" "$week_int" "$suffix"
 fi
-
-printf '%s]%s' "$DIM" "$RST"
