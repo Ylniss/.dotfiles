@@ -52,5 +52,6 @@
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
   },
-  "autoUpdatesChannel": "latest"
+  "autoUpdatesChannel": "latest",
+  "skipAutoPermissionPrompt": true
 }
