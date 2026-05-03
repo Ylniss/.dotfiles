@@ -33,7 +33,7 @@
         "format": "\udb81\udd7e {volume}%",
         "max-volume": 100,
         "scroll-step": 5,
-        "on-click": "~/.config/niri/scripts/wiremix-toggle.nu"
+        "on-click": "~/.config/niri/scripts/toggle-floating-window-with-foot.nu wiremix-float wiremix -v output"
     },
 
     "battery": {
@@ -77,7 +77,8 @@
         "format-connected": "\udb80\udcb1",
         "tooltip-format": "{controller_alias}\t{controller_address}",
         "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
-        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}"
+        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+        "on-click": "~/.config/niri/scripts/toggle-floating-window-with-foot.nu bluetuith-float --size 110x35 bluetuith"
     },
 
     "backlight": {

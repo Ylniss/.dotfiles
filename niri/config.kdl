@@ -195,6 +195,7 @@ window-rule {
     match app-id=r#"^wiremix-float$"#
     match app-id=r#"^btop-float$"#
     match app-id=r#"^yazi-float$"#
+    match app-id=r#"^bluetuith-float$"#
     match app-id=r#"^mpv$"#
     match app-id=r#"^imv$"#
     open-floating true
@@ -216,12 +217,13 @@ binds {
 
     Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn-sh "~/.config/swaylock/lock.nu"; }
 
-    Super+Alt+M hotkey-overlay-title="Toggle wiremix mixer: foot" { spawn-sh "~/.config/niri/scripts/wiremix-toggle.nu"; }
-    Super+E hotkey-overlay-title="Toggle file explorer - yazi: foot" { spawn-sh "~/.config/niri/scripts/yazi-toggle.nu"; }
-    Ctrl+Shift+Escape hotkey-overlay-title="Toggle btop: foot" { spawn-sh "~/.config/niri/scripts/btop-toggle.nu"; }
+    Super+Alt+M hotkey-overlay-title="Toggle wiremix mixer: foot" { spawn-sh "~/.config/niri/scripts/toggle-floating-window-with-foot.nu wiremix-float wiremix -v output"; }
+    Super+E hotkey-overlay-title="Toggle file explorer - yazi: foot" { spawn-sh "~/.config/niri/scripts/toggle-floating-window-with-foot.nu yazi-float --size 110x35 yazi"; }
+    Ctrl+Shift+Escape hotkey-overlay-title="Toggle btop: foot" { spawn-sh "~/.config/niri/scripts/toggle-floating-window-with-foot.nu btop-float --size 110x35 btop"; }
 
     Super+Alt+K hotkey-overlay-title="Toggle Virtual Keyboard: wvkbd" { spawn "pkill" "-RTMIN" "wvkbd-mobintl"; }
     Super+Alt+W hotkey-overlay-title="Open WiFi menu: fuzzel" { spawn-sh "~/.config/niri/scripts/wifi-menu.nu"; }
+    Super+Alt+B hotkey-overlay-title="Toggle bluetuith: foot" { spawn-sh "~/.config/niri/scripts/toggle-floating-window-with-foot.nu bluetuith-float --size 110x35 bluetuith"; }
     Mod+Alt+Escape hotkey-overlay-title="Power Menu: fuzzel" { spawn-sh "~/.config/waybar/scripts/power-menu.nu"; }
 
     // Volume keys mappings for PipeWire & WirePlumber.
