@@ -23,7 +23,7 @@ let symlinks = [
   { src: 'zsh/.zshrc',                    desc: '.zshrc',                     dest: $'($home_dir)/.zshrc' }
   { src: 'yazi/yazi.toml',                desc: 'yazi yazi.toml',             dest: $'($yazi_config_dir)/yazi.toml' }
   { src: 'yazi/keymap.toml',              desc: 'yazi keymap.toml',           dest: $'($yazi_config_dir)/keymap.toml' }
-  { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            dest: $'($yazi_config_dir)/theme.toml' }
+  { src: 'yazi/theme.toml',               desc: 'yazi theme.toml',            dest: $'($yazi_config_dir)/theme.toml',           linux_only: true }
   { src: 'yazi/package.toml',             desc: 'yazi package.toml',          dest: $'($yazi_config_dir)/package.toml' }
   { src: 'yazi/init.lua',                 desc: 'yazi init.lua',              dest: $'($yazi_config_dir)/init.lua' }
   { src: 'yazi/local-plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',   dest: $'($yazi_config_dir)/plugins/tab-hover.yazi' }
