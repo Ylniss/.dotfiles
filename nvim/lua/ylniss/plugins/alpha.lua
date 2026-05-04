@@ -59,14 +59,11 @@ return {
 			dashboard.button("q", "󰐥  Quit Neovim", "<cmd>qa<CR>"),
 		}
 
-		dashboard.section.footer.val = " 󰈈 󰈈 󰈈  WE SMOKE ACID BITCH! 󰈈 󰈈 󰈈 "
+		dashboard.section.footer.val = " 󰈈 󰈈 󰈈  B  R  U  H 󰈈 󰈈 󰈈 "
 
-		vim.api.nvim_set_hl(0, "DashboardHeader", { fg = "#ffff61", bg = "none" })
-		vim.api.nvim_set_hl(0, "DashboardButtons", { fg = "#FFA500", bg = "none" })
-
+		dashboard.section.header.opts.hl = "Function"
+		dashboard.section.buttons.opts.hl = "Keyword"
 		dashboard.section.footer.opts.hl = "Type"
-		dashboard.section.header.opts.hl = "DashboardHeader"
-		dashboard.section.buttons.opts.hl = "DashboardButtons"
 
 		dashboard.opts.opts.noautocmd = true
 
