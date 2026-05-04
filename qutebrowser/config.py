@@ -107,6 +107,7 @@ c.scrolling.bar = 'never'
 
 # Custom bindings (Space as chord prefix, vim-style "leader")
 config.unbind('<Ctrl-h>')
+config.bind(';I', 'hint images download')
 config.bind('<Space>h', 'home')
 config.bind('<Space>gs', 'cmd-set-text -s :open s')
 config.bind('<Space>gh', 'open -t https://github.com')
