@@ -69,7 +69,7 @@ input {
 // https://yalter.github.io/niri/Configuration:-Layout
 layout {
     // Set gaps around windows in logical pixels.
-    gaps 16
+    gaps 8
 
     // When to center a column when changing focus, options are:
     // - "never", default behavior, focusing an off-screen column will keep at the left
@@ -155,6 +155,8 @@ screenshot-path "~/stuff/screenshots/screenshot_%Y-%m-%d %H-%M-%S.png"
 // https://yalter.github.io/niri/Configuration:-Animations
 animations {
     slowdown 0.75 // values >1 slowdown; <1 speed up
+    window-open { off; }
+    window-close { off; }
 }
 
 // Window rules let you adjust behavior for individual windows.
