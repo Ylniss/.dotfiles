@@ -1,17 +1,25 @@
 #!/usr/bin/env bash
 # Claude Code status line — mirrors Starship prompt key elements
 
-IFS=$'\t' read -r cwd model used_pct five_h_pct five_h_reset week_pct week_reset < <(
-    jq -r '[
-        (.workspace.current_dir // .cwd),
-        .model.display_name,
-        (.context_window.used_percentage // ""),
-        (.rate_limits.five_hour.used_percentage // ""),
-        (.rate_limits.five_hour.resets_at // ""),
-        (.rate_limits.seven_day.used_percentage // ""),
-        (.rate_limits.seven_day.resets_at // "")
-    ] | @tsv'
-)
+# One value per line — robust against Windows jq.exe (CRLF) and avoids
+# whitespace-IFS collapsing of consecutive empty TSV fields.
+{
+    IFS= read -r cwd
+    IFS= read -r model
+    IFS= read -r used_pct
+    IFS= read -r five_h_pct
+    IFS= read -r five_h_reset
+    IFS= read -r week_pct
+    IFS= read -r week_reset
+} < <(jq -r '
+    .workspace.current_dir // .cwd,
+    .model.display_name,
+    (.context_window.used_percentage // ""),
+    (.rate_limits.five_hour.used_percentage // ""),
+    (.rate_limits.five_hour.resets_at // ""),
+    (.rate_limits.seven_day.used_percentage // ""),
+    (.rate_limits.seven_day.resets_at // "")
+' | tr -d '\r')
 model="${model% (*)}"
 
 # --- Colors (ANSI named — follow terminal palette, like starship.toml)
