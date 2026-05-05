@@ -1,107 +1,112 @@
 {
-    "layer": "top",
-    "position": "top",
-    "height": 32,
-    "spacing": 24,
-
-    "modules-left": ["battery", "temperature", "cpu", "memory"],
-    "modules-center": ["niri/workspaces"],
-    "modules-right": ["wireplumber", "backlight", "idle_inhibitor", "network", "bluetooth", "tray", "clock", "custom/power"],
-
-    "niri/workspaces": {
-        "format": "<span font_family='Symbols Nerd Font' size='larger'>{icon}</span>",
-        "on-click": "activate",
-        "format-icons": {
-            "active": "\uf444",
-            "default": "\uf4c3"
-        },
-        "sort-by-number": true,
-        "persistent-workspaces": {
-            "1": [],
-            "2": [],
-            "3": [],
-            "4": [],
-            "5": []
-        }
-    },
-
-    "clock": {
-        "format": "{:%a, %d %b | %H:%M}"
-    },
-
-    "wireplumber": {
-        "format": "\udb81\udd7e {volume}%",
-        "max-volume": 100,
-        "scroll-step": 5,
-        "on-click": "~/.config/niri/scripts/toggle-floating-window-with-foot.nu wiremix-float wiremix -v output"
-    },
-
-    "battery": {
-        "bat": "BAT1",
-        "interval": 60,
-        "format": "{icon} {capacity}%",
-        "format-icons": ["\uf244", "\uf243", "\uf242", "\uf241", "\uf240"]
-    },
-
-    "memory": {
-        "interval": 30,
-        "format": "\uf0c9 {percentage}%"
-    },
-
-    "cpu": {
-        "interval": 5,
-        "format": " {usage}%"
-    },
-
-    "temperature": {
-        "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
-        "input-filename": "temp1_input",
-        "critical-threshold": 85,
-        "format": " {temperatureC}°C"
-    },
-
-    "network": {
-        "format": "",
-        "format-ethernet": "\uf6ff",
-        "format-wifi": "<span font_family='Symbols Nerd Font'>\uf1eb</span>",
-        "format-disconnected": "\uf127",
-        "tooltip-format-wifi": "{essid} ({signalStrength}%)",
-        "tooltip-format-ethernet": "{ifname}",
-        "tooltip-format-disconnected": "Disconnected",
-        "on-click": "~/.config/niri/scripts/wifi-menu.nu"
-    },
-
-    "bluetooth": {
-        "format": "\udb80\udcaf",
-        "format-disabled": "\udb80\udcb2",
-        "format-connected": "\udb80\udcb1",
-        "tooltip-format": "{controller_alias}\t{controller_address}",
-        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
-        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
-        "on-click": "~/.config/niri/scripts/toggle-floating-window-with-foot.nu bluetuith-float --size 110x35 bluetuith"
-    },
-
-    "backlight": {
-        "format": "{icon} {percent}%",
-        "format-icons": ["󰃜", "󰃝", "󰃞"]
-    },
-
-    "tray": {
-        "icon-size": 16,
-        "spacing": 16
-    },
-
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "<span font_family='Symbols Nerd Font'>\uf06e</span>",
-            "deactivated": "<span font_family='Symbols Nerd Font'>\uf070</span>"
-        }
-    },
-
-    "custom/power": {
-        "format": "\udb81\udc25",
-        "tooltip": false,
-        "on-click": "~/.config/waybar/scripts/power-menu.nu"
-    }
+	"layer": "top",
+	"position": "top",
+	"height": 32,
+	"spacing": 24,
+	"modules-left": [
+		"battery",
+		"cpu",
+		"memory"
+	],
+	"modules-center": [
+		"niri/workspaces"
+	],
+	"modules-right": [
+		"wireplumber",
+		"backlight",
+		"idle_inhibitor",
+		"network",
+		"bluetooth",
+		"tray",
+		"clock",
+		"custom/power"
+	],
+	"niri/workspaces": {
+		"format": "<span font_family='Symbols Nerd Font' size='larger'>{icon}</span>",
+		"on-click": "activate",
+		"format-icons": {
+			"active": "\uf444",
+			"default": "\uf4c3"
+		},
+		"sort-by-number": true,
+		"persistent-workspaces": {
+			"1": [],
+			"2": [],
+			"3": [],
+			"4": [],
+			"5": []
+		}
+	},
+	"clock": {
+		"format": "{:%a, %d %b | %H:%M}"
+	},
+	"wireplumber": {
+		"format": "\udb81\udd7e {volume}%",
+		"max-volume": 100,
+		"scroll-step": 5,
+		"on-click": "~/.config/niri/scripts/toggle-floating-window-with-foot.nu wiremix-float wiremix -v output"
+	},
+	"battery": {
+		"bat": "BAT1",
+		"interval": 60,
+		"format": "{icon} {capacity}%",
+		"format-icons": [
+			"\uf244",
+			"\uf243",
+			"\uf242",
+			"\uf241",
+			"\uf240"
+		]
+	},
+	"memory": {
+		"interval": 30,
+		"format": "\uf0c9 {percentage}%"
+	},
+	"cpu": {
+		"interval": 5,
+		"format": " {usage}%"
+	},
+	"network": {
+		"format": "",
+		"format-ethernet": "\uf6ff",
+		"format-wifi": "<span font_family='Symbols Nerd Font'>\uf1eb</span>",
+		"format-disconnected": "\uf127",
+		"tooltip-format-wifi": "{essid} ({signalStrength}%)",
+		"tooltip-format-ethernet": "{ifname}",
+		"tooltip-format-disconnected": "Disconnected",
+		"on-click": "~/.config/niri/scripts/wifi-menu.nu"
+	},
+	"bluetooth": {
+		"format": "\udb80\udcaf",
+		"format-disabled": "\udb80\udcb2",
+		"format-connected": "\udb80\udcb1",
+		"tooltip-format": "{controller_alias}\t{controller_address}",
+		"tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
+		"tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+		"on-click": "~/.config/niri/scripts/toggle-floating-window-with-foot.nu bluetuith-float --size 110x35 bluetuith"
+	},
+	"backlight": {
+		"format": "{icon} {percent}%",
+		"format-icons": [
+			"󰃜",
+			"󰃝",
+			"󰃞"
+		]
+	},
+	"tray": {
+		"icon-size": 16,
+		"spacing": 16
+	},
+	"idle_inhibitor": {
+		"format": "{icon}",
+		"format-icons": {
+			"activated": "<span font_family='Symbols Nerd Font'>\uf06e</span>",
+			"deactivated": "<span font_family='Symbols Nerd Font'>\uf070</span>"
+		}
+	},
+	"custom/power": {
+		"format": "\udb81\udc25",
+		"tooltip": false,
+		"on-click": "~/.config/waybar/scripts/power-menu.nu"
+	}
 }

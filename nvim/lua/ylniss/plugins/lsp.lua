@@ -24,6 +24,7 @@ return {
 			yamlls = {},
 			taplo = {},
 			terraformls = {},
+			gopls = {},
 			lua_ls = {
 				Lua = {
 					workspace = { checkThirdParty = false },
