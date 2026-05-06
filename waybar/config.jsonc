@@ -42,6 +42,7 @@
 	},
 	"wireplumber": {
 		"format": "\udb81\udd7e {volume}%",
+		"format-muted": "\udb81\udd81 ",
 		"max-volume": 100,
 		"scroll-step": 5,
 		"on-click": "~/.config/niri/scripts/toggle-floating-window-with-foot.nu wiremix-float wiremix -v output"
