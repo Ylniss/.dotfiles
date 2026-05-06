@@ -1,5 +1,10 @@
 # Global Rules
 
+## Approval
+
+- Never write or modify code without my approval.
+- Never `git commit` without my explicit say-so.
+
 ## Code Style
 
 - No dead code — don't add params, fields, or logic nothing currently uses.
@@ -11,16 +16,6 @@
 
 - Be brutally honest. Say plainly if an approach is bad, overcomplicated, or wrong.
 - Planning: high-level steps first (WHAT/WHY, not HOW). No file paths or code. Wait for approval before details.
-
-## Updating Project Knowledge
-
-When asked to update claude.md / save learnings / remember this:
-
-- Conventions, decisions → project CLAUDE.md
-- Patterns with code → skill reference files
-- New repeatable pattern fitting no existing skill → propose new skill.
-- Gotchas → relevant SKILL.md
-- No duplication across locations.
 
 ## Git
 
