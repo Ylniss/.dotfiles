@@ -13,7 +13,7 @@ alias dwn = cd $env.DOWNLOADS
 alias knowtes = cd $env.NOTES
 
 # List files with mode permissions
-def lsmod [] { ls -al | select name type size modified mode }
+def lsmod [path: glob = "."] { ls -al $path | select name type size modified mode }
 
 def --env notes [] { cd $env.NOTES }
 
