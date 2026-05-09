@@ -198,6 +198,7 @@ window-rule {
     match app-id=r#"^btop-float$"#
     match app-id=r#"^yazi-float$"#
     match app-id=r#"^bluetuith-float$"#
+    match app-id=r#"^psw-float$"#
     match app-id=r#"^mpv$"#
     match app-id=r#"^imv$"#
     open-floating true
@@ -226,6 +227,7 @@ binds {
     Super+Alt+K hotkey-overlay-title="Toggle Virtual Keyboard: wvkbd" { spawn "pkill" "-RTMIN" "wvkbd-mobintl"; }
     Super+Alt+W hotkey-overlay-title="Open WiFi menu: fuzzel" { spawn-sh "~/.config/niri/scripts/wifi-menu.nu"; }
     Super+Alt+B hotkey-overlay-title="Toggle bluetuith: foot" { spawn-sh "~/.config/niri/scripts/toggle-floating-window-with-foot.nu bluetuith-float --size 110x35 bluetuith"; }
+    Super+Alt+P hotkey-overlay-title="Toggle psw: foot" { spawn-sh "~/.config/niri/scripts/toggle-floating-window-with-foot.nu psw-float --size 40x40 ~/go/bin/psw menu"; }
     Mod+Alt+Escape hotkey-overlay-title="Power Menu: fuzzel" { spawn-sh "~/.config/waybar/scripts/power-menu.nu"; }
 
     // Volume keys mappings for PipeWire & WirePlumber.
