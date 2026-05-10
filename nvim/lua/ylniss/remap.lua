@@ -49,6 +49,63 @@ vim.keymap.set("n", "<leader>E", "<cmd>Yazi cwd<CR>", { desc = "open yazi at cwd
 vim.keymap.set("n", "<leader>g>", "<cmd>!git push<CR>", { noremap = true, desc = "git push" })
 vim.keymap.set("n", "<leader>g<", "<cmd>!git pull<CR>", { noremap = true, desc = "git pull" })
 
+-- Add every changed/untracked file (skip deletions) to the buffer list and open the first.
+local function git_status_to_buffers()
+	local git_root = vim.fs.root(0, ".git")
+	if not git_root then
+		vim.notify("Not a git repository", vim.log.levels.WARN)
+		return
+	end
+
+	local result = vim.system({ "git", "-C", git_root, "status", "--porcelain", "-z" }):wait()
+	if result.code ~= 0 then
+		vim.notify("git status failed", vim.log.levels.ERROR)
+		return
+	end
+	local output = result.stdout
+
+	local first_bufnr
+	local i = 1
+	while i <= #output do
+		local nul = output:find("\0", i, true)
+		if not nul then
+			break
+		end
+		local entry = output:sub(i, nul - 1)
+		i = nul + 1
+
+		local x = entry:sub(1, 1)
+		local y = entry:sub(2, 2)
+		local path = entry:sub(4)
+
+		-- Renames/copies are followed by an extra NUL-terminated old path
+		if x == "R" or x == "C" then
+			local nul2 = output:find("\0", i, true)
+			if nul2 then
+				i = nul2 + 1
+			end
+		end
+
+		if x ~= "D" and y ~= "D" then
+			local bufnr = vim.fn.bufadd(vim.fs.joinpath(git_root, path))
+			vim.bo[bufnr].buflisted = true
+			if not first_bufnr then
+				first_bufnr = bufnr
+			end
+		end
+	end
+
+	if not first_bufnr then
+		vim.notify("No changed files", vim.log.levels.INFO)
+		return
+	end
+
+	vim.fn.bufload(first_bufnr)
+	vim.api.nvim_set_current_buf(first_bufnr)
+end
+
+vim.keymap.set("n", "<leader>gs", git_status_to_buffers, { desc = "add git status files to buffers" })
+
 -- =================================== Commenting ===================================
 -- Map both forms: terminals using legacy xterm encoding send 0x1f (<C-_>); terminals
 -- using kitty keyboard protocol / CSI u (recent wezterm) send the modern <C-/> form.
