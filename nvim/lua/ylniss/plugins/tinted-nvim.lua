@@ -51,6 +51,10 @@ return {
 
 						CursorLine = { bg = palette.base02, underline = false },
 
+						LspReferenceText = { bg = palette.base03 },
+						LspReferenceRead = { bg = palette.base03 },
+						LspReferenceWrite = { bg = palette.base03 },
+
 						["@property"] = { fg = palette.base0D },
 						["@variable.member"] = { fg = palette.base0D },
 						["@variable.parameter"] = { fg = palette.base09 },
