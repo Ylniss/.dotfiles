@@ -118,7 +118,6 @@ On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -
 
 | Key | Action |
 |-----|--------|
-| `<leader>gs` | Toggle Diffview |
 | `<leader>gr` | Toggle show deleted lines |
 | `<leader>gi` | Open lazygit |
 

@@ -48,6 +48,7 @@ return {
 						GitSignsAdd = { fg = palette.base0B, bg = "none" },
 						GitSignsChange = { fg = palette.base0D, bg = "none" },
 						GitSignsDelete = { fg = palette.base08, bg = "none" },
+						GitSignsDeleteVirtLn = { fg = palette.base08, bg = "none" },
 
 						CursorLine = { bg = palette.base02, underline = false },
 
