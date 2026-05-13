@@ -5,6 +5,8 @@
 // Find the full list of options on the wiki:
 // https://yalter.github.io/niri/Configuration:-Input
 input {
+    disable-power-key-handling // power button → logind, not niri (avoids back-to-back suspend hang on SP5)
+
     keyboard {
         xkb {
             layout "pl"
@@ -231,7 +233,7 @@ binds {
     Super+Alt+K hotkey-overlay-title="Toggle Virtual Keyboard: wvkbd" { spawn "pkill" "-RTMIN" "wvkbd-mobintl"; }
     Super+Alt+W hotkey-overlay-title="Open WiFi menu: fuzzel" { spawn-sh "~/.config/niri/scripts/wifi-menu.nu"; }
     Super+Alt+B hotkey-overlay-title="Toggle bluetuith: foot" { spawn-sh "~/.config/niri/scripts/toggle-floating-window-with-foot.nu bluetuith-float --size 110x35 bluetuith"; }
-    Super+Alt+P hotkey-overlay-title="Toggle psw: foot" { spawn-sh "~/.config/niri/scripts/toggle-floating-window-with-foot.nu psw-float --size 60x42 ~/go/bin/psw menu"; }
+    Super+Alt+P hotkey-overlay-title="Toggle psw: foot" { spawn-sh "~/.config/niri/scripts/toggle-floating-window-with-foot.nu psw-float --size 60x42 ~/go/bin/psw"; }
     Mod+Alt+Escape hotkey-overlay-title="Power Menu: fuzzel" { spawn-sh "~/.config/waybar/scripts/power-menu.nu"; }
 
     // Volume keys mappings for PipeWire & WirePlumber.
