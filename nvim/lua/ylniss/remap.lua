@@ -41,6 +41,20 @@ vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc =
 
 vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole file" })
 
+vim.keymap.set("n", "<leader>yd", function()
+	local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
+	local diags = vim.diagnostic.get(0, { lnum = lnum })
+	if #diags == 0 then
+		vim.notify("No diagnostics on this line", vim.log.levels.INFO)
+		return
+	end
+	local msgs = {}
+	for _, d in ipairs(diags) do
+		table.insert(msgs, d.message)
+	end
+	vim.fn.setreg("+", table.concat(msgs, "\n"))
+end, { desc = "yank diagnostic under cursor to clipboard" })
+
 -- ====================================== Yazi ========================================
 vim.keymap.set("n", "<leader>e", "<cmd>Yazi<CR>", { desc = "open yazi at current file" })
 vim.keymap.set("n", "<leader>E", "<cmd>Yazi cwd<CR>", { desc = "open yazi at cwd" })

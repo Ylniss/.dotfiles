@@ -130,6 +130,7 @@ On Debian/Ubuntu, `bat` may be installed as `batcat`; symlink it with `sudo ln -
 | `<leader>?` | Recent files |
 | `<leader>/` | Search current buffer |
 | `<leader>sd` | Search diagnostics |
+| `<leader>yd` | Yank diagnostic on current line to clipboard |
 
 # Obsidian
 
