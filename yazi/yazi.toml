@@ -13,13 +13,13 @@ wrap = "yes"
 # Replace slow file.exe MIME detection with extension-based lookup.
 # Installed via: ya pkg add yazi-rs/plugins:mime-ext
 [[plugin.prepend_fetchers]]
-id = "mime"
+group = "mime"
 url = "local://*"
 run = "mime-ext.local"
 prio = "high"
 
 [[plugin.prepend_fetchers]]
-id = "mime"
+group = "mime"
 url = "remote://*"
 run = "mime-ext.remote"
 prio = "high"
