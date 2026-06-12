@@ -8,8 +8,6 @@
       "Write",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git stash:*)",
-      "Bash(git checkout:*)",
       "Bash(git mv:*)",
       "Bash(find:*)",
       "Bash(grep:*)",
@@ -35,6 +33,10 @@
       "Bash(git reset --hard:*)"
     ]
   },
+  "model": "claude-fable-5[1m]",
+  "attribution": {
+    "commit": ""
+  },
   "hooks": {
     "Notification": [
       {
@@ -42,7 +44,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -File ~/stuff/repo/.dotfiles/claude/hooks/notify.ps1"
+            "command": "powershell -NoProfile -WindowStyle Hidden -File ~/.claude/hooks/notify.ps1"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -WindowStyle Hidden -File ~/.claude/hooks/notify.ps1"
           }
         ]
       }
@@ -53,7 +66,5 @@
     "command": "bash ~/.claude/statusline-command.sh"
   },
   "effortLevel": "xhigh",
-  "autoUpdatesChannel": "latest",
-  "skipAutoPermissionPrompt": true,
-  "model": "opus[1m]"
+  "autoUpdatesChannel": "latest"
 }

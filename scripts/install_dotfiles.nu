@@ -57,6 +57,8 @@ let symlinks = [
   { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', dest: $'($home_dir)/.claude/statusline-command.sh' }
   { src: 'claude/skills',                 desc: 'claude skills',              dest: $'($home_dir)/.claude/skills' }
   { src: 'claude/agents',                 desc: 'claude agents',              dest: $'($home_dir)/.claude/agents' }
+  { src: 'claude/rules',                  desc: 'claude rules',               dest: $'($home_dir)/.claude/rules' }
+  { src: 'claude/hooks',                  desc: 'claude hooks',               dest: $'($home_dir)/.claude/hooks' }
 ]
 
 if (is-windows) { windows-require-symlink-capability }

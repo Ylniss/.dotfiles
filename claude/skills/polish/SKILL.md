@@ -31,8 +31,9 @@ APIs. Do not skip this even if you think you know the answer.
 - List every external library/framework in the changed lines (imports/`using`/
   `require`), with its version from the lockfile/manifest (package.json,
   *.csproj, Cargo.toml, go.mod, etc.).
-- For each, invoke the `context7-mcp` skill to fetch current docs (it handles
-  resolve-library-id → version-specific select → query-docs).
+- For each, fetch current docs via the context7 MCP tools: `resolve-library-id`
+  (library name + the question), then `query-docs` with the selected ID —
+  version-specific when the version is known.
 - Hard rule: every "modern-pattern" finding MUST cite what context7 returned.
   If context7 has no docs or doesn't support the suggestion, drop the finding —
   do not assert it from memory.

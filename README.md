@@ -210,6 +210,14 @@ In mpv:
 | `b` | Toggle SponsorBlock skipping |
 | `q` | Quit mpv |
 
+# Claude Code
+
+Config (settings, skills, agents, rules, hooks) is symlinked by `install_dotfiles.nu`. The context7 MCP server lives in `~/.claude.json` (untracked) and must be re-added on a new machine:
+
+```
+claude mcp add --scope user --transport http context7 https://mcp.context7.com/mcp --header "CONTEXT7_API_KEY: <key>"
+```
+
 # Docker
 
 Build the dotfiles image (Arch base + nushell, neovim, yazi, lazygit, Mason LSPs preinstalled):
