@@ -1,4 +1,7 @@
 {
+  "attribution": {
+    "commit": ""
+  },
   "permissions": {
     "allow": [
       "Read",
@@ -33,10 +36,7 @@
       "Bash(git reset --hard:*)"
     ]
   },
-  "model": "claude-fable-5[1m]",
-  "attribution": {
-    "commit": ""
-  },
+  "model": "opus[1m]",
   "hooks": {
     "Notification": [
       {

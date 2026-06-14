@@ -42,6 +42,7 @@ inkscape = [
 ]
 imv = [
 	{ run = 'imv -n "$1" "$(dirname "$1")"', orphan = true, desc = "imv", for = "unix" },
+	{ run = 'start "" "%1"', orphan = true, desc = "Open", for = "windows" },
 ]
 
 [[open.prepend_rules]]
