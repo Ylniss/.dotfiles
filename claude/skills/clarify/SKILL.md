@@ -24,9 +24,25 @@ then apply the findings the user selects. Quality only — no logic changes.
 Goal: every comment is essence only — simple words, direct, no fluff, no
 mental leap to understand it.
 
+Evaluate EVERY comment in the diff — do not sample or cherry-pick. Each comment
+gets one of these verdicts: keep as-is / shorten / reword / delete. Report all
+that need a change; only edit those. Aggressive coverage, selective edits — a
+comment that is already fine stays untouched.
+
+Apply these, in priority order:
+
 - Shorten verbose comments to their core point.
+- Plain wording — replace jargon, insider shorthand, and domain slang with
+  everyday words (e.g. "flake the suite" → "break the tests"). Keep the meaning;
+  just change the vocabulary so any reader gets it with no mental leap.
 - A comment that just restates what the code already says → propose DELETE,
   not shorten. A redundant comment is worse than none.
+- Redundant with the name → DELETE. A clear name (class, method, variable) plus
+  an obvious body often already says everything the comment does. Cover test:
+  hide the comment — can a reader still tell what's going on from the name and
+  code alone? If yes, the comment is noise; delete it. (Also check the usage
+  site: if the WHY is already stated where the thing is wired up, the definition
+  doesn't need to repeat it.) Prefer a clearer name over keeping a comment.
 - Do NOT touch: TODO comments, license/legal headers, API-contract doc
   comments (params/returns/throws), and comments explaining a non-obvious WHY.
 
