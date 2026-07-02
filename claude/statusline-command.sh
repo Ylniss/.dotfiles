@@ -37,8 +37,8 @@ BLUE=$'\033[94m'
 RST=$'\033[0m'
 BRANCH_ICON=$''
 
-# --- User
-user=$(whoami)
+# --- User (env var — avoids a process fork per refresh)
+user=${USERNAME:-${USER:-$(whoami)}}
 
 # --- Detect git repo + grab status in one call
 in_repo=0
@@ -52,9 +52,9 @@ fi
 # --- Directory
 # In a repo: just the repo root name. Otherwise: full path, with $HOME → ~
 if [ "$in_repo" = "1" ] && [ -n "$repo_root" ]; then
-    short_dir=$(basename "$repo_root")
+    short_dir="${repo_root##*/}"
 else
-    home=$(cd ~ && pwd)
+    home=$HOME
     if [ "$cwd" = "$home" ]; then
         short_dir="~"
     elif [ "${cwd#$home/}" != "$cwd" ]; then

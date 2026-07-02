@@ -33,10 +33,13 @@
     "deny": [
       "Bash(git push:*)",
       "Bash(git rebase:*)",
-      "Bash(git reset --hard:*)"
+      "Bash(git reset --hard:*)",
+      "Bash(git clean:*)",
+      "Bash(git restore:*)",
+      "Bash(git checkout -- :*)"
     ]
   },
-  "model": "opus[1m]",
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "Notification": [
       {
@@ -44,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -WindowStyle Hidden -File ~/.claude/hooks/notify.ps1"
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"$HOME/.claude/hooks/notify.ps1\""
           }
         ]
       }
@@ -55,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -WindowStyle Hidden -File ~/.claude/hooks/notify.ps1"
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"$HOME/.claude/hooks/notify.ps1\""
           }
         ]
       }

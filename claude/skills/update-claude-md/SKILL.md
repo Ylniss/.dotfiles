@@ -10,7 +10,8 @@ description: >
 
 Pick one destination. No duplication across files.
 
-- Global rule or convention → global `claude.md`
+- Global rule or convention → global `CLAUDE.md`
+- Self-contained global topic rule (a tool or MCP workflow) → `~/.claude/rules/<topic>.md`
 - Project-specific rule or decision → project `CLAUDE.md`
 - Repeatable workflow or instructions → matching skill's `SKILL.md`
 - Gotcha tied to a skill → that skill's `SKILL.md`

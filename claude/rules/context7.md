@@ -1,6 +1,6 @@
-Use Context7 MCP to fetch current documentation whenever the user asks about a library, framework, SDK, API, CLI tool, or cloud service -- even well-known ones like React, Next.js, Prisma, Express, Tailwind, Django, or Spring Boot. This includes API syntax, configuration, version migration, library-specific debugging, setup instructions, and CLI tool usage. Use even when you think you know the answer -- your training data may not reflect recent changes. Prefer this over web search for library docs.
+The context7 server injects its own when-to-use instructions whenever it is connected; this file only adds the lookup procedure and one exception.
 
-Do not use for: refactoring, writing scripts from scratch, debugging business logic, code review, or general programming concepts.
+Exception to the server's "do not use for: code review": DO use context7 during review to verify modern-library patterns (the polish skill mandates this) — never judge current library idioms from memory.
 
 ## Steps
 

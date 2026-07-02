@@ -5,6 +5,7 @@ description: >
   refines through Q&A, then saves a self-contained, updatable plan to
   plans/<slug>.md at git root for fresh-context handoff. Never writes
   code or commits. Use when user invokes "/plan <subject>".
+argument-hint: "<subject>"
 ---
 
 # Plan
@@ -14,7 +15,7 @@ Plan the subject that follows. Output a phased, commitable plan saved as a singl
 ## Hard rules
 
 1. **No code, no commits, no edits to anything but the plan file.** This skill plans only.
-2. **Two approval gates.** Do not save until you have said the exact phrase **"Plan is ready to save."** and the user approves. Do not write code from this plan — phase detail is a separate, fresh-context invocation.
+2. **Two approval gates: slug and save.** Confirm the slug before creating the file (rule 3), and do not save until you have said the exact phrase **"Plan is ready to save."** and the user approves. Do not write code from this plan — phase detail is a separate, fresh-context invocation.
 3. **Save location.** `<git-root>/plans/<slug>.md`. Create `plans/` if missing. Resolve git root with `git rev-parse --show-toplevel`. Slug from subject (kebab-case); propose and confirm before writing.
 4. **File is canonical after save.** Once saved, the file is the plan. Do not silently restate or revise plan content in conversation — either write the change to the file or stop. Otherwise the in-memory and on-disk plans diverge and fresh context inherits the stale one.
 

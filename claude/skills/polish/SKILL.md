@@ -6,6 +6,7 @@ description: >
   user picks. Use when the user says "polish", "polish changes", "review
   my changes", or asks what in the diff could be simplified/improved/
   optimized or made to use current library patterns.
+argument-hint: "[base ref]"
 ---
 
 # Polish

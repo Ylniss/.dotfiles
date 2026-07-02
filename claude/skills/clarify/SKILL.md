@@ -5,6 +5,7 @@ description: >
   Reports findings first, applies only the ones the user picks. Use when the
   user says "clarify", "clarify changes", "fix names and comments", or asks
   to tighten comments / improve naming in the diff.
+argument-hint: "[base ref]"
 ---
 
 # Clarify
@@ -16,7 +17,8 @@ then apply the findings the user selects. Quality only — no logic changes.
 
 - Default scope: `git diff HEAD` (staged + unstaged tracked changes).
 - Also include new untracked files: `git ls-files --others --exclude-standard`.
-- If the user passed an argument, diff against it instead: `git diff <arg>`.
+- If the user passed an argument, diff against it instead: `git diff <arg>`
+  (e.g. `main`, `HEAD~3`, a branch). The arg is a git ref or range.
 - If there are no changes, say so and stop.
 
 ## 2. Review comments

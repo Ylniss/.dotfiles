@@ -6,6 +6,7 @@ description: >
   scope, verify build + tests, self-review with the clarify/polish criteria,
   then commit on approval and mark the phase done in the plan. Use when user
   invokes "/phase <plan> [N]".
+argument-hint: "<plan> [N]"
 ---
 
 # Phase
@@ -66,10 +67,12 @@ scope only.
 
 ### 5. Self-review
 
-Run the clarify skill's review (comment essence + name directness) and the
-polish skill's review (simplification, optimization, modern-library
-patterns — context7-backed) over the phase diff. Report-only, do not
-apply. Merge both into one numbered findings list.
+Apply the clarify skill's review criteria (comment essence + name
+directness) and the polish skill's criteria (simplification, optimization,
+modern-library patterns — context7-backed) to the phase diff only — the
+changes this phase made, not everything in `git diff HEAD`. Report-only:
+skip those skills' own apply/ask steps and merge both reviews into one
+numbered findings list.
 
 ### 6. Commit gate
 
