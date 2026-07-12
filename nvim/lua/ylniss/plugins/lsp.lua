@@ -31,7 +31,7 @@ return {
 					telemetry = { enable = false },
 					diagnostics = {
 						disable = { "missing-fields" },
-						globals = { "vim, require" },
+						globals = { "vim", "require" },
 					},
 				},
 			},
@@ -51,10 +51,7 @@ return {
 			})
 
 			for server_name, server_settings in pairs(servers) do
-				vim.lsp.config(server_name, {
-					settings = server_settings,
-					filetypes = (server_settings or {}).filetypes,
-				})
+				vim.lsp.config(server_name, { settings = server_settings })
 			end
 			vim.lsp.enable(vim.tbl_keys(servers))
 			vim.lsp.enable("stylua", false)

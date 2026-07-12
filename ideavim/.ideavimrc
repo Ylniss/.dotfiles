@@ -53,7 +53,6 @@ nnoremap yf ggVGy
 set relativenumber number
 set scrolloff=10
 
-" Do incremental searching
 set incsearch
 
 set clipboard+=unnamedplus
@@ -64,7 +63,7 @@ Plug 'machakann/vim-highlightedyank'
 
 " -- Map IDE actions to IdeaVim -- https://jb.gg/abva4t
 
-" Open solution explorer
+" Open the project tool window
 map <leader>e <Action>(ActivateProjectToolWindow)
 
 map gi <Action>(GotoImplementation)

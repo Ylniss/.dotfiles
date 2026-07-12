@@ -134,7 +134,7 @@ spawn-at-startup "wezterm" "start" "--" "nu" "-e" "fastfetch; exec nu" // termin
 spawn-at-startup "wvkbd-mobintl" "--hidden" // virtual keyboard daemon (Super+Alt+K to toggle)
 spawn-at-startup "wlsunset" "-l" "50.26" "-L" "19.02" // night light (Katowice)
 spawn-at-startup "wpaperd" "-d" // wallpaper changer daemon
-spawn-at-startup "udiskie -an" // USB auto mounting daemon
+spawn-at-startup "udiskie" "-a" "-n" // USB auto mounting daemon
 spawn-at-startup "swayidle" "-w" "timeout" "300" "~/.config/swaylock/lock.nu" "timeout" "600" "niri msg action power-off-monitors" "resume" "niri msg action power-on-monitors" "before-sleep" "~/.config/swaylock/lock.nu" // idle: lock at 5min, screen off at 10min
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:

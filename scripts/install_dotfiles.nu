@@ -27,6 +27,7 @@ let symlinks = [
   { src: 'yazi/package.toml',             desc: 'yazi package.toml',          dest: $'($yazi_config_dir)/package.toml' }
   { src: 'yazi/init.lua',                 desc: 'yazi init.lua',              dest: $'($yazi_config_dir)/init.lua' }
   { src: 'yazi/local-plugins/tab-hover.yazi',   desc: 'yazi tab-hover plugin',   dest: $'($yazi_config_dir)/plugins/tab-hover.yazi' }
+  { src: 'yazi/local-plugins/nu-notify.yazi',   desc: 'yazi nu-notify plugin',   dest: $'($yazi_config_dir)/plugins/nu-notify.yazi' }
   { src: 'yazi/local-plugins/disk-info.yazi',   desc: 'yazi disk-info plugin',   dest: $'($yazi_config_dir)/plugins/disk-info.yazi' }
   { src: 'yazi/local-plugins/file-info.yazi',   desc: 'yazi file-info plugin',   dest: $'($yazi_config_dir)/plugins/file-info.yazi' }
   { src: 'yazi/local-plugins/system-info.yazi', desc: 'yazi system-info plugin', dest: $'($yazi_config_dir)/plugins/system-info.yazi' }
@@ -91,7 +92,6 @@ def is-android [] { $nu.os-info.name == 'android' }
 def is-macos   [] { $nu.os-info.name == 'macos' }
 def is-linux   [] { $nu.os-info.name == 'linux' }
 
-# Prints a yellow warning to stderr
 def warn [msg: string] {
   print -e $"(ansi yellow)($msg)(ansi reset)"
 }

@@ -9,7 +9,7 @@ let palette = (palette)
 let bg_alpha = (alpha-hex $opacity)
 let opaque = "ff"
 
-def with_alpha [color: string, alpha_hex: string] {
+def with-alpha [color: string, alpha_hex: string] {
   ($color | str replace '#' '') + $alpha_hex
 }
 
@@ -18,11 +18,11 @@ mkdir ($output_path | path dirname)
 
 [
   "[colors]"
-  $"background=(with_alpha $palette.base00 $bg_alpha)"
-  $"text=(with_alpha $palette.base05 $opaque)"
-  $"match=(with_alpha $palette.base0D $opaque)"
-  $"selection=(with_alpha $palette.base03 $opaque)"
-  $"selection-text=(with_alpha $palette.base06 $opaque)"
-  $"selection-match=(with_alpha $palette.base0D $opaque)"
-  $"border=(with_alpha $palette.base05 $opaque)"
+  $"background=(with-alpha $palette.base00 $bg_alpha)"
+  $"text=(with-alpha $palette.base05 $opaque)"
+  $"match=(with-alpha $palette.base0D $opaque)"
+  $"selection=(with-alpha $palette.base03 $opaque)"
+  $"selection-text=(with-alpha $palette.base06 $opaque)"
+  $"selection-match=(with-alpha $palette.base0D $opaque)"
+  $"border=(with-alpha $palette.base05 $opaque)"
 ] | str join (char nl) | save -f $output_path

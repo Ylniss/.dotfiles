@@ -1,11 +1,5 @@
-# Set up the prompt
-autoload -Uz promptinit
-promptinit
-prompt adam1
-
 setopt histignorealldups sharehistory
 
-# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
 HISTSIZE=1000
 SAVEHIST=1000
 HISTFILE=~/.zsh_history
@@ -32,16 +26,4 @@ zstyle ':completion:*' verbose true
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
 
-# ------------- my cli functions  -------------  
-repo_dir=/mnt/c/users/zupqa/stuff/repo #change to your repo path
-
-repo() {
-  cd $repo_dir
-}
-
-ntpd() {
-  /mnt/c/Program\ Files/Notepad++/Notepad++.exe $1
-}
-
-# oh-my-posh init
 eval "$(oh-my-posh init zsh)"

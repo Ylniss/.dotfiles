@@ -1,3 +1,5 @@
+local run_nu = require("nu-notify").run
+
 local nu_snippet = [[
 let h = (sys host)
 let cpus = (sys cpu)
@@ -29,31 +31,11 @@ $lines | str join "\n" | print
 
 return {
 	entry = function()
-		local child, err = Command("nu")
-			:arg("-c"):arg(nu_snippet)
-			:stdout(Command.PIPED):stderr(Command.PIPED)
-			:spawn()
-
-		if not child then
-			ya.notify { title = "System info", content = "Failed to start nu: " .. tostring(err), timeout = 5, level = "error" }
-			return
-		end
-
-		local output, werr = child:wait_with_output()
-		if not output then
-			ya.notify { title = "System info", content = "wait failed: " .. tostring(werr), timeout = 5, level = "error" }
-			return
-		end
-
-		if output.status.success then
-			ya.notify { title = "System", content = output.stdout or "", timeout = 6, level = "info" }
-		else
-			ya.notify {
-				title = "System info error",
-				content = "nu exit " .. tostring(output.status.code) .. ": " .. (output.stderr or ""),
-				timeout = 10,
-				level = "error",
-			}
-		end
+		run_nu {
+			snippet = nu_snippet,
+			error_title = "System info",
+			success_title = "System",
+			timeout = 6,
+		}
 	end,
 }

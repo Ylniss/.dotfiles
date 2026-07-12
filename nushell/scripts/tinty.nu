@@ -9,18 +9,20 @@ const TINTY_FAVS = [
   base16-irblack
 ]
 
-# Pick any tinty scheme via fzf and apply it.
-def tinty-apply [] {
-  let pick = (tinty list | fzf | str trim)
+# Pick a scheme from the piped-in list via fzf and apply it.
+def apply-picked []: string -> nothing {
+  let pick = ($in | fzf | str trim)
   if ($pick | is-not-empty) {
     tinty apply $pick
   }
 }
 
+# Pick any tinty scheme via fzf and apply it.
+def tinty-apply [] {
+  tinty list | apply-picked
+}
+
 # Pick a scheme via fzf from a favorites list and apply it.
 def tinty-fav-apply [] {
-  let pick = ($TINTY_FAVS | str join "\n" | fzf | str trim)
-  if ($pick | is-not-empty) {
-    tinty apply $pick
-  }
+  $TINTY_FAVS | str join "\n" | apply-picked
 }

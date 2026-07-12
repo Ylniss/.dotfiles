@@ -10,16 +10,16 @@ def gita --wrapped [path?: string, ...opts] {
   } 
 }
 
-# Show Git Log: Displays a graphical representation of the git commit history.
-def gitl [--grph (-g)] {
-  if $grph { 
+# Show git log — compact table by default, --graph (-g) for the commit graph.
+def gitl [--graph (-g)] {
+  if $graph {
     git log --all --decorate --oneline --graph --pretty=format:'%C(auto)%h %<(12,trunc)%an %<(16,trunc)%ar %s %d'
   } else { 
     git log --reverse $"--pretty=(ansi yellow)%h(ansi reset)»¦«%s»¦«%aN»¦«%as" | lines | split column "»¦«" commit message name date | upsert message {|r| $r.message | str substring 0..65} | sort-by date
   }  
 }
 
-# Git Diff: Displays unstaged and staged changes with appropriate messages.
+# Show unstaged then staged changes under labeled headers.
 def gitd --wrapped [...opts] {
   let git_diff_output = git diff
   if $git_diff_output != "" {
@@ -31,13 +31,8 @@ def gitd --wrapped [...opts] {
     print $"(ansi green)\n --------------------- Staged Changes --------------------- (ansi reset)"
     git diff --staged ...$opts
   }
-
-  if $git_diff_output == "" and $git_diff_staged_output == "" {
-    git diff ...$opts
-  }
 }
 
-# Git Commit Message: Commits changes with a given commit message.
 def gitc --wrapped [...opts, message?: string] {
   if not ($message | is-empty) {
     git commit ...$opts -m $message 
@@ -65,7 +60,7 @@ def gitmrg [branch: string] {
   let current_branch = git rev-parse --abbrev-ref HEAD
   git fetch --all
 
-  # Check if the current branch has an upstream set, if not, set it to origin/current_branch
+  # Set upstream to origin/<branch> if none is configured (needed before merge).
   if (git rev-parse --abbrev-ref --symbolic-full-name @{u} | is-empty) {
     git branch $'--set-upstream-to=origin/($current_branch)' $current_branch
   }

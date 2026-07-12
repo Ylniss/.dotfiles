@@ -2,7 +2,7 @@ alias vi = nvim
 alias vim = nvim
 
 # Remove stale nvim temp files: shada tmp + swap files orphaned by dead nvim processes.
-def virmtmp [] {
+def nvim-clean-temp [] {
   let shada_dir = if (is-windows) {
     $"($env.LOCALAPPDATA)/nvim-data/shada"
   } else {
@@ -24,6 +24,6 @@ def virmtmp [] {
     } catch { }
   } | compact
   let count = ($removed | length)
-  if $count > 0 { print $"virmtmp: removed ($count) orphaned swap file\(s\)" }
+  if $count > 0 { print $"nvim-clean-temp: removed ($count) orphaned swap file\(s\)" }
 }
 

@@ -1,3 +1,5 @@
+local run_nu = require("nu-notify").run
+
 local get_hovered = ya.sync(function()
 	local h = cx.active.current.hovered
 	if not h then return nil end
@@ -89,36 +91,18 @@ return {
 			return
 		end
 
-		local child, err = Command("nu")
-			:arg("-c"):arg(nu_snippet)
-			:env("YAZI_FILE_PATH", f.path)
-			:env("YAZI_FILE_NAME", f.name)
-			:env("YAZI_FILE_MIME", f.mime)
-			:env("YAZI_FILE_SIZE", tostring(f.size))
-			:env("YAZI_FILE_MTIME", tostring(f.mtime))
-			:stdout(Command.PIPED):stderr(Command.PIPED)
-			:spawn()
-
-		if not child then
-			ya.notify { title = "File info", content = "Failed to start nu: " .. tostring(err), timeout = 5, level = "error" }
-			return
-		end
-
-		local output, werr = child:wait_with_output()
-		if not output then
-			ya.notify { title = "File info", content = "wait failed: " .. tostring(werr), timeout = 5, level = "error" }
-			return
-		end
-
-		if output.status.success then
-			ya.notify { title = "File: " .. f.name, content = output.stdout or "", timeout = 6, level = "info" }
-		else
-			ya.notify {
-				title = "File info error",
-				content = "nu exit " .. tostring(output.status.code) .. ": " .. (output.stderr or ""),
-				timeout = 10,
-				level = "error",
-			}
-		end
+		run_nu {
+			snippet = nu_snippet,
+			env = {
+				YAZI_FILE_PATH = f.path,
+				YAZI_FILE_NAME = f.name,
+				YAZI_FILE_MIME = f.mime,
+				YAZI_FILE_SIZE = tostring(f.size),
+				YAZI_FILE_MTIME = tostring(f.mtime),
+			},
+			error_title = "File info",
+			success_title = "File: " .. f.name,
+			timeout = 6,
+		}
 	end,
 }

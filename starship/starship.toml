@@ -2,14 +2,12 @@
 style_user = "bright-white"
 style_root = "red"
 format = "[$user]($style)"
-disabled = false
 show_always = true
 
 [hostname]
 ssh_only = false
 format = "[@$hostname](bright-white) "
 trim_at = "."
-disabled = false
 
 [character]
 success_symbol = "[➜](green)"
@@ -24,12 +22,7 @@ style = "italic bright-white"
 
 [cmd_duration]
 min_time = 500
-show_milliseconds = false
-disabled = false
 style = "italic red"
-
-[shell]
-disabled = true
 
 [aws]
 symbol = "  "
@@ -45,8 +38,6 @@ format = "[via ](bright-white)[$symbol$context]($style) "
 style = "bright-blue"
 only_with_files = true
 detect_files = ["docker-compose.yml", "docker-compose.yaml", "Dockerfile"]
-detect_folders = []
-disabled = false
 
 [git_branch]
 symbol = " "

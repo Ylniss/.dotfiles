@@ -138,9 +138,8 @@ def main [--rescan(-r)] {
     let active = if ($connected | is-empty) { "" } else { $connected | first | get ssid }
 
     let menu_table = ($nets | each { |n|
-        let mark = if $n.in_use == "*" { "  " } else { "  " }
         let lock = if (($n.security != "") and ($n.security != "--")) { "󰌾" } else { " " }
-        let display = $"($mark)(signal-icon $n.signal)  ($lock)  ($n.ssid)"
+        let display = $"  (signal-icon $n.signal)  ($lock)  ($n.ssid)"
         { display: $display, ssid: $n.ssid, security: $n.security }
     })
 

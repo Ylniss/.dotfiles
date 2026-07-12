@@ -28,7 +28,6 @@
 			"active": "\uf444",
 			"default": "\uf4c3"
 		},
-		"sort-by-number": true,
 		"persistent-workspaces": {
 			"1": [],
 			"2": [],

@@ -2,16 +2,15 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- Set relative and absolute line numbers
+-- Show relative line numbers
 vim.o.relativenumber = true
 
--- Make line numbers default
 vim.wo.number = true
 
 -- Set the number of screen lines to keep above and below the cursor
 vim.o.scrolloff = 10
 
--- Set highlight on search
+-- Don't keep search matches highlighted after searching
 vim.o.hlsearch = false
 
 -- Highlight line with the cursor
@@ -60,14 +59,10 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- Set custom terminal tab title
-local function get_last_segment_of_path(path)
-	return string.gsub(path, "(.*[/\\])(.*)", "%2")
-end
-
 local function set_custom_title()
 	local current_file = vim.fn.expand("%:t")
 	local filename_segment = current_file ~= "" and "|" .. current_file or ""
-	vim.opt.titlestring = "nvim in " .. get_last_segment_of_path(vim.fn.getcwd()) .. filename_segment
+	vim.opt.titlestring = "nvim in " .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. filename_segment
 end
 
 -- Enable setting the terminal title

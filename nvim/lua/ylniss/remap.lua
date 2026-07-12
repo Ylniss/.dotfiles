@@ -123,10 +123,10 @@ vim.keymap.set("n", "<leader>gs", git_status_to_buffers, { desc = "add git statu
 -- =================================== Commenting ===================================
 -- Map both forms: terminals using legacy xterm encoding send 0x1f (<C-_>); terminals
 -- using kitty keyboard protocol / CSI u (recent wezterm) send the modern <C-/> form.
-vim.keymap.set("n", "<C-_>", "gcc", { remap = true, desc = "toggle line comment" })
-vim.keymap.set("v", "<C-_>", "gc", { remap = true, desc = "toggle line comment" })
-vim.keymap.set("n", "<C-/>", "gcc", { remap = true, desc = "toggle line comment" })
-vim.keymap.set("v", "<C-/>", "gc", { remap = true, desc = "toggle line comment" })
+for _, lhs in ipairs({ "<C-_>", "<C-/>" }) do
+	vim.keymap.set("n", lhs, "gcc", { remap = true, desc = "toggle line comment" })
+	vim.keymap.set("v", lhs, "gc", { remap = true, desc = "toggle line comment" })
+end
 
 -- ================================= LSP keymaps ==================================
 vim.api.nvim_create_autocmd("LspAttach", {

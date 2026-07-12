@@ -10,18 +10,6 @@ local split_nav = require("nvim-splits").split_nav
 local M = {}
 
 M.bindings = {
-	-- Ctrl + number to focus on <number> tab
-	{ key = "1", mods = "CTRL", action = act.ActivateTab(0) },
-	{ key = "2", mods = "CTRL", action = act.ActivateTab(1) },
-	{ key = "3", mods = "CTRL", action = act.ActivateTab(2) },
-	{ key = "4", mods = "CTRL", action = act.ActivateTab(3) },
-	{ key = "5", mods = "CTRL", action = act.ActivateTab(4) },
-	{ key = "6", mods = "CTRL", action = act.ActivateTab(5) },
-	{ key = "7", mods = "CTRL", action = act.ActivateTab(6) },
-	{ key = "8", mods = "CTRL", action = act.ActivateTab(7) },
-	{ key = "9", mods = "CTRL", action = act.ActivateTab(8) },
-	{ key = "0", mods = "CTRL", action = act.ActivateTab(-1) },
-
 	-- move between split panes
 	split_nav("move", "h"),
 	split_nav("move", "j"),
@@ -33,10 +21,9 @@ M.bindings = {
 	split_nav("resize", "k"),
 	split_nav("resize", "l"),
 
-	-- Ctrl + T to open a new tab
 	{ key = "t", mods = "CTRL", action = act.SpawnTab("CurrentPaneDomain") },
 
-	-- Ctrl + Shift + T to create small pane on the bottom (terminal)
+	-- Small terminal pane docked at the bottom
 	{
 		key = "t",
 		mods = "CTRL|SHIFT",
@@ -47,16 +34,14 @@ M.bindings = {
 		}),
 	},
 
-	-- Ctrl + Shift + Q to close current pane
 	{ key = "q", mods = "CTRL|SHIFT", action = act.CloseCurrentPane({ confirm = false }) },
 
-	-- Ctrl + Shift + W to close current tab
 	{ key = "w", mods = "CTRL|SHIFT", action = act.CloseCurrentTab({ confirm = false }) },
 
-	-- Ctrl + Shift + V to split horizontally (side by side)
+	-- split side by side
 	{ key = "v", mods = "CTRL|SHIFT", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
 
-	-- Ctrl + Shift + H to split vertically (stacked)
+	-- split stacked
 	{ key = "h", mods = "CTRL|SHIFT", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
 
 	-- Ctrl + e/y to scroll up or down
@@ -65,10 +50,8 @@ M.bindings = {
 
 	{ key = "F11", action = act.ToggleFullScreen },
 
-	-- Alt + Shift + L to show launcher options
 	{ key = "l", mods = "SHIFT|ALT", action = act.ShowLauncher },
 
-	-- Ctrl + V to paste
 	{ key = "v", mods = "CTRL", action = act.PasteFrom("Clipboard") },
 
 	-- Shift + Enter to insert newline (for Claude Code)
@@ -89,6 +72,12 @@ M.bindings = {
 		end),
 	},
 }
+
+-- Ctrl + number to focus on <number> tab (0 = last)
+for i = 1, 9 do
+	table.insert(M.bindings, { key = tostring(i), mods = "CTRL", action = act.ActivateTab(i - 1) })
+end
+table.insert(M.bindings, { key = "0", mods = "CTRL", action = act.ActivateTab(-1) })
 
 function M.copy_mode()
 	if not wezterm.gui then

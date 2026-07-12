@@ -24,17 +24,14 @@ return {
 			local start = current_file == "" and vim.fn.getcwd() or vim.fn.fnamemodify(current_file, ":h")
 			local found = vim.fs.find(".git", { upward = true, path = start })[1]
 			if not found then
-				print("Not a git repository. Searching on current working directory")
+				vim.notify("Not a git repository. Searching on current working directory", vim.log.levels.WARN)
 				return vim.fn.getcwd()
 			end
 			return vim.fs.dirname(found)
 		end
 
 		local function live_grep_git_root()
-			local git_root = find_git_root()
-			if git_root then
-				fzf.live_grep({ cwd = git_root })
-			end
+			fzf.live_grep({ cwd = find_git_root() })
 		end
 
 		local function live_grep_open_files()
@@ -55,7 +52,7 @@ return {
 		vim.keymap.set("n", "<leader>?", fzf.oldfiles, { desc = "find recently opened files" })
 		vim.keymap.set("n", "<leader>/", fzf.grep_curbuf, { desc = "fuzzily search in current buffer" })
 		vim.keymap.set("n", "<leader>s/", live_grep_open_files, { desc = "search in Open Files" })
-		vim.keymap.set("n", "<leader>st", fzf.builtin, { desc = "search select fzf-lua" })
+		vim.keymap.set("n", "<leader>st", fzf.builtin, { desc = "select fzf-lua picker" })
 		vim.keymap.set("n", "<leader>ss", fzf.git_files, { desc = "search git files" })
 		vim.keymap.set("n", "<leader>sf", fzf.files, { desc = "search files" })
 		vim.keymap.set("n", "<leader>sp", function()

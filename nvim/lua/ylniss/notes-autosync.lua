@@ -156,7 +156,7 @@ end
 -- read from disk AFTER rebase lands — prevents the stale-buffer overwrite
 -- race where local saves would push a pre-pull version to origin. Notifies
 -- if the sync runs long so user knows why nvim is hanging.
-local function spawn_quiet_sync(timeout_ms)
+local function spawn_quiet_blocking(timeout_ms)
 	local done = false
 	local slow_timer = assert(vim.uv.new_timer())
 	slow_timer:start(
@@ -240,7 +240,7 @@ vim.api.nvim_create_autocmd("BufReadPre", {
 			return
 		end
 		pulled_this_session = true
-		spawn_quiet_sync(SYNC_TIMEOUT_MS)
+		spawn_quiet_blocking(SYNC_TIMEOUT_MS)
 		-- Re-stat after BufReadPost so b_mtime reflects the post-sync file.
 		-- Without this, :wq on an unmodified buffer warns about external change.
 		vim.schedule(function()
