@@ -28,6 +28,10 @@ if (is-windows) {
   if ($aseprite_dir | path exists) {
     $env.Path = ($env.Path | prepend $aseprite_dir)
   }
+  let inkscape_dir = 'C:\Program Files\Inkscape\bin'
+  if ($inkscape_dir | path exists) {
+    $env.Path = ($env.Path | prepend $inkscape_dir)
+  }
   $env.Path = ($env.Path | prepend ($nu.home-dir | path join 'go' 'bin'))
 } else {
   $env.PATH = ($env.PATH | prepend ($nu.home-dir | path join 'go' 'bin'))
