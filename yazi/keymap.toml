@@ -4,6 +4,11 @@ run = "cd ~/stuff/"
 desc = "Go stuff"
 
 [[mgr.prepend_keymap]]
+on = ["g", "b"]
+run = "cd \"~/stuff/BoardGame Design/\""
+desc = "Go board game dev"
+
+[[mgr.prepend_keymap]]
 on = ["g", "n"]
 run = "cd ~/stuff/knowtes/"
 desc = "Go Obsidian knowtes"
