@@ -30,7 +30,7 @@ prio = "high"
 url = "*.nu"
 run = 'piper -- bat --color=always --theme=ansi --style=plain --paging=never "$1"'
 
-# Open text files in nvim by default; SVGs in Inkscape
+# Open text files in nvim by default; SVGs in Inkscape; office docs in OnlyOffice
 [opener]
 edit = [
 	{ run = 'nvim "$@"', block = true, desc = "nvim", for = "unix" },
@@ -39,6 +39,11 @@ edit = [
 inkscape = [
 	{ run = 'inkscape "$@"', orphan = true, desc = "Inkscape", for = "unix" },
 	{ run = 'inkscape %*', orphan = true, desc = "Inkscape", for = "windows" },
+]
+onlyoffice = [
+	{ run = 'onlyoffice-desktopeditors "$@"', orphan = true, desc = "OnlyOffice", for = "unix" },
+	# Full exe path required: DesktopEditors.exe exits silently when spawned by bare name via cmd's PATH lookup
+	{ run = '"C:\Program Files\ONLYOFFICE\DesktopEditors\DesktopEditors.exe" %*', orphan = true, desc = "OnlyOffice", for = "windows" },
 ]
 imv = [
 	{ run = 'imv -n "$1" "$(dirname "$1")"', orphan = true, desc = "imv", for = "unix" },
@@ -60,6 +65,14 @@ use = "edit"
 [[open.prepend_rules]]
 mime = "application/javascript"
 use = "edit"
+
+[[open.prepend_rules]]
+url = "*.docx"
+use = "onlyoffice"
+
+[[open.prepend_rules]]
+url = "*.xlsx"
+use = "onlyoffice"
 
 [[open.prepend_rules]]
 mime = "image/svg+xml"
