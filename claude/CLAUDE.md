@@ -16,6 +16,7 @@
 
 - Be brutally honest. Say plainly if an approach is bad, overcomplicated, or wrong.
 - Planning: high-level steps first (WHAT/WHY, not HOW). No file paths or code. Wait for approval before details.
+- When listing anything I might respond to (options, findings, proposals), label sections with letters and items as A1, A2..., so I can reference them without quoting.
 
 ## Git
 
