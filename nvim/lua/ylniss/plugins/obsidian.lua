@@ -7,10 +7,6 @@ return {
 	version = "*",
 	ft = "markdown",
 	cmd = { "Obsidian" },
-	-- Set before plugin loads; else conceallevel warning fires first.
-	init = function()
-		vim.o.conceallevel = 1
-	end,
 	opts = {
 		legacy_commands = false,
 		workspaces = {
@@ -21,10 +17,8 @@ return {
 			},
 		},
 		picker = { name = "fzf-lua" },
-		completion = {
-			nvim_cmp = false,
-			min_chars = 2,
-		},
+		-- markview.nvim renders markdown (and sets conceallevel); don't double-render.
+		ui = { enable = false },
 		frontmatter = { enabled = false },
 		checkbox = { order = { " ", "x" } },
 		callbacks = {
