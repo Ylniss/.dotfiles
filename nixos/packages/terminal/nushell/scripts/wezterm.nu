@@ -8,3 +8,11 @@ def layout-dev [] {
   wezterm cli activate-pane --pane-id $pane_id
 }
 
+# Create bg layout: 40/60 vertical split, left pane split 50/50 horizontal
+def layout-bg [] {
+  let pane_id = $env.WEZTERM_PANE
+  wezterm cli split-pane --right --percent 60 --pane-id $pane_id
+  wezterm cli split-pane --bottom --percent 50 --pane-id $pane_id
+  wezterm cli activate-pane --pane-id $pane_id
+}
+
