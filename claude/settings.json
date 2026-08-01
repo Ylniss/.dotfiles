@@ -47,7 +47,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"$HOME/.claude/hooks/notify.ps1\""
+            "command": "bash ~/.claude/hooks/notify.sh"
           }
         ]
       }
@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File \"$HOME/.claude/hooks/notify.ps1\""
+            "command": "bash ~/.claude/hooks/notify.sh"
           }
         ]
       }

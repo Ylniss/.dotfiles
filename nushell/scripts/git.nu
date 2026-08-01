@@ -126,7 +126,7 @@ def --env gitwtf [path: string] {
     | str replace 'worktree ' '')
 
   # Validate: not the main worktree
-  if ($resolved | path expand | str downcase) == ($base_path | str downcase) {
+  if ($resolved | path expand | str lowercase) == ($base_path | str lowercase) {
     print $"(ansi red)This is the main worktree — refusing to remove(ansi reset)"
     return
   }

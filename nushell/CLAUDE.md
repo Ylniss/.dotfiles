@@ -1,6 +1,6 @@
 # Nushell Config
 
-Personal nushell (v0.111+) dotfiles. No build/test/lint — validate by loading in a live nushell session.
+Personal nushell (v0.114+) dotfiles. No build/test/lint — validate by loading in a live nushell session.
 
 ## Architecture
 

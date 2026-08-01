@@ -84,7 +84,7 @@ def clip [] {
 
 # Extract archive into directory named after the archive
 def extract [file: path] {
-  let ext = ($file | str downcase)
+  let ext = ($file | str lowercase)
   let dir = ($file | path basename | str replace -r '(?i)\.(tar\.(gz|bz2|xz)|tgz|zip|7z|rar|tar)$' '')
 
   mkdir $dir

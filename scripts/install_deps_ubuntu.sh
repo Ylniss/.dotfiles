@@ -11,7 +11,7 @@ fi
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends \
   build-essential procps curl file git ca-certificates \
-  xdg-utils unzip
+  xdg-utils unzip libnotify-bin
 
 if ! command -v brew >/dev/null 2>&1 && [[ ! -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
   NONINTERACTIVE=1 /bin/bash -c \
@@ -28,5 +28,5 @@ fi
 brew install \
   btop \
   nushell neovim yazi starship \
-  bat ripgrep fd fzf \
+  bat ripgrep fd fzf jq \
   lazygit
