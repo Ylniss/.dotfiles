@@ -1,7 +1,8 @@
 [mgr]
 show_hidden = true
-sort_by = "mtime"
-sort_reverse = true
+sort_by = "extension"
+sort_reverse = false
+sort_fallback = "natural"
 sort_dir_first = true
 linemode = "size_and_mtime"
 
