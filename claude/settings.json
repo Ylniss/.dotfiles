@@ -3,7 +3,6 @@
     "commit": ""
   },
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Read",
       "Grep",
@@ -38,7 +37,8 @@
       "Bash(git clean:*)",
       "Bash(git restore:*)",
       "Bash(git checkout -- :*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "opus[1m]",
   "hooks": {
