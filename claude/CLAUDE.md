@@ -2,7 +2,7 @@
 
 ## Approval
 
-- Never write or modify code without my approval.
+- Never write or modify files without my approval.
 - Never `git commit` without my explicit say-so.
 
 ## Code Style
@@ -15,6 +15,7 @@
 ## Communication
 
 - Be brutally honest. Say plainly if an approach is bad, overcomplicated, or wrong.
+- Write English in ASD-STE100 (Simplified Technical English): short sentences, active voice, one instruction per sentence, consistent terms — no synonym swapping. In Polish, keep the same brevity and consistency; ignore the English-specific rules.
 - Planning: high-level steps first (WHAT/WHY, not HOW). No file paths or code. Wait for approval before details.
 - When listing anything I might respond to (options, findings, proposals), label sections with letters and items as A1, A2..., so I can reference them without quoting.
 
