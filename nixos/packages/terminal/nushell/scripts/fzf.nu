@@ -1,9 +1,9 @@
 # Change dir with fzf
-def fcd --env [] {
+def --env fcd [] {
   let path = fzf
   let type = $path | path type
   if ($path | path exists) {
-    if $type =~ 'dir' or $type =~ 'symlink' {
+    if $type in ['dir' 'symlink'] {
       cd $path
     } else {
       cd ($path | path dirname)

@@ -43,7 +43,7 @@ def "notes up" [] {
 
   let behind = (git rev-list --count $"HEAD..($upstream)" | str trim | into int)
   if $behind > 0 {
-    try { git rebase --quiet $upstream } catch { |e|
+    try { git rebase --quiet $upstream } catch {
       notify "notes up" "rebase failed — resolve manually"
       error make { msg: "notes up: rebase failed" }
     }
@@ -61,7 +61,7 @@ def "notes up" [] {
 }
 
 # Make directory and enter inside
-def mkdircd --env [dir_name: string] {
+def --env mkdircd [dir_name: string] {
   mkdir $dir_name
   cd $dir_name
 }
@@ -84,28 +84,28 @@ def clip [] {
 
 # Extract archive into directory named after the archive
 def extract [file: path] {
-  let ext = ($file | str lowercase)
+  let lower = ($file | str lowercase)
   let dir = ($file | path basename | str replace -r '(?i)\.(tar\.(gz|bz2|xz)|tgz|zip|7z|rar|tar)$' '')
 
   mkdir $dir
 
-  if ($ext | str ends-with ".tar.gz") or ($ext | str ends-with ".tgz") {
+  if ($lower | str ends-with ".tar.gz") or ($lower | str ends-with ".tgz") {
     tar -xzf $file -C $dir
-  } else if ($ext | str ends-with ".tar.bz2") {
+  } else if ($lower | str ends-with ".tar.bz2") {
     tar -xjf $file -C $dir
-  } else if ($ext | str ends-with ".tar.xz") {
+  } else if ($lower | str ends-with ".tar.xz") {
     tar -xJf $file -C $dir
-  } else if ($ext | str ends-with ".tar") {
+  } else if ($lower | str ends-with ".tar") {
     tar -xf $file -C $dir
-  } else if ($ext | str ends-with ".zip") {
+  } else if ($lower | str ends-with ".zip") {
     if (is-windows) {
       tar -xf $file -C $dir
     } else {
       unzip $file -d $dir
     }
-  } else if ($ext | str ends-with ".7z") {
+  } else if ($lower | str ends-with ".7z") {
     7z x $file $"-o($dir)"
-  } else if ($ext | str ends-with ".rar") {
+  } else if ($lower | str ends-with ".rar") {
     unrar x $file $"($dir)/"
   } else {
     rm -r $dir

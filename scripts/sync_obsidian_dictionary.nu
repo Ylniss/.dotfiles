@@ -3,25 +3,10 @@
 # Merges Custom Dictionary.txt between the obsidian data dir and the repo.
 # Restart Obsidian after running so it reloads the merged file.
 
-def is-windows [] { $nu.os-info.family == 'windows' }
-def is-macos   [] { $nu.os-info.name == 'macos' }
+use _lib.nu *
 
-let repo_dir = if (is-windows) {
-  $'($env.USERPROFILE)/stuff/repo/.dotfiles'
-} else {
-  $'($env.HOME)/stuff/repo/.dotfiles'
-}
-
-let obsidian_dir = if (is-windows) {
-  $'($env.APPDATA)/obsidian'
-} else if (is-macos) {
-  $'($env.HOME)/Library/Application Support/obsidian'
-} else {
-  $'($env.HOME)/.config/obsidian'
-}
-
-let appdata_file = $'($obsidian_dir)/Custom Dictionary.txt'
-let repo_file = $'($repo_dir)/obsidian/Custom Dictionary.txt'
+let appdata_file = $'(obsidian-data-dir)/Custom Dictionary.txt'
+let repo_file = $'(dotfiles-repo-dir)/obsidian/Custom Dictionary.txt'
 
 def read-words [path: string] {
   if not ($path | path exists) { return [] }

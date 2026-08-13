@@ -1,8 +1,10 @@
 #!/usr/bin/env nu
 
+use _lib.nu *
+
 # -------------- MAIN --------------
 
-let repo_dir = (get-dotfiles-repo-dir)
+let repo_dir = (dotfiles-repo-dir)
 
 let home_dir = if (is-windows) { $env.USERPROFILE } else { $env.HOME }
 let config_dir = if (is-windows) { $env.LOCALAPPDATA } else { $'($env.HOME)/.config' }
@@ -11,7 +13,7 @@ let yazi_config_dir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $
 let niri_config_dir = $'($config_dir)/niri'
 let qutebrowser_config_dir = if (is-windows) { $'($env.APPDATA)/qutebrowser/config' } else { $'($config_dir)/qutebrowser' }
 let mpv_config_dir = if (is-windows) { $'($env.APPDATA)/mpv' } else { $'($config_dir)/mpv' }
-let obsidian_data_dir = if (is-windows) { $'($env.APPDATA)/obsidian' } else if (is-macos) { $'($env.HOME)/Library/Application Support/obsidian' } else { $'($env.HOME)/.config/obsidian' }
+let obsidian_data_dir = (obsidian-data-dir)
 
 let symlinks = [
   { src: 'nvim',                          desc: 'nvim',                       dest: $'($config_dir)/nvim' }
@@ -87,22 +89,8 @@ if (is-windows) { allow-cfa-apps-if-needed }
 
 # -------------- FUNCTIONS --------------
 
-def is-windows [] { $nu.os-info.family == 'windows' }
-def is-android [] { $nu.os-info.name == 'android' }
-def is-macos   [] { $nu.os-info.name == 'macos' }
-def is-linux   [] { $nu.os-info.name == 'linux' }
-
 def warn [msg: string] {
   print -e $"(ansi yellow)($msg)(ansi reset)"
-}
-
-# Returns the dotfiles repo directory for this platform
-def get-dotfiles-repo-dir [] {
-  if (is-windows) {
-    $'($env.USERPROFILE)/stuff/repo/.dotfiles'
-  } else {
-    $'($env.HOME)/stuff/repo/.dotfiles'
-  }
 }
 
 # Reads where a symlink points (lists parent so directory symlinks aren't followed into)
@@ -118,7 +106,7 @@ def read-symlink-target [link_path] {
 # True if two paths point to the same location (case/slash-insensitive on Windows)
 def same-path [a: string, b: string] {
   if (is-windows) {
-    ($a | str replace --all '\' '/' | str downcase) == ($b | str replace --all '\' '/' | str downcase)
+    ($a | str replace --all '\' '/' | str lowercase) == ($b | str replace --all '\' '/' | str lowercase)
   } else {
     $a == $b
   }

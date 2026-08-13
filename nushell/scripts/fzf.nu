@@ -1,5 +1,5 @@
 # Change dir with fzf
-def fcd --env [] {
+def --env fcd [] {
   let path = fzf
   let type = $path | path type
   if ($path | path exists) {

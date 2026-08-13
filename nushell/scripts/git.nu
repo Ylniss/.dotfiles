@@ -3,11 +3,8 @@ alias gits = git status
 
 # Git Add changes in a specified path, or the current directory if no path is given.
 def gita --wrapped [path?: string, ...opts] {
-  if ((not ($path | is-empty)) and ($path | path exists)) {
-    git add ...$opts $path  
-  } else { 
-    git add ...$opts .
-  } 
+  let target = if (($path | is-not-empty) and ($path | path exists)) { $path } else { "." }
+  git add ...$opts $target
 }
 
 # Show git log — compact table by default, --graph (-g) for the commit graph.
@@ -73,24 +70,15 @@ def giti [
   repo_name?: string # New repo name, if not specified it will be created in current working dir
   --github (-g) # Create repo also on github
 ] {
-  let current_dir = pwd | path basename
-  if ($repo_name | is-empty) {
-    git init
+  let dir = ($repo_name | default ".")
+  git init $dir
 
-    if $github {
-      gh auth login
-      gh repo create $current_dir --private --source=.
-    }
-    touch .gitignore
-  } else {
-    git init $repo_name
-
-    if $github {
-      gh auth login
-      gh repo create $repo_name --private $"--source=(pwd)/($repo_name)"
-    }
-    touch $"(pwd)/($repo_name)/.gitignore"
+  if $github {
+    let source = ($dir | path expand)
+    gh auth login
+    gh repo create ($source | path basename) --private $"--source=($source)"
   }
+  touch ($dir | path join '.gitignore')
 }
 
 # Git Worktree Add: Creates a new worktree with a new branch.

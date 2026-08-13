@@ -1,16 +1,23 @@
 #!/usr/bin/env nu
 
+let lock_script = ($env.HOME | path join ".config/swaylock/lock.nu")
+
+let entries = [
+    { label: "󰌾  Lock",     cmd: [$lock_script] }
+    { label: "󰜉  Reboot",   cmd: [systemctl reboot] }
+    { label: "󰐥  Shutdown", cmd: [systemctl poweroff] }
+    { label: "󰍃  Logout",   cmd: [niri msg action quit] }
+]
+
 let choice = (
-    "󰌾  Lock\n󰜉  Reboot\n󰐥  Shutdown\n󰍃  Logout"
+    $entries
+    | get label
+    | str join (char nl)
     | fuzzel --dmenu
     | str trim
 )
 
-let lock_script = ($env.HOME | path join ".config/swaylock/lock.nu")
-
-match $choice {
-    "󰌾  Lock"     => { exec $lock_script }
-    "󰜉  Reboot"   => { exec systemctl reboot }
-    "󰐥  Shutdown" => { exec systemctl poweroff }
-    "󰍃  Logout"   => { exec niri msg action quit }
+let picked = ($entries | where label == $choice | get 0?)
+if $picked != null {
+    exec ...$picked.cmd
 }

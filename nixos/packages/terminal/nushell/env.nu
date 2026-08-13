@@ -2,17 +2,12 @@ def is-windows [] { $nu.os-info.family == 'windows' }
 def is-android [] { $nu.os-info.name == 'android' }
 def is-macos   [] { $nu.os-info.name == 'macos' }
 
-if (is-windows) {
-  $env.REPO = $"($env.USERPROFILE)/stuff/repo"
-  $env.GAMES = $"($env.USERPROFILE)/stuff/games"
-  $env.DOWNLOADS = $"($env.USERPROFILE)/stuff/downloads"
-  $env.NOTES = $"($env.USERPROFILE)/stuff/knowtes"
-} else {
-  $env.REPO = $"($env.HOME)/stuff/repo"
-  $env.GAMES = $"($env.HOME)/stuff/games"
-  $env.DOWNLOADS = $"($env.HOME)/stuff/downloads"
-  $env.NOTES = $"($env.HOME)/stuff/knowtes"
-}
+let stuff_root = if (is-windows) { $env.USERPROFILE } else { $env.HOME }
+
+$env.REPO = $"($stuff_root)/stuff/repo"
+$env.GAMES = $"($stuff_root)/stuff/games"
+$env.DOWNLOADS = $"($stuff_root)/stuff/downloads"
+$env.NOTES = $"($stuff_root)/stuff/knowtes"
 
 # Script/plugin lookup dirs — skip if already set (e.g. by NixOS home-manager).
 if ($env.NU_LIB_DIRS? | is-empty) {
@@ -47,14 +42,16 @@ if (is-android) {
   $env.CAMERA = "~/storage/dcim/camera"
 }
 
-# Start ssh-agent
-^ssh-agent -c
-    | lines
-    | first 2
-    | parse "setenv {name} {value};"
-    | transpose -r
-    | into record
-    | load-env
+# Start ssh-agent — skip if one is already inherited, else every shell forks a new agent.
+if ($env.SSH_AUTH_SOCK? | is-empty) {
+    ^ssh-agent -c
+        | lines
+        | first 2
+        | parse "setenv {name} {value};"
+        | transpose -r
+        | into record
+        | load-env
+}
 
 if (is-android) {
   do { ^ssh-add ~/.ssh/andrd } | ignore

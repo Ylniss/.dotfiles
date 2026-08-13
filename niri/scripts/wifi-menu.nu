@@ -84,6 +84,10 @@ def with-scanning-indicator [task: closure]: nothing -> any {
     $result
 }
 
+def is-open [security: string]: nothing -> bool {
+    $security in ["" "--"]
+}
+
 def saved-profile-exists [ssid: string]: nothing -> bool {
     let names = (try { ^nmcli -g NAME connection show | lines } catch { [] })
     $ssid in $names
@@ -138,7 +142,7 @@ def main [--rescan(-r)] {
     let active = if ($connected | is-empty) { "" } else { $connected | first | get ssid }
 
     let menu_table = ($nets | each { |n|
-        let lock = if (($n.security != "") and ($n.security != "--")) { "󰌾" } else { " " }
+        let lock = if (is-open $n.security) { " " } else { "󰌾" }
         let display = $"  (signal-icon $n.signal)  ($lock)  ($n.ssid)"
         { display: $display, ssid: $n.ssid, security: $n.security }
     })
@@ -183,7 +187,7 @@ def main [--rescan(-r)] {
         return
     }
 
-    let is_open = (($entry.security == "") or ($entry.security == "--"))
+    let is_open = (is-open $entry.security)
 
     if (saved-profile-exists $ssid) {
         let r = (^nmcli --wait 10 connection up id $ssid | complete)

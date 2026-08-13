@@ -1,15 +1,22 @@
-let username = 'u0_a344'
-let ip_address = '192.168.1.100'
-let port = 8022
+const USERNAME = 'u0_a344'
+const IP_ADDRESS = '192.168.1.100'
+const PORT = 8022
+const KEY = '~/.ssh/id_rsa'
+
+# ssh args for the phone: target host, port and identity file.
+# `path expand` resolves `~` — ssh itself does not.
+def mob-target [] {
+  [$"($USERNAME)@($IP_ADDRESS)" -p $PORT -i ($KEY | path expand)]
+}
 
 # SSH into mobile phone
 def 'ssh mob' [] {
-  ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/id_rsa
+  ssh ...(mob-target)
 }
 
 # Copy to clipboard file contents from mobile phone
 def 'ssh mob clip' [file_path: string] {
-  ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/id_rsa $"cat ($file_path)" | clip
+  ssh ...(mob-target) $"cat ($file_path)" | clip
 }
 
 # Copy file from mobile phone to current machine
@@ -19,5 +26,5 @@ def 'ssh mob cp' [file_path: string target_path: string] {
     mkdir $parent_dir
   }
 
-  (ssh $"($username)@($ip_address)" -p $port -i ~/.ssh/id_rsa $"cp ($file_path) ($target_path)")
+  ssh ...(mob-target) $"cp ($file_path) ($target_path)"
 }

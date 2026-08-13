@@ -3,23 +3,20 @@ alias gits = git status
 
 # Git Add changes in a specified path, or the current directory if no path is given.
 def gita --wrapped [path?: string, ...opts] {
-  if ((not ($path | is-empty)) and ($path | path exists)) {
-    git add ...$opts $path  
-  } else { 
-    git add ...$opts .
-  } 
+  let target = if (($path | is-not-empty) and ($path | path exists)) { $path } else { "." }
+  git add ...$opts $target
 }
 
-# Show Git Log: Displays a graphical representation of the git commit history.
-def gitl [--grph (-g)] {
-  if $grph { 
+# Show git log — compact table by default, --graph (-g) for the commit graph.
+def gitl [--graph (-g)] {
+  if $graph {
     git log --all --decorate --oneline --graph --pretty=format:'%C(auto)%h %<(12,trunc)%an %<(16,trunc)%ar %s %d'
   } else { 
     git log --reverse $"--pretty=(ansi yellow)%h(ansi reset)»¦«%s»¦«%aN»¦«%as" | lines | split column "»¦«" commit message name date | upsert message {|r| $r.message | str substring 0..65} | sort-by date
   }  
 }
 
-# Git Diff: Displays unstaged and staged changes with appropriate messages.
+# Show unstaged then staged changes under labeled headers.
 def gitd --wrapped [...opts] {
   let git_diff_output = git diff
   if $git_diff_output != "" {
@@ -31,13 +28,8 @@ def gitd --wrapped [...opts] {
     print $"(ansi green)\n --------------------- Staged Changes --------------------- (ansi reset)"
     git diff --staged ...$opts
   }
-
-  if $git_diff_output == "" and $git_diff_staged_output == "" {
-    git diff ...$opts
-  }
 }
 
-# Git Commit Message: Commits changes with a given commit message.
 def gitc --wrapped [...opts, message?: string] {
   if not ($message | is-empty) {
     git commit ...$opts -m $message 
@@ -65,7 +57,7 @@ def gitmrg [branch: string] {
   let current_branch = git rev-parse --abbrev-ref HEAD
   git fetch --all
 
-  # Check if the current branch has an upstream set, if not, set it to origin/current_branch
+  # Set upstream to origin/<branch> if none is configured (needed before merge).
   if (git rev-parse --abbrev-ref --symbolic-full-name @{u} | is-empty) {
     git branch $'--set-upstream-to=origin/($current_branch)' $current_branch
   }
@@ -78,24 +70,15 @@ def giti [
   repo_name?: string # New repo name, if not specified it will be created in current working dir
   --github (-g) # Create repo also on github
 ] {
-  let current_dir = pwd | path basename
-  if ($repo_name | is-empty) {
-    git init
+  let dir = ($repo_name | default ".")
+  git init $dir
 
-    if $github {
-      gh auth login
-      gh repo create $current_dir --private --source=.
-    }
-    touch .gitignore
-  } else {
-    git init $repo_name
-
-    if $github {
-      gh auth login
-      gh repo create $repo_name --private $"--source=(pwd)/($repo_name)"
-    }
-    touch $"(pwd)/($repo_name)/.gitignore"
+  if $github {
+    let source = ($dir | path expand)
+    gh auth login
+    gh repo create ($source | path basename) --private $"--source=($source)"
   }
+  touch ($dir | path join '.gitignore')
 }
 
 # Git Worktree Add: Creates a new worktree with a new branch.
@@ -131,7 +114,7 @@ def --env gitwtf [path: string] {
     | str replace 'worktree ' '')
 
   # Validate: not the main worktree
-  if ($resolved | path expand | str downcase) == ($base_path | str downcase) {
+  if ($resolved | path expand | str lowercase) == ($base_path | str lowercase) {
     print $"(ansi red)This is the main worktree — refusing to remove(ansi reset)"
     return
   }

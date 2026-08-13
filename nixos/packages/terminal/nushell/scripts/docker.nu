@@ -1,29 +1,21 @@
 alias dockercu = docker compose up
 alias dockercub = docker compose up --build
 
-# Stops all running containers
-def "docker stop all" [] { 
-  docker ps | from ssv | get NAMES | each { |it| docker stop $it }
+def "docker stop all" [] {
+  let names = (docker ps | from ssv | get NAMES)
+  if ($names | is-not-empty) { docker stop ...$names }
 }
 
 # List all containers within a compose
 def "docker psc" --wrapped [...args] {
-  if ($args | length) == 1 {
-    let project_name = $args.0
-    let filter_arg = $'-f label=com.docker.compose.project=($project_name)' 
-    docker ps $filter_arg | from ssv
-  } else {
-    let project_name = $args | last
-    let options = $args | drop 
-    let filter_arg = $'-f label=com.docker.compose.project=($project_name)' 
-    docker ps ...$options $filter_arg | from ssv 
-  }
+  let filter_arg = $'-f label=com.docker.compose.project=($args | last)'
+  docker ps ...($args | drop) $filter_arg | from ssv
 }
 
 # -------------- PSQL -------------- 
 
-# Run docker contiainer with postgres and set environment variables for psql session
-def "docker psqls" --env [
+# Start a postgres container (if needed) and store its connection env for 'docker psql'
+def --env "docker psqls" [
   container_name: string,
   postgres_user: string,
   postgres_password: string,
@@ -39,12 +31,8 @@ def "docker psqls" --env [
   $env.DOCKER_PSQL_DB_NAME = $db_name
 }
 
-# Execute `psql` commands inside the Docker container
+# Execute `psql` commands inside the Docker container. Run 'docker psqls' first.
 def "docker psql" [command: string] {
-  try {
-    docker exec -it $env.DOCKER_PSQL_CONTAINER_NAME psql -U $env.DOCKER_PSQL_POSTGRES_USER -d $env.DOCKER_PSQL_DB_NAME -c $"($command)"
-  } catch {
-    "Set the Docker PostgreSQL environment variables first using 'docker psqls'."
-  }
+  docker exec -it $env.DOCKER_PSQL_CONTAINER_NAME psql -U $env.DOCKER_PSQL_POSTGRES_USER -d $env.DOCKER_PSQL_DB_NAME -c $command
 }
 
