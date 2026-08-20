@@ -48,7 +48,8 @@ onlyoffice = [
 ]
 imv = [
 	{ run = 'imv -n "$1" "$(dirname "$1")"', orphan = true, desc = "imv", for = "unix" },
-	{ run = 'start "" %1', orphan = true, desc = "Open", for = "windows" },
+	# explorer, not `start`: cmd's start silently no-ops on Store-app associations (e.g. .png -> Photos)
+	{ run = 'explorer.exe %1', orphan = true, desc = "Open", for = "windows" },
 ]
 
 [[open.prepend_rules]]
