@@ -13,6 +13,7 @@ let yazi_config_dir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $
 let niri_config_dir = $'($config_dir)/niri'
 let qutebrowser_config_dir = if (is-windows) { $'($env.APPDATA)/qutebrowser/config' } else { $'($config_dir)/qutebrowser' }
 let mpv_config_dir = if (is-windows) { $'($env.APPDATA)/mpv' } else { $'($config_dir)/mpv' }
+let applications_dir = $'($home_dir)/.local/share/applications'
 let obsidian_data_dir = (obsidian-data-dir)
 
 let symlinks = [
@@ -47,6 +48,7 @@ let symlinks = [
   { src: 'mpv/scripts/sponsorblock.lua',  desc: 'mpv sponsorblock.lua',       dest: $'($mpv_config_dir)/scripts/sponsorblock.lua',       skip_on_android: true }
   { src: 'mpv/script-opts/sponsorblock.conf', desc: 'mpv sponsorblock.conf',  dest: $'($mpv_config_dir)/script-opts/sponsorblock.conf',  skip_on_android: true }
   { src: 'imv/config',                    desc: 'imv config',                 dest: $'($config_dir)/imv/config',                linux_only: true }
+  { src: 'onlyoffice/onlyoffice-desktopeditors.desktop', desc: 'onlyoffice desktop entry', dest: $'($applications_dir)/onlyoffice-desktopeditors.desktop', linux_only: true }
   { src: 'starship/starship.toml',        desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
   { src: 'tinted-theming/tinty/config.toml', desc: 'tinty config.toml',       dest: $'($config_dir)/tinted-theming/tinty/config.toml',  linux_only: true }
   { src: 'btop/btop.conf',                desc: 'btop btop.conf',             dest: $'($config_dir)/btop/btop.conf' }
