@@ -1,12 +1,12 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:mime-ext"
-rev = "3f2b882"
-hash = "1eb6f0887d52abb365c7dd9ed4b349da"
+rev = "72f9e3c"
+hash = "7d74f651b97c038a37ea7e6df70a09b8"
 
 [[plugin.deps]]
 use = "Rolv-Apneseth/starship"
-rev = "159eaba"
-hash = "7de446280b1ba8c49ffd86dbc24bbbe6"
+rev = "ea92cf4"
+hash = "9776f378459072b6c2875eae5addc49d"
 
 [[plugin.deps]]
 use = "Lil-Dank/lazygit"
@@ -15,13 +15,13 @@ hash = "6ea5f37c7f219671ec504cb8311f889d"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "3f2b882"
+rev = "72f9e3c"
 hash = "b99cda925dfd7969cb888e086408decc"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "3f2b882"
-hash = "fc35d8a08ee408066f4ef741239e499a"
+rev = "72f9e3c"
+hash = "3467fdfffaa33fbca84c1b9017923ab"
 
 [[flavor.deps]]
 use = "BennyOe/tokyo-night"
