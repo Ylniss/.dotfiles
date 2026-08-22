@@ -75,6 +75,9 @@ def clip [] {
     $input | ^clip
   } else if (is-macos) {
     $input | pbcopy
+  } else if ($env.WAYLAND_DISPLAY? | is-not-empty) {
+    # On Wayland xclip only reaches XWayland clients, so native apps cannot read the clipboard.
+    $input | wl-copy
   } else {
     $input | xclip -selection clipboard
   }

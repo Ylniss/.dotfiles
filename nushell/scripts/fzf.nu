@@ -11,7 +11,7 @@ def --env fcd [] {
   }
 }
 
-# Open file in nvim with fzf
+# Open file in nvim with fzf, previewing the hovered file with bat
 def fvi [] {
-  nvim (fzf)
+  nvim (fzf --preview 'bat --color=always --style=numbers {}')
 }
