@@ -11,7 +11,7 @@ desc = "Go board game dev"
 [[mgr.prepend_keymap]]
 on = ["g", "n"]
 run = "cd ~/stuff/knowtes/"
-desc = "Go Obsidian knowtes"
+desc = "Go to notes"
 
 [[mgr.prepend_keymap]]
 on = ["g", "r"]

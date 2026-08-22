@@ -14,7 +14,6 @@ let niri_config_dir = $'($config_dir)/niri'
 let qutebrowser_config_dir = if (is-windows) { $'($env.APPDATA)/qutebrowser/config' } else { $'($config_dir)/qutebrowser' }
 let mpv_config_dir = if (is-windows) { $'($env.APPDATA)/mpv' } else { $'($config_dir)/mpv' }
 let applications_dir = $'($home_dir)/.local/share/applications'
-let obsidian_data_dir = (obsidian-data-dir)
 
 let symlinks = [
   { src: 'nvim',                          desc: 'nvim',                       dest: $'($config_dir)/nvim' }
@@ -75,10 +74,6 @@ for s in ($symlinks | where { |s|
   not ($skip_android or $android_only or $linux_only)
 }) {
   create-symbolic-link $'($repo_dir)/($s.src)' $s.dest $s.desc
-}
-
-if not (is-android) {
-  copy-file $'($repo_dir)/obsidian/Custom Dictionary.txt' $'($obsidian_data_dir)/Custom Dictionary.txt' 'obsidian Custom Dictionary.txt'
 }
 
 install-yazi-packages
@@ -174,32 +169,6 @@ def create-symbolic-link [target, link_path, description] {
   } else {
     ^ln -s $target $link_path
   }
-}
-
-# Copies src to dest. Replaces a stale symlink; keeps an existing regular file.
-def copy-file [src: string, dest: string, description: string] {
-  let exists = ($dest | path exists -n)
-  let is_symlink = $exists and (($dest | path type) == 'symlink')
-
-  if $is_symlink {
-    print $'(ansi yellow)Replacing stale symlink(ansi reset) for ($description)'
-    if (is-windows) {
-      windows-delete-reparse $dest
-    } else {
-      ^rm -f $dest
-    }
-  } else if $exists {
-    print $'($description) (ansi blue)already exists, leaving local copy in place.(ansi reset)'
-    return
-  }
-
-  let parent_dir = ($dest | path dirname)
-  if not ($parent_dir | path exists) {
-    mkdir $parent_dir
-  }
-
-  print $'(ansi green)Copying(ansi reset) ($description)'
-  cp $src $dest
 }
 
 # Installs yazi plugins via `ya pkg install` (no-op if `ya` is missing)

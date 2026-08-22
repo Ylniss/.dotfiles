@@ -165,16 +165,6 @@ Useful commands from any buffer:
 |---------|--------|
 | `:Obsidian new [title]` | Create a new note |
 
-## Custom Dictionary
-
-`Custom Dictionary.txt` is copied (not symlinked) — Obsidian rewrites it with a checksum and would reject a symlinked file.
-
-To save new words from Obsidian into the repo:
-
-1. Close Obsidian.
-2. Run `nu scripts/sync_obsidian_dictionary.nu` — merges words from Obsidian and repo, writes to both.
-3. Reopen Obsidian and commit the change.
-
 # qutebrowser
 
 ## Video playback (mpv)
