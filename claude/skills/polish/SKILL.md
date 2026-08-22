@@ -1,11 +1,9 @@
 ---
 name: polish
 description: >
-  Review the current git changes — or a path given as the argument — for
-  simplification, optimization, and modern-library usage. Reports findings
-  first, applies only the ones the user picks. Use when the user says
-  "polish", "polish changes", "review my changes", or asks what could be
-  simplified/improved/optimized or made to use current library patterns.
+  Review git changes or a given path for simplification, optimization, and
+  modern-library usage. Use for "polish", "review my changes", or asking what
+  could be simplified or modernized. Not bug-hunting — that is code-review.
 argument-hint: "[base ref | path]"
 ---
 

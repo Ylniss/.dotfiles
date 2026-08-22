@@ -1,13 +1,10 @@
 ---
 name: shape
 description: >
-  Review the current git changes — or a path given as the argument — for code
-  organization: units that do not earn their keep, logic that already exists
-  elsewhere, code in the wrong place, and structure that departs from the
-  pattern the repo keeps. Reports findings first, applies only the ones the
-  user picks. Use when the user says "shape", "shape changes", "architecture
-  review", or asks about overengineering, code organization, duplication, or
-  consistency with the rest of the repo.
+  Review git changes or a given path for code organization: units that do not
+  earn their keep, duplicated logic, code in the wrong place, drift from repo
+  patterns. Use for "shape", "architecture review", overengineering, or
+  duplication.
 argument-hint: "[base ref | path]"
 ---
 

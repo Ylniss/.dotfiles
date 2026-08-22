@@ -1,11 +1,8 @@
 ---
 name: phase
 description: >
-  Execute one phase of a saved plan from plans/<slug>.md: verify the plan is
-  fresh, outline the implementation for approval, implement within phase
-  scope, verify build + tests, self-review with the clarify/polish criteria,
-  then commit on approval and mark the phase done in the plan. Use when user
-  invokes "/phase <plan> [N]".
+  Execute one phase of a saved plan from plans/<slug>.md, from outline gate
+  to commit. Use when user invokes "/phase <plan> [N]".
 argument-hint: "<plan> [N]"
 ---
 
@@ -39,6 +36,10 @@ outline before code, review before commit.
   plan's Last-updated commit to `HEAD`; read the files in Repo context and
   confirm they still exist and behave as described. On drift: report it,
   update the plan with the user, do not implement yet.
+- Review check: read the plan's **Reviewed** line. If it says `never`, is
+  missing, or its date is older than the **Last updated** date, the plan has
+  changed since it was last reviewed. Say so and ask whether to run
+  `/plan-review` first. The user may skip — do not block on it.
 - Verify the phase's `Depends on` phases are `[x]`. If not, stop and say
   which are missing.
 

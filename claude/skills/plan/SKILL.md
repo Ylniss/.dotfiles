@@ -1,10 +1,9 @@
 ---
 name: plan
 description: >
-  High-level phased planning for a subject. Brutally critiques the idea,
-  refines through Q&A, then saves a self-contained, updatable plan to
-  plans/<slug>.md at git root for fresh-context handoff. Never writes
-  code or commits. Use when user invokes "/plan <subject>".
+  High-level phased planning for a subject. Critiques the idea, refines
+  through Q&A, saves a self-contained plan to plans/<slug>.md. Use when user
+  invokes "/plan <subject>".
 argument-hint: "<subject>"
 ---
 
@@ -46,6 +45,7 @@ On approval, write `<git-root>/plans/<slug>.md` using the template below. Self-c
 # <Subject>
 
 _Last updated: YYYY-MM-DD — commit `<sha>`_
+_Reviewed: never_
 
 ## Goal
 One paragraph. What "done" looks like.
@@ -92,6 +92,8 @@ When a phase changes state, update its heading in place:
 - Abandoned: `### [~] Phase 1: <name>` — add a Decisions log entry explaining why
 
 Bump the **Last updated** line at the top of the file on every change (date + current `HEAD` sha). Decisions made during a phase go in the **Decisions log**, not the pre-implementation section.
+
+Leave the **Reviewed** line alone. Only the plan-review skill stamps it, so a plan edited after its last review shows as unreviewed — which is correct.
 
 ## Phasing rules
 

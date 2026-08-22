@@ -1,11 +1,8 @@
 ---
 name: clarify
 description: >
-  Review the current git changes — or a path given as the argument — for
-  comment essence and name directness. Reports findings first, applies only
-  the ones the user picks. Use when the user says "clarify", "clarify
-  changes", "fix names and comments", or asks to tighten comments / improve
-  naming.
+  Review git changes or a given path for comment essence and name
+  directness. Use for "clarify", tightening comments, or improving naming.
 argument-hint: "[base ref | path]"
 ---
 
