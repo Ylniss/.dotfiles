@@ -41,42 +41,38 @@ local function read_tinty_scheme_slug()
 	return slug
 end
 
-if is_windows then
+if not is_windows then
+	-- Load the scheme file directly, so a reload works even if the
+	-- colors/ symlink was missing when wezterm started.
+	local slug = read_tinty_scheme_slug()
+	local tinty_scheme = slug and wezterm.color.load_scheme(home .. "/.config/wezterm/colors/" .. slug .. ".toml")
+	if tinty_scheme then
+		-- keep 256-color index 16 as default black (LS_COLORS expects it)
+		if tinty_scheme.indexed then
+			tinty_scheme.indexed[16] = nil
+		end
+		config.color_schemes = { [slug] = tinty_scheme }
+		config.color_scheme = slug
+		scheme = tinty_scheme
+	end
+end
+
+if not scheme then
 	config.color_scheme = "Ef-Cherie"
 	scheme = wezterm.color.get_builtin_schemes()[config.color_scheme]
-else
-	-- Register inline so reloads resolve the slug even if wezterm started
-	-- before the colors/ symlink existed.
-	local slug = read_tinty_scheme_slug()
-	if slug then
-		local loaded = wezterm.color.load_scheme(home .. "/.config/wezterm/colors/" .. slug .. ".toml")
-		if loaded then
-			-- keep 256-color index 16 as default black (LS_COLORS expects it)
-			if loaded.indexed then
-				loaded.indexed[16] = nil
-			end
-			config.color_schemes = { [slug] = loaded }
-			config.color_scheme = slug
-			scheme = loaded
-		end
-	end
-	if not scheme then
-		config.color_scheme = "Ef-Cherie"
-		scheme = wezterm.color.get_builtin_schemes()[config.color_scheme]
-	end
 end
 
 config.initial_cols = 135
 config.initial_rows = 34
 
 -- Windows registers the Nerd Font under a different family name than Linux
-local nerd_font = is_windows and "JetBrainsMono NF" or "JetBrainsMonoNerdFont"
+local nerd_font_family = is_windows and "JetBrainsMono NF" or "JetBrainsMonoNerdFont"
 
-config.font = wezterm.font(nerd_font)
+config.font = wezterm.font(nerd_font_family)
 config.font_size = 11
 config.line_height = 1
 
--- Windows: RESIZE keeps the resize border (NONE strips it). Linux/Wayland: NONE hides the CSD titlebar.
+-- Windows: RESIZE keeps the resize border (NONE strips it). Linux/Wayland: NONE hides the client-side titlebar.
 config.window_decorations = is_windows and "RESIZE" or "NONE"
 config.window_background_opacity = 0.75
 if is_windows then
@@ -89,27 +85,28 @@ local function with_alpha(hex, alpha)
 	return string.format("rgba(%d,%d,%d,%.3f)", r, g, b, alpha)
 end
 
+local frame_bg = with_alpha(scheme.background, config.window_background_opacity)
+
 config.window_frame = {
-	font = wezterm.font({ family = nerd_font }),
+	font = wezterm.font({ family = nerd_font_family }),
 	font_size = 10,
-	active_titlebar_bg = with_alpha(scheme.background, config.window_background_opacity),
-	inactive_titlebar_bg = with_alpha(scheme.background, config.window_background_opacity),
+	active_titlebar_bg = frame_bg,
+	inactive_titlebar_bg = frame_bg,
 }
 
-local outer = with_alpha(scheme.background, config.window_background_opacity)
 -- indexed[19]=base03, [20]=base04 (base24 extended palette)
 local active_bg = (scheme.indexed and scheme.indexed[19]) or scheme.selection_bg or "#3a3a3a"
 local inactive_fg = (scheme.indexed and scheme.indexed[20]) or "#808080"
 
 config.colors = {
 	tab_bar = {
-		background = outer,
+		background = frame_bg,
 		active_tab = {
 			bg_color = active_bg,
 			fg_color = scheme.foreground,
 		},
 		inactive_tab = {
-			bg_color = outer,
+			bg_color = frame_bg,
 			fg_color = inactive_fg,
 		},
 		inactive_tab_hover = {
