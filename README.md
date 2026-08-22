@@ -212,6 +212,14 @@ In mpv:
 | `b` | Toggle SponsorBlock skipping |
 | `q` | Quit mpv |
 
+# ONLYOFFICE
+
+Install with `paru -S onlyoffice-bin xdg-user-dirs`, then run `xdg-user-dirs-update` once.
+
+`onlyoffice/onlyoffice-desktopeditors.desktop` overrides the packaged desktop entry. It adds `GDK_BACKEND=x11`. ONLYOFFICE runs its Qt UI on XWayland but opens a GTK save dialog. Without the variable, GTK starts on Wayland and the app crashes when you save a file.
+
+The override is a trimmed copy of the packaged entry. Compare it with `/usr/share/applications/onlyoffice-desktopeditors.desktop` after a major ONLYOFFICE update.
+
 # Claude Code
 
 Config (settings, skills, agents, rules, hooks) is symlinked by `install_dotfiles.nu`. The context7 MCP server lives in `~/.claude.json` (untracked) and must be re-added on a new machine:
