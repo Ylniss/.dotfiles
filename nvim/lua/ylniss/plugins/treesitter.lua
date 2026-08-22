@@ -2,7 +2,7 @@
 -- Treesitter
 -- Syntax highlighting and code parsing
 -- ========================================================
-local ensure_installed = {
+local wanted_parsers = {
 	"json",
 	"dockerfile",
 	"terraform",
@@ -31,7 +31,7 @@ return {
 			ts.setup()
 
 			local installed = ts.get_installed("parsers")
-			local missing = vim.iter(ensure_installed)
+			local missing = vim.iter(wanted_parsers)
 				:filter(function(p)
 					return not vim.tbl_contains(installed, p)
 				end)

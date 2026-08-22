@@ -1,5 +1,4 @@
 -- Highlight other instances of the symbol under the cursor via LSP.
--- Only attaches for clients that support textDocument/documentHighlight.
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("LspDocumentHighlight", { clear = true }),
 	callback = function(args)

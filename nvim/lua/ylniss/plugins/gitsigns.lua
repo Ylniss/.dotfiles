@@ -15,10 +15,10 @@ return {
 		},
 		on_attach = function(bufnr)
 			local gs = package.loaded.gitsigns
-			local function keymap(mode, l, r, opts)
+			local function keymap(mode, lhs, rhs, opts)
 				opts = opts or {}
 				opts.buffer = bufnr
-				vim.keymap.set(mode, l, r, opts)
+				vim.keymap.set(mode, lhs, rhs, opts)
 			end
 
 			keymap("v", "<leader>ghs", function()

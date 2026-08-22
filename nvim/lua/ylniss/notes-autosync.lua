@@ -21,7 +21,7 @@ local SYNC_TIMEOUT_MS = 15000
 local SLOW_SYNC_NOTIFY_MS = 500
 
 local debounce_timer
-local dirty = false
+local sync_pending = false
 local sync_in_flight = false
 local pulled_this_session = false
 
@@ -55,8 +55,8 @@ if is_windows then
 	vim.fn.mkdir(cache_dir, "p")
 	local sync_ps_path = vim.fs.joinpath(cache_dir, "notes-autosync.ps1")
 	local log_path = vim.fs.joinpath(cache_dir, "notes-autosync.log")
-	local esc_notes = knowtes_path:gsub("'", "''")
-	local esc_log = log_path:gsub("'", "''")
+	local escaped_notes_path = knowtes_path:gsub("'", "''")
+	local escaped_log_path = log_path:gsub("'", "''")
 	local sync_script = vim.trim(string.format(
 		[[
 $log = '%s'
@@ -112,8 +112,8 @@ if ($ahead -gt 0) {
 }
 Log "--- sync done (ahead=$ahead, behind=$behind) ---"
 ]],
-		esc_log,
-		esc_notes
+		escaped_log_path,
+		escaped_notes_path
 	)) .. "\n"
 	write_if_changed(sync_ps_path, sync_script)
 	sync_cmd = {
@@ -131,7 +131,7 @@ end
 
 -- hide=true sets CREATE_NO_WINDOW so git.exe doesn't flash. Don't add
 -- detached=true — it sets DETACHED_PROCESS which silently breaks PowerShell.
-local function spawn_quiet(cmd_args, on_exit)
+local function spawn_hidden(cmd_args, on_exit)
 	local handle
 	---@diagnostic disable-next-line: missing-fields
 	handle = vim.uv.spawn(cmd_args[1], {
@@ -144,19 +144,16 @@ local function spawn_quiet(cmd_args, on_exit)
 			vim.schedule(on_exit)
 		end
 	end)
-	if not handle then
-		if on_exit then
-			vim.schedule(on_exit)
-		end
-		return
+	if not handle and on_exit then
+		vim.schedule(on_exit)
 	end
 end
 
 -- Blocks until sync exits (or timeout). Used at BufReadPre so the file is
--- read from disk AFTER rebase lands — prevents the stale-buffer overwrite
--- race where local saves would push a pre-pull version to origin. Notifies
--- if the sync runs long so user knows why nvim is hanging.
-local function spawn_quiet_blocking(timeout_ms)
+-- read from disk AFTER rebase lands — otherwise a save could push an old
+-- version over the remote. Notifies if the sync runs long so user knows why
+-- nvim is hanging.
+local function sync_and_wait(timeout_ms)
 	local done = false
 	local slow_timer = assert(vim.uv.new_timer())
 	slow_timer:start(
@@ -168,7 +165,7 @@ local function spawn_quiet_blocking(timeout_ms)
 			end
 		end)
 	)
-	spawn_quiet(sync_cmd, function()
+	spawn_hidden(sync_cmd, function()
 		done = true
 	end)
 	vim.wait(timeout_ms, function()
@@ -178,7 +175,7 @@ local function spawn_quiet_blocking(timeout_ms)
 	slow_timer:close()
 end
 
-local function cancel_timer()
+local function cancel_debounce()
 	if debounce_timer then
 		debounce_timer:stop()
 		debounce_timer:close()
@@ -195,8 +192,8 @@ local function in_knowtes(bufnr)
 	if not path:lower():find("knowtes", 1, true) then
 		return false
 	end
-	local real = vim.uv.fs_realpath(path)
-	return real ~= nil and vim.startswith(real, knowtes_path)
+	local real_path = vim.uv.fs_realpath(path)
+	return real_path ~= nil and vim.startswith(real_path, knowtes_path)
 end
 
 local function trigger_sync()
@@ -204,25 +201,25 @@ local function trigger_sync()
 		return
 	end
 	sync_in_flight = true
-	dirty = false
-	spawn_quiet(sync_cmd, function()
+	sync_pending = false
+	spawn_hidden(sync_cmd, function()
 		sync_in_flight = false
 		-- Reload any buffer whose disk file was updated by rebase.
 		vim.cmd("silent! checktime")
-		if dirty then
+		if sync_pending then
 			trigger_sync()
 		end
 	end)
 end
 
 local function debounce_sync()
-	cancel_timer()
+	cancel_debounce()
 	debounce_timer = assert(vim.uv.new_timer())
 	debounce_timer:start(
 		DEBOUNCE_MS,
 		0,
 		vim.schedule_wrap(function()
-			cancel_timer()
+			cancel_debounce()
 			trigger_sync()
 		end)
 	)
@@ -240,9 +237,10 @@ vim.api.nvim_create_autocmd("BufReadPre", {
 			return
 		end
 		pulled_this_session = true
-		spawn_quiet_blocking(SYNC_TIMEOUT_MS)
-		-- Re-stat after BufReadPost so b_mtime reflects the post-sync file.
-		-- Without this, :wq on an unmodified buffer warns about external change.
+		sync_and_wait(SYNC_TIMEOUT_MS)
+		-- Re-stat after BufReadPost so the buffer's stored mtime matches the
+		-- synced file. Without this, :wq on an unmodified buffer warns about
+		-- external change.
 		vim.schedule(function()
 			vim.cmd("silent! checktime")
 		end)
@@ -256,7 +254,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 		if not in_knowtes(ev.buf) then
 			return
 		end
-		dirty = true
+		sync_pending = true
 		debounce_sync()
 	end,
 	desc = "knowtes: debounce-schedule sync after save",
@@ -265,11 +263,11 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 vim.api.nvim_create_autocmd("VimLeavePre", {
 	group = group,
 	callback = function()
-		if not dirty then
+		if not sync_pending then
 			return
 		end
-		cancel_timer()
-		spawn_quiet(sync_cmd)
+		cancel_debounce()
+		spawn_hidden(sync_cmd)
 	end,
 	desc = "knowtes: flush pending sync on exit",
 })

@@ -2,18 +2,16 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- Show relative line numbers
 vim.o.relativenumber = true
 
-vim.wo.number = true
+vim.o.number = true
 
--- Set the number of screen lines to keep above and below the cursor
+-- Lines kept visible above and below the cursor
 vim.o.scrolloff = 10
 
--- Don't keep search matches highlighted after searching
+-- Don't keep search matches highlighted
 vim.o.hlsearch = false
 
--- Highlight line with the cursor
 vim.o.cursorline = true
 
 -- Enable mouse mode
@@ -30,10 +28,9 @@ vim.o.shellredir = "| save %s"
 -- Don't add trailing newline to files missing one
 vim.o.fixeol = false
 
--- Sync clipboard between OS and Neovim.
+-- Sync clipboard between OS and Neovim
 vim.o.clipboard = "unnamedplus"
 
--- Enable break indent
 vim.o.breakindent = true
 
 -- Save undo history
@@ -43,14 +40,12 @@ vim.o.undofile = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 
--- Keep signcolumn on by default
-vim.wo.signcolumn = "yes"
+vim.o.signcolumn = "yes"
 
--- Decrease update time
+-- Faster CursorHold and which-key popup
 vim.o.updatetime = 100
 vim.o.timeoutlen = 300
 
--- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
 	callback = function()
 		vim.hl.on_yank()
@@ -58,20 +53,16 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("YankHighlight", { clear = true }),
 })
 
--- Set custom terminal tab title
-local function set_custom_title()
-	local current_file = vim.fn.expand("%:t")
-	local filename_segment = current_file ~= "" and "|" .. current_file or ""
-	vim.opt.titlestring = "nvim in " .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. filename_segment
+local function set_title()
+	local filename = vim.fn.expand("%:t")
+	local title_suffix = filename ~= "" and "|" .. filename or ""
+	vim.o.titlestring = "nvim in " .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. title_suffix
 end
 
--- Enable setting the terminal title
-vim.opt.title = true
+vim.o.title = true
 
--- Set the custom title initially
-set_custom_title()
+set_title()
 
--- Update the title whenever the buffer changes or the directory changes
 vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "DirChanged" }, {
-	callback = set_custom_title,
+	callback = set_title,
 })

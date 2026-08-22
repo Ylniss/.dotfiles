@@ -20,14 +20,14 @@ return {
 		})
 
 		local function find_git_root()
-			local current_file = vim.api.nvim_buf_get_name(0)
-			local start = current_file == "" and vim.fn.getcwd() or vim.fn.fnamemodify(current_file, ":h")
-			local found = vim.fs.find(".git", { upward = true, path = start })[1]
-			if not found then
+			local buf_path = vim.api.nvim_buf_get_name(0)
+			local start_dir = buf_path == "" and vim.fn.getcwd() or vim.fn.fnamemodify(buf_path, ":h")
+			local git_dir = vim.fs.find(".git", { upward = true, path = start_dir })[1]
+			if not git_dir then
 				vim.notify("Not a git repository. Searching on current working directory", vim.log.levels.WARN)
 				return vim.fn.getcwd()
 			end
-			return vim.fs.dirname(found)
+			return vim.fs.dirname(git_dir)
 		end
 
 		local function live_grep_git_root()
@@ -35,16 +35,13 @@ return {
 		end
 
 		local function live_grep_open_files()
-			local bufnrs = vim.api.nvim_list_bufs()
-			local paths = {}
-			for _, bufnr in ipairs(bufnrs) do
-				if vim.api.nvim_buf_is_loaded(bufnr) then
-					local name = vim.api.nvim_buf_get_name(bufnr)
-					if name ~= "" then
-						table.insert(paths, name)
-					end
-				end
-			end
+			local paths = vim.iter(vim.api.nvim_list_bufs())
+				:filter(vim.api.nvim_buf_is_loaded)
+				:map(vim.api.nvim_buf_get_name)
+				:filter(function(name)
+					return name ~= ""
+				end)
+				:totable()
 			fzf.live_grep({ search_paths = paths })
 		end
 
@@ -74,7 +71,7 @@ return {
 				return a.lnum < b.lnum
 			end)
 
-			local sev_map = {
+			local severity_styles = {
 				[1] = { icon = "E", hl = "DiagnosticError" },
 				[2] = { icon = "W", hl = "DiagnosticWarn" },
 				[3] = { icon = "I", hl = "DiagnosticInfo" },
@@ -82,22 +79,22 @@ return {
 			}
 
 			local entries = {}
-			for _, d in ipairs(diags) do
-				local bufname = vim.api.nvim_buf_get_name(d.bufnr)
+			for _, diag in ipairs(diags) do
+				local bufname = vim.api.nvim_buf_get_name(diag.bufnr)
 				if bufname == "" then
 					goto continue
 				end
-				local s = sev_map[d.severity]
-				if not s then
+				local style = severity_styles[diag.severity]
+				if not style then
 					goto continue
 				end
 
 				local rel_path = vim.fn.fnamemodify(bufname, ":~:.")
-				local msg = d.message:match("^[^\n]+") or d.message
-				local lnum = d.lnum + 1
-				local col = d.col + 1
+				local msg = diag.message:match("^[^\n]+") or diag.message
+				local lnum = diag.lnum + 1
+				local col = diag.col + 1
 
-				local icon = fzf_utils.ansi_from_hl(s.hl, s.icon)
+				local icon = fzf_utils.ansi_from_hl(style.hl, style.icon)
 				local dim_path = fzf_utils.ansi_from_hl("Comment", string.format("%s:%d:%d", rel_path, lnum, col))
 
 				-- entry_to_file() splits by nbsp, finds first part matching :%d+:

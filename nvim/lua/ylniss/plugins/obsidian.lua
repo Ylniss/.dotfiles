@@ -12,7 +12,7 @@ return {
 		workspaces = {
 			{
 				name = "knowtes",
-				-- Canonicalize case on Windows ("stuff" -> "Stuff") for workspace match.
+				-- Fix letter case on Windows ("stuff" -> "Stuff") so the workspace matches.
 				path = vim.uv.fs_realpath(vim.fn.expand("~/stuff/knowtes")) or vim.fn.expand("~/stuff/knowtes"),
 			},
 		},
@@ -23,40 +23,24 @@ return {
 		checkbox = { order = { " ", "x" } },
 		callbacks = {
 			enter_note = function(_)
-				-- Set before del so a failed del doesn't skip our mappings.
+				-- Set our mappings before deleting the defaults, so a failed delete doesn't skip them.
 				local actions = require("obsidian.actions")
 				local api = require("obsidian.api")
-				vim.keymap.set("n", "gd", function()
-					-- actions.follow_link doesn't resolve nil → cursor link; do it ourselves.
+				local function nmap(lhs, rhs, desc)
+					vim.keymap.set("n", lhs, rhs, { buffer = true, desc = "obsidian: " .. desc })
+				end
+
+				nmap("gd", function()
+					-- actions.follow_link won't find the link under the cursor; pass it in.
 					local link = api.cursor_link()
 					if link then
 						actions.follow_link(link)
 					end
-				end, { buffer = true, desc = "obsidian: follow link under cursor" })
-				vim.keymap.set(
-					"n",
-					"gb",
-					"<cmd>Obsidian backlinks<CR>",
-					{ buffer = true, desc = "obsidian: show backlinks" }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>sf",
-					"<cmd>Obsidian quick_switch<CR>",
-					{ buffer = true, desc = "obsidian: fuzzy-find notes (overrides fzf-lua)" }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>sg",
-					"<cmd>Obsidian search<CR>",
-					{ buffer = true, desc = "obsidian: grep vault (overrides fzf-lua)" }
-				)
-				vim.keymap.set(
-					"n",
-					"<leader>t",
-					actions.toggle_checkbox,
-					{ buffer = true, desc = "obsidian: toggle checkbox" }
-				)
+				end, "follow link under cursor")
+				nmap("gb", "<cmd>Obsidian backlinks<CR>", "show backlinks")
+				nmap("<leader>sf", "<cmd>Obsidian quick_switch<CR>", "fuzzy-find notes (overrides fzf-lua)")
+				nmap("<leader>sg", "<cmd>Obsidian search<CR>", "grep vault (overrides fzf-lua)")
+				nmap("<leader>t", actions.toggle_checkbox, "toggle checkbox")
 
 				-- Drop plugin defaults that shadow our <CR> or delay ]/[.
 				-- pcall: defaults vary by buffer state; skip if not registered.

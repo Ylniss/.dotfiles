@@ -37,33 +37,31 @@ return {
 			},
 		}
 
-		local function is_android()
-			local camera_path = vim.fn.expand("~/storage/dcim/camera")
-			return vim.uv.fs_stat(camera_path) ~= nil
-		end
-
 		local uname = vim.uv.os_uname()
 		local is_nixos = uname.sysname == "Linux" and uname.version:match("NixOS")
+		local is_android = vim.uv.fs_stat(vim.fn.expand("~/storage/dcim/camera")) ~= nil
 
-		if not is_nixos and not is_android() then
-			require("mason-lspconfig").setup({
-				ensure_installed = vim.tbl_keys(servers),
-			})
-
-			for server_name, server_settings in pairs(servers) do
-				vim.lsp.config(server_name, { settings = server_settings })
-			end
-			vim.lsp.enable(vim.tbl_keys(servers))
-			vim.lsp.enable("stylua", false)
-
-			require("mason-tool-installer").setup({
-				ensure_installed = {
-					"stylua",
-					"prettier",
-					"taplo",
-					"roslyn",
-				},
-			})
+		if is_nixos or is_android then
+			return
 		end
+
+		require("mason-lspconfig").setup({
+			ensure_installed = vim.tbl_keys(servers),
+		})
+
+		for server_name, server_settings in pairs(servers) do
+			vim.lsp.config(server_name, { settings = server_settings })
+		end
+		vim.lsp.enable(vim.tbl_keys(servers))
+		vim.lsp.enable("stylua", false)
+
+		require("mason-tool-installer").setup({
+			ensure_installed = {
+				"stylua",
+				"prettier",
+				"taplo",
+				"roslyn",
+			},
+		})
 	end,
 }

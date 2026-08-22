@@ -20,7 +20,7 @@ vim.keymap.set({ "n", "v" }, "P", "p", { desc = "paste with overwriting clipboar
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
 
--- ================= Remove space functions because it is a leader key ==================
+-- ========================= Unbind space, it is the leader key =========================
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 
 -- =============================== Dealing with word wrap ===============================
@@ -48,10 +48,11 @@ vim.keymap.set("n", "<leader>yd", function()
 		vim.notify("No diagnostics on this line", vim.log.levels.INFO)
 		return
 	end
-	local msgs = {}
-	for _, d in ipairs(diags) do
-		table.insert(msgs, d.message)
-	end
+	local msgs = vim.iter(diags)
+		:map(function(d)
+			return d.message
+		end)
+		:totable()
 	vim.fn.setreg("+", table.concat(msgs, "\n"))
 end, { desc = "yank diagnostic under cursor to clipboard" })
 
@@ -165,8 +166,8 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- ========================== Document existing key chains ==========================
-local whichKey = require("which-key")
-whichKey.add({
+local which_key = require("which-key")
+which_key.add({
 	{ "<leader>e", group = "explore" },
 	{ "<leader>e_", hidden = true },
 	{ "<leader>g", group = "git" },
@@ -178,7 +179,7 @@ whichKey.add({
 })
 
 -- Required for visual <leader>hs (hunk stage) to work
-whichKey.add({
+which_key.add({
 	{ "<leader>", group = "VISUAL <leader>", mode = "v" },
 	{ "<leader>h", desc = "git hunk", mode = "v" },
 })
