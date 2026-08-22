@@ -25,5 +25,5 @@
   "smart-splits.nvim": { "branch": "master", "commit": "5e92431aa7f5e618c2f6825f682df6d94f6e0a02" },
   "tinted-nvim": { "branch": "main", "commit": "a1f4cd347a26cec0e55dd992be52e93ba2f3c6a5" },
   "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" },
-  "yazi.nvim": { "branch": "main", "commit": "2508e758d9057da9a3ec3f8c53e9f33a46a66e2d" }
+  "yazi.nvim": { "branch": "main", "commit": "172bd64a4c2d3adbe2e0ef56289f47ffe139ca55" }
 }

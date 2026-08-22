@@ -7,6 +7,7 @@ const TINTY_FAVS = [
   base16-everforest-dark-hard
   base16-black-metal-bathory
   base16-irblack
+  base16-pastelon-de-amarillos-dark
 ]
 
 # Pick a scheme from the piped-in list via fzf and apply it.
