@@ -58,6 +58,10 @@ Look for, in priority order:
 3. Modern-library patterns — replace dated usage with the current idiom the
    library now recommends (backed by context7).
 
+Keep to changes inside the lines you look at. If the fix is to move code to
+another file, split a unit, or merge two — that is /shape. Do not report it
+here.
+
 Also apply the user's own style rules as review criteria. Read them from the
 global CLAUDE.md rather than from memory — they are the source of truth and
 they change. Do not restate them here.
