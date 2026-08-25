@@ -141,7 +141,7 @@ start:
 
 - A corrected claim is rewritten in its own sentence, in place.
 - A new phase is inserted at its right position, renumbered, with every
-  `Depends on` and Hand-off reference updated to match.
+  `Depends on` reference and the top-of-file **Phases** list updated to match.
 - Removed scope disappears from the Scope line. It is not struck through, not
   parenthesised, not marked "dropped".
 - No trace of the review in the plan body: no "(fixed in review)", no "Review

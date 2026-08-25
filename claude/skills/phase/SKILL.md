@@ -30,12 +30,12 @@ outline before code, review before commit.
 
 - Resolve the plan: the arg is a slug or path under `<git-root>/plans/`.
   If it doesn't resolve, list available plans and stop.
-- Pick the phase: explicit N if given, else the first `[ ]` phase.
+- Pick the phase: explicit N if given, else the first `[ ]` phase in **Phase detail**.
   If none remain, say so and stop.
-- Staleness check (mandated by the plan's Hand-off section): compare the
-  plan's Last-updated commit to `HEAD`; read the files in Repo context and
-  confirm they still exist and behave as described. On drift: report it,
-  update the plan with the user, do not implement yet.
+- Staleness check: compare the plan's Last-updated commit to `HEAD`; read
+  the files in Repo context and confirm they still exist and behave as
+  described. On drift: report it, update the plan with the user, do not
+  implement yet.
 - Review check: read the plan's **Reviewed** line. If it says `never`, is
   missing, or its date is older than the **Last updated** date, the plan has
   changed since it was last reviewed. Say so and ask whether to run
@@ -85,7 +85,7 @@ On approval:
 - Apply only the selected findings; re-run tests if they changed code.
 - Commit: one commit if the phase is a single concern, else split by
   concern. Short one-line messages.
-- Update the plan: mark the phase `[x] — <sha or range>`, bump
-  Last updated (date + `HEAD` sha), then commit the plan update
-  separately.
+- Update the plan: mark the phase `[x] — <sha or range>` in Phase detail,
+  mark `[x]` in the top-of-file Phases list, bump Last updated (date +
+  `HEAD` sha), then commit the plan update separately.
 - Report: phase done, commits made, next pending phase.

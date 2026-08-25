@@ -47,6 +47,10 @@ On approval, write `<git-root>/plans/<slug>.md` using the template below. Self-c
 _Last updated: YYYY-MM-DD — commit `<sha>`_
 _Reviewed: never_
 
+## Phases
+- [ ] 1. <short name>
+- [ ] 2. <short name>
+
 ## Goal
 One paragraph. What "done" looks like.
 
@@ -59,7 +63,7 @@ For each: decision, why, what was rejected and why.
 ## Repo context a fresh Claude needs
 Quirks, conventions, file paths, prior incidents, anything not derivable from a quick `ls` or `git log`.
 
-## Phases
+## Phase detail
 
 ### [ ] Phase 1: <name>
 - **Goal:** ...
@@ -75,17 +79,14 @@ Append-only. Each entry: `YYYY-MM-DD — decision — why`. Future sessions add 
 
 ## Open questions
 Deferred items. Empty if none.
-
-## Hand-off
-To detail a phase, start a fresh context and ask:
-> Prepare a detailed plan for phase N from `plans/<slug>.md`.
-
-**Before writing phase detail, verify the plan is not stale.** Compare the **Last updated** commit to current `HEAD`; read the files cited in **Repo context** to confirm they still exist and behave as described. If anything has drifted, surface the drift and update the plan before producing detail.
 ````
+
+The top-of-file **Phases** list is the index: phase number and one short line per phase. No goal, no sha, no detail. It carries the same state mark as the matching **Phase detail** heading.
 
 ### 4. Updating the plan after a phase
 
-When a phase changes state, update its heading in place:
+When a phase changes state, update its heading in place, and set the same
+mark on its line in the top-of-file **Phases** list:
 - Pending: `### [ ] Phase 1: <name>`
 - Done: `### [x] Phase 1: <name> — <commit-sha-or-range>` (use a range or PR ref if it spans several commits)
 - Blocked: `### [!] Phase 1: <name>` — add a Decisions log entry explaining the block
