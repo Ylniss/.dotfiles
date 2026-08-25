@@ -165,8 +165,8 @@ Rules for a redesign finding:
 - Always flag it ✗. It is never recommended, however good the idea is.
 - Give what it buys and what it costs, one line each. An idea without a cost is
   not a proposal.
-- Never apply it under "all" or "recommended". Apply it only when the user names
-  its number.
+- "recommended" never applies it, because it is never ✓. "all" does apply it —
+  it is a finding like any other.
 
 ## 4. Evidence rule (REQUIRED)
 
@@ -264,10 +264,19 @@ End with: "Which to apply? (e.g. 1,3,5 / all / recommended / none)"
 
 ## 8. Apply selected
 
-- Apply only the findings the user names.
-- "recommended" means every finding you tagged ✓, and nothing tagged ✗.
-- "all" and "recommended" both skip every `redesign` finding. Apply one only
-  when the user names its number.
+Apply only the findings the user picks.
+
+### Selection words
+
+- **numbers** (`1,3,5`) — exactly those findings.
+- **all** — every finding in the report, `✓` and `✗` alike. "all" never means
+  "recommended". Never drop a finding because you did not recommend it, and
+  never tell the user that "all" skips something.
+- **recommended** — every finding tagged `✓`, nothing tagged `✗`.
+- **none** — apply nothing.
+
+### Rules
+
 - Apply them all in one pass. The result stays uncommitted for the user to read.
 - Edit any file the change needs, in the scope or outside it. The scope picks
   what you judge, not what you may touch.

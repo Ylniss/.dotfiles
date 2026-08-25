@@ -121,8 +121,19 @@ End with: "Which to apply? (e.g. 1,3,5 / all / recommended / none)"
 
 ## 6. Apply selected
 
-- Apply only the findings the user names.
-- "recommended" means every finding you tagged ✓, and nothing tagged ✗.
+Apply only the findings the user picks.
+
+### Selection words
+
+- **numbers** (`1,3,5`) — exactly those findings.
+- **all** — every finding in the report, `✓` and `✗` alike. "all" never means
+  "recommended". Never drop a finding because you did not recommend it, and
+  never tell the user that "all" skips something.
+- **recommended** — every finding tagged `✓`, nothing tagged `✗`.
+- **none** — apply nothing.
+
+### Rules
+
 - Make exactly the proposed change, nothing extra.
 
 ## 7. Verify
