@@ -10,19 +10,11 @@ argument-hint: "[plan]"
 # Plan review
 
 Review a plan written by the plan skill, before /phase spends work on it.
-Report-only until the user picks; then edit the plan file.
+Report-only until the user picks; then edit the plan file. This skill edits
+the plan file and nothing else — it never touches code.
 
 Best run in a fresh context — after `/clear` or a compact. The session that
 wrote the plan tends to approve its own plan. This is advice, not a gate.
-
-## Hard rules
-
-1. **No code.** This skill edits the plan file and nothing else.
-2. **Evidence or drop.** Every claim finding cites what the repo returned.
-   Never assert from memory.
-3. **Woven, not appended.** An applied finding is written as if the plan had
-   been authored with it from the start.
-4. **One approval gate.** Report, then apply only the findings the user names.
 
 ## 1. Pick the plan
 
@@ -58,7 +50,7 @@ At minimum:
 - "X already exists" and "Y does not exist yet"
 - claims about how existing code behaves
 
-A claim finding without an `evidence:` line is not reportable — drop it.
+A claim finding without an `evidence` field is not reportable — drop it.
 Claims the repo cannot settle (external services, future work, taste) are out
 of scope for this step; they may still be a `gap`.
 
@@ -90,7 +82,7 @@ with no stated trade-off is not analysis — drop it.
 Do not re-run the critique the plan skill already did before the plan was
 saved. Raise only what the written plan makes visible.
 
-## 6. Filter and rank
+## 6. Rank and flag
 
 - Drop nitpicks. Only report what is worth changing in the plan.
 - Rank by impact: what would waste the most work first.
@@ -107,10 +99,13 @@ saved. Raise only what the written plan makes visible.
 
 Numbered list so the user can pick:
 
-    N. [category][H|M|L][✓|✗] <plan section or phase> — short title
-       why:      <one line>
-       evidence: <what the repo returned — claim findings only>
-       fix:      <what changes in the plan, one line>
+    **N. [category][H|M|L][✓|✗] <plan section or phase> — short title**
+    ========== why ==========
+    <one line>
+    ========== evidence ==========
+    <what the repo returned — claim findings only>
+    ========== fix ==========
+    <what changes in the plan, one line>
 
 Header tag rules — three tags, no spaces between them, always in this order:
 
@@ -123,11 +118,24 @@ Never write "(confidence: high)" at the end of the line — the tags carry it.
 Point at the plan's own section or phase name, not a line number — applying
 rewrites the file.
 
-The `evidence:` line is required for every `claim` finding and names what was
-read or grepped, and what came back. Omit it for the other categories.
+The `evidence` field is required for every `claim` finding and names what was
+read or grepped, and what came back. Omit its banner for the other categories.
 
-No diff blocks. Plan prose reads badly as a diff; the `fix:` line carries the
+No diff blocks. Plan prose reads badly as a diff; the `fix` field carries the
 change.
+
+Format rules:
+
+- Wrap the header line in `**` so it reads bold. Never make it a heading — a
+  heading adds a blank line under itself and breaks the tight block.
+- Write every banner as `========== <label> ==========` — ten `=` on each
+  side, one space around the label. Always ten, whatever the label length. Do
+  not pad the banner to a fixed width and do not centre the label.
+- Write no blank line inside a finding. The header line, every banner, and
+  every field sit on consecutive lines. One blank line separates two findings,
+  and nothing else.
+- A banner is plain text. Never put it in a code fence, and never add
+  backticks, bold, or a heading marker to it.
 
 End with: "Which to apply? (e.g. 1,3,5 / all / recommended / none)"
 

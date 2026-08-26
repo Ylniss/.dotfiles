@@ -221,24 +221,29 @@ Give a verdict for EVERY file in the scope, in the order the files appear —
 the clean ones included. Before the first file, state the file count and the
 finding count in one line.
 
-Per file, print the path, then either its findings or a one-line verdict that
-the file needs no change, and why it is fine.
+The verdict list comes first: one line per file, path and verdict, for every
+file in the scope. Print the findings after it, never grouped under a file path.
+
+Never print a file path above a finding. The number must start the finding, and
+the finding header carries the path, so nothing sits between the two.
 
 Per finding:
 
-```
-N. [category][H|M|L][✓|✗] file:line — short title
-   move:    `current` → `proposed`
-   why:     <one line>
-   pattern: <deviation, layout, dependency: the files that establish it + count>
-   scope:   <files touched + safe/risky>
-```
+    **N. [category][H|M|L][✓|✗] <path from the repo root>:line — short title**
+    ========== move ==========
+    `current` → `proposed`
+    ========== why ==========
+    <one line>
+    ========== pattern ==========
+    <deviation, layout, dependency: the files that establish it + count>
+    ========== scope ==========
+    <files touched + safe/risky>
 
-A `redesign` finding uses a different body: an `idea:` line in place of `move:`,
-then `buys:` and `costs:` in place of `why:`.
+A `redesign` finding uses a different body: an `idea` field in place of `move`,
+then `buys` and `costs` in place of `why`. Each keeps its own banner.
 
-Number the findings in one sequence across all files, so the user can pick
-`7,12`.
+Number the findings in one sequence, in the order the files appear in the
+scope, so the user can pick `7,12`.
 
 Header tag rules — three tags, no spaces between them, always in this order:
 
@@ -247,18 +252,31 @@ Header tag rules — three tags, no spaces between them, always in this order:
 2. Confidence: a single letter — `H`, `M`, or `L`.
 3. Recommend flag: `✓` if you recommend applying it, `✗` if you do not.
 
-Format rules for the `move:` line:
+Never write "(confidence: high)" at the end of the line — the tags carry it.
 
-- Print each finding as plain markdown lines. Never put a finding inside a code
-  fence — a fence shows the backticks as literal text and kills the colour. The
-  block above is a template, not the output format.
+Format rules for the finding body:
+
+- Wrap the header line in `**` so it reads bold. Never make it a heading — a
+  heading adds a blank line under itself and breaks the tight block.
+- Write every banner as `========== <label> ==========` — ten `=` on each
+  side, one space around the label. Always ten, whatever the label length. Do
+  not pad the banner to a fixed width and do not centre the label.
+- Write no blank line inside a finding. The header line, every banner, and
+  every field sit on consecutive lines. One blank line separates two findings,
+  and nothing else.
+- A banner is plain text. Never put it in a code fence, and never add
+  backticks, bold, or a heading marker to it.
+- Print the banners and the fields as plain markdown lines. Never put a finding
+  inside a code fence — a fence shows the backticks as literal text and kills
+  the colour.
 - Wrap each side in backticks. The terminal colours both sides and leaves the
   arrow plain. Never print the backticks as literal text.
 - Use a plain `→` between the two sides.
 - The left side names what moves. The right side names where it ends up — a
   file, a unit, or a position. For an inline, the right side is the unit that
   absorbs it.
-- Keep it to one line. Use no diff blocks; a move reads as noise in a diff.
+- Keep the `move` field to one line. Use no diff blocks; a move reads as noise
+  in a diff.
 
 End with: "Which to apply? (e.g. 1,3,5 / all / recommended / none)"
 
@@ -288,13 +306,13 @@ Apply only the findings the user picks.
 - If a finding turns out to be impossible as proposed — it would break the
   build, or it needs a redesign you did not report — revert that one finding,
   finish the rest, and say which one you dropped and why.
-
-## 9. Verify
-
 - Change only what a finding names. Do not reformat, re-indent, or re-wrap
   anything else.
 - Keep each file's existing conventions: line endings, indent character, and
   final newline. Read the file's current state before you write it back.
+
+## 9. Verify
+
 - Run the project's tests. Always, whenever the repo has them — find the command
   in the repo config. Report the command and its result.
 - Run the project's formatter and linter if it has them, and confirm every

@@ -11,6 +11,16 @@ argument-hint: "[base ref | path]"
 Report-only review of the scope for clear comments and direct names, then
 apply the findings the user selects. Quality only — no logic changes.
 
+## Boundary against the other reviews
+
+- /polish changes code in place: a better expression on the same lines.
+- /clarify changes what the code is called and what the comments say.
+- /shape changes where code lives, how many units it is cut into, which unit
+  depends on which, and the order things sit in a file.
+
+If a finding rewrites logic, that is /polish. If it moves code, splits a unit,
+or merges two — that is /shape. Do not report either one here.
+
 ## 1. Get the scope
 
 The argument decides the scope. Work out which kind it is:
@@ -25,15 +35,23 @@ The argument decides the scope. Work out which kind it is:
 If the scope resolves to nothing — an empty diff, or a path with no source
 files — say so and stop.
 
+### Out-of-scope findings are wanted
+
+A finding does not have to belong to the job the user is doing. It does not
+have to touch a line the user wrote. Report it the same way.
+
+Never hedge. Do not write "this is outside the scope of your change", "this is
+pre-existing", or "unrelated to your work". The user wants those findings, and
+the disclaimer only adds noise.
+
 ## 2. Review comments
 
 Goal: every comment is essence only — simple words, direct, no fluff, no
 mental leap to understand it.
 
 Evaluate EVERY comment in the scope — do not sample or cherry-pick. Each comment
-gets one of these verdicts: keep as-is / shorten / reword / delete. Report all
-that need a change; only edit those. Aggressive coverage, selective edits — a
-comment that is already fine stays untouched.
+gets one of these verdicts: keep as-is / shorten / reword / delete. Aggressive
+coverage, selective edits — report only what needs a change.
 
 Apply these, in priority order:
 
@@ -111,18 +129,25 @@ For each name, read how it is used before you judge it:
 
 ## 5. Report (do not code yet)
 
-Group findings by file, in the order the files appear in the scope. Number them
-in one sequence across all groups, so the user can pick `7,12`. Before the first
-group, state the finding count and the file count in one line.
+List the findings in one numbered sequence, in the order the files appear in
+the scope, so the user can pick `7,12`. Before the first finding, state the
+finding count and the file count in one line.
 
-Per finding:
+Never print a file path above a finding. The number must start the finding, so
+nothing sits above it.
 
-```
-N. [comment|name][H|M|L][✓|✗] file:line — short title
-   proposition: `current` → `proposed`
-   why:         <one line>
-   scope:       <only for renames: ref count + safe/risky>
-```
+Per finding, print a header line, the diff block, then a banner for every field:
+
+    **N. [comment|name][H|M|L][✓|✗] short title**
+    ```diff
+    @@ <path from the repo root>:line @@
+    - <current code>
+    + <proposed code>
+    ```
+    ========== why ==========
+    <one line>
+    ========== scope ==========
+    <only for renames: ref count + safe/risky>
 
 Header tag rules — three tags, no spaces between them, always in this order:
 
@@ -130,20 +155,36 @@ Header tag rules — three tags, no spaces between them, always in this order:
 2. Confidence: a single letter — `H`, `M`, or `L`.
 3. Recommend flag: `✓` if you recommend applying it, `✗` if you do not.
 
-Format rules for the `proposition:` line:
+Never write "(confidence: high)" at the end of the line — the tags carry it.
 
-- Print each finding as plain markdown lines. Never put a finding inside a code
-  fence — a fence shows the backticks as literal text and kills the colour. The
-  block above is a template, not the output format.
-- Wrap each side in backticks. The terminal colours both sides and leaves the
-  arrow plain. Never print the backticks as literal text.
-- Use a plain `→` between the two sides.
-- For a deletion, write the right side as `DELETE` in backticks, so both the
-  removed text and the word DELETE are coloured.
-- Keep it to one line. If a comment is too long for one line, quote its core
-  phrase on the left and the replacement on the right.
+Format rules for the finding body:
 
-After the last group, list what you reviewed and deliberately did not report,
+- Wrap the header line in `**` so it reads bold. Never make it a heading — a
+  heading adds a blank line under itself and breaks the tight block.
+- Write every banner as `========== <label> ==========` — ten `=` on each
+  side, one space around the label. Always ten, whatever the label length. Do
+  not pad the banner to a fixed width and do not centre the label.
+- Write no blank line inside a finding. The header line, every banner, and
+  every field sit on consecutive lines. One blank line separates two findings,
+  and nothing else.
+- A banner is plain text. Never put it in a code fence, and never add
+  backticks, bold, or a heading marker to it.
+- Print the banners and the fields as plain markdown lines. The diff block is
+  the only fence in a finding.
+- The diff block is the only place the before and after text appears. Do not
+  repeat it as prose.
+- The `@@ path:line @@` header is the only place the location appears. Write
+  the path from the repo root there. Never repeat it on the header line.
+- Show only the lines that change, plus the minimum context needed to read
+  them. Do not paste the whole function.
+- The terminal colours `-` lines red and `+` lines green. Colouring is per
+  line, so keep one finding to one change — do not merge two unrelated edits
+  into one block.
+- For a deleted comment, write only `-` lines.
+- For a rename, show the declaration line only. The `scope` field carries the
+  other references; never list them as diff lines.
+
+After the last finding, list what you reviewed and deliberately did not report,
 and why — one line per class (e.g. "section banners", "library module aliases",
 "domain vocabulary: bufnr, lnum"). This proves the coverage was aggressive and
 the edits selective.
@@ -168,13 +209,13 @@ Apply only the findings the user picks.
 - Make exactly the proposed change, nothing extra.
 - For renames, update every reference in scope. Then search the whole scope for
   the old name and confirm zero hits remain.
-
-## 7. Verify
-
 - Change only the lines a finding names. Do not reformat, re-indent, or
   re-wrap anything else.
 - Keep the file's existing conventions: line endings, indent character, and
   final newline. Read the file's current state before you write it back.
+
+## 7. Verify
+
 - After applying, run the project's formatter and linter if it has them
   (check the repo config for the tool it uses), and confirm every changed file
   still parses, compiles, or passes its tests. Report the command and its
