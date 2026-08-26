@@ -31,7 +31,7 @@ prio = "high"
 url = "*.nu"
 run = 'piper -- bat --color=always --theme=ansi --style=plain --paging=never "$1"'
 
-# Open text files in nvim by default; SVGs in Inkscape; office docs in OnlyOffice
+# Open text files in nvim by default; SVGs in Inkscape; office docs in OnlyOffice; scripts via the system
 [opener]
 edit = [
 	{ run = 'nvim %s', block = true, desc = "nvim", for = "unix" },
@@ -46,10 +46,22 @@ onlyoffice = [
 	# Full exe path required: DesktopEditors.exe is not on PATH, and .docx maps to Word in the system associations
 	{ run = '"C:\Program Files\ONLYOFFICE\DesktopEditors\DesktopEditors.exe" %s', orphan = true, desc = "OnlyOffice", for = "windows" },
 ]
+system = [
+	{ run = 'start "" %s1', orphan = true, desc = "Open", for = "windows" },
+]
 imv = [
 	{ run = 'imv -n %s1 %d1', orphan = true, desc = "imv", for = "unix" },
 	{ run = 'start "" %s1', orphan = true, desc = "Open", for = "windows" },
 ]
+
+# Scripts stay previewable as text, but run through the system opener
+[[open.prepend_rules]]
+url = "*.bat"
+use = "system"
+
+[[open.prepend_rules]]
+url = "*.cmd"
+use = "system"
 
 [[open.prepend_rules]]
 mime = "text/*"

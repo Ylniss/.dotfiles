@@ -21,6 +21,8 @@ require("mime-ext.local"):setup({
 		targets = "text/plain",
 		csx = "text/plain",
 		ps1 = "text/plain",
+		bat = "text/plain",
+		cmd = "text/plain",
 		ahk = "text/plain",
 		config = "text/plain",
 		nu = "text/plain",
