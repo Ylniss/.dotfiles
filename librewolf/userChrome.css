@@ -1,0 +1,26 @@
+/* Hide the top chrome — menu bar, title bar, navigation bar and bookmarks
+   toolbar all live in #navigator-toolbox.
+
+   A collapsed or `visibility: hidden` toolbar cannot take focus, so Ctrl+L
+   would have nothing to reveal; an element at zero opacity still can.
+
+   The address bar expands out of its container and paints its background and
+   shadow in a layer of its own, so clipping and opacity on the toolbox do not
+   reach it. */
+#navigator-toolbox:not(:focus-within) {
+  height: 1px !important;
+  min-height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  z-index: -5 !important;
+  pointer-events: none;
+}
+
+#navigator-toolbox:not(:focus-within) #urlbar,
+#navigator-toolbox:not(:focus-within) #urlbar-background,
+#navigator-toolbox:not(:focus-within) #urlbar-input-container {
+  opacity: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}

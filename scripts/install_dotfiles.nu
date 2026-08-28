@@ -1,6 +1,7 @@
 #!/usr/bin/env nu
 
 use _lib.nu *
+use librewolf_cookie_exceptions.nu *
 
 # -------------- MAIN --------------
 
@@ -43,6 +44,8 @@ let symlinks = [
   { src: 'mako/config',                   desc: 'mako config',                dest: $'($config_dir)/mako/config',               linux_only: true }
   { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
   { src: 'qutebrowser/styles',            desc: 'qutebrowser styles',         dest: $'($qutebrowser_config_dir)/styles',        skip_on_android: true }
+  { src: 'librewolf/librewolf.overrides.cfg', desc: 'librewolf.overrides.cfg', dest: $'($home_dir)/.librewolf/librewolf.overrides.cfg', skip_on_android: true }
+  { src: 'librewolf/tridactylrc',         desc: 'tridactylrc',                dest: $'($home_dir)/.tridactylrc',                skip_on_android: true }
   { src: 'mpv/mpv.conf',                  desc: 'mpv mpv.conf',               dest: $'($mpv_config_dir)/mpv.conf',                       skip_on_android: true }
   { src: 'mpv/scripts/sponsorblock.lua',  desc: 'mpv sponsorblock.lua',       dest: $'($mpv_config_dir)/scripts/sponsorblock.lua',       skip_on_android: true }
   { src: 'mpv/script-opts/sponsorblock.conf', desc: 'mpv sponsorblock.conf',  dest: $'($mpv_config_dir)/script-opts/sponsorblock.conf',  skip_on_android: true }
@@ -76,19 +79,19 @@ for s in ($symlinks | where { |s|
   create-symbolic-link $'($repo_dir)/($s.src)' $s.dest $s.desc
 }
 
+link-librewolf-userchrome $repo_dir
+
 install-yazi-packages
 
 install-bat-syntaxes
+
+apply-librewolf-cookie-exceptions $repo_dir
 
 ensure-gitconfig-local $home_dir
 
 if (is-windows) { allow-cfa-apps-if-needed }
 
 # -------------- FUNCTIONS --------------
-
-def warn [msg: string] {
-  print -e $"(ansi yellow)($msg)(ansi reset)"
-}
 
 # Reads where a symlink points (lists parent so directory symlinks aren't followed into)
 def read-symlink-target [link_path] {
@@ -169,6 +172,16 @@ def create-symbolic-link [target, link_path, description] {
   } else {
     ^ln -s $target $link_path
   }
+}
+
+# Links userChrome.css into the LibreWolf profile, whose directory name is random
+def link-librewolf-userchrome [repo_dir] {
+  let profile_dir = (librewolf-profile-dir)
+  if $profile_dir == null {
+    warn 'LibreWolf profile not found. Skipping userChrome.css.'
+    return
+  }
+  create-symbolic-link $'($repo_dir)/librewolf/userChrome.css' $'($profile_dir)/chrome/userChrome.css' 'librewolf userChrome.css'
 }
 
 # Installs yazi plugins via `ya pkg install` (no-op if `ya` is missing)

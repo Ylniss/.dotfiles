@@ -1,0 +1,19 @@
+" Sourced at startup by the native messenger, or with :source.
+
+" Drop the settings Tridactyl stores in the browser, so this file is the only
+" source of truth.
+sanitise tridactyllocal tridactylsync
+
+" Tridactyl cannot run on about: pages, so redirect the new tab.
+set newtab https://duckduckgo.com
+
+" Vertical tabs: J moves down the list, K moves up, as in vim.
+bind J tabnext
+bind K tabprev
+
+" Leader: Space.
+bind <Space>gh tabopen https://github.com
+bind <Space>gy tabopen https://youtube.com
+bind <Space>gr tabopen https://reddit.com
+bind <Space>m mute toggle
+bind <Space>p pin

@@ -202,6 +202,24 @@ In mpv:
 | `b` | Toggle SponsorBlock skipping |
 | `q` | Quit mpv |
 
+# LibreWolf
+
+LibreWolf deletes cookies and site data at shutdown. Origins in `librewolf/cookie-allow.txt` keep theirs, so their logins stay. Subdomains are covered: `https://google.com` also keeps `accounts.google.com`.
+
+LibreWolf holds these exceptions in the profile database, not in a config file, so a script writes them:
+
+```
+nu scripts/librewolf_cookie_exceptions.nu
+```
+
+Close LibreWolf first — it writes its cached permissions back at exit. `install_dotfiles.nu` runs the script too. Each run replaces all exceptions, so exceptions added in the browser UI are lost.
+
+`librewolf/librewolf.overrides.cfg`, symlinked to `~/.librewolf/`, holds the tracked preferences. It forces dark websites, which needs `privacy.resistFingerprinting` off, and reopens the previous tabs at startup.
+
+`librewolf/userChrome.css` hides the navigation bar until it takes focus. `install_dotfiles.nu` links it into the profile, whose directory name is random.
+
+Tridactyl reads `~/.tridactylrc` (symlinked to `librewolf/tridactylrc`) at startup. It needs the native messenger: `:installnative`.
+
 # ONLYOFFICE
 
 Install with `paru -S onlyoffice-bin xdg-user-dirs`, then run `xdg-user-dirs-update` once.
