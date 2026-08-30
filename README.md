@@ -204,21 +204,68 @@ In mpv:
 
 # LibreWolf
 
-LibreWolf deletes cookies and site data at shutdown. Origins in `librewolf/cookie-allow.txt` keep theirs, so their logins stay. Subdomains are covered: `https://google.com` also keeps `accounts.google.com`.
+`install_dotfiles.nu` symlinks the preferences, `userChrome.css` and `tridactylrc`.
 
-LibreWolf holds these exceptions in the profile database, not in a config file, so a script writes them:
+Tridactyl needs its native messenger. Run `:installnative` once.
+
+## Cookies
+
+LibreWolf deletes cookies at shutdown. Sites listed in `librewolf/cookie-allow.txt` keep theirs, so their logins stay. Subdomains are covered.
+
+To apply the list, close LibreWolf and run:
 
 ```
 nu scripts/librewolf_cookie_exceptions.nu
 ```
 
-Close LibreWolf first — it writes its cached permissions back at exit. `install_dotfiles.nu` runs the script too. Each run replaces all exceptions, so exceptions added in the browser UI are lost.
+Each run replaces all exceptions. `install_dotfiles.nu` runs it too.
 
-`librewolf/librewolf.overrides.cfg`, symlinked to `~/.librewolf/`, holds the tracked preferences. It forces dark websites, which needs `privacy.resistFingerprinting` off, and reopens the previous tabs at startup.
+## Bookmarks
 
-`librewolf/userChrome.css` hides the navigation bar until it takes focus. `install_dotfiles.nu` links it into the profile, whose directory name is random.
+To export, close LibreWolf and run:
 
-Tridactyl reads `~/.tridactylrc` (symlinked to `librewolf/tridactylrc`) at startup. It needs the native messenger: `:installnative`.
+```
+nu scripts/librewolf_bookmarks_export.nu
+```
+
+To import: `Ctrl+Shift+O` -> `Import and Backup` -> `Import Bookmarks from HTML...` -> pick `librewolf/bookmarks.html`. The import adds bookmarks, it does not replace them.
+
+## Keybindings
+
+Custom:
+
+| Key | Action |
+|-----|--------|
+| `f` / `F` | Follow a link in a new tab / in this tab |
+| `J` / `K` | Next / previous tab |
+| `gb` | Search bookmarks |
+| `g h/y/r` | Open GitHub / YouTube / Reddit |
+| `gm z/j` | Open Gmail account 0 / 1 |
+| `<Space>m` | Mute tab |
+| `<Space>p` | Pin tab |
+| `Ctrl+B` | Toggle the bookmarks sidebar |
+
+Tridactyl defaults:
+
+| Key | Action |
+|-----|--------|
+| `:` | Command line |
+| `H` / `L` | Back / forward |
+| `o` / `t` | Open a URL in this tab / a new tab |
+| `b` / `B` | Switch tab in this window / any window |
+| `s` / `S` | Search in this tab / a new tab |
+| `d` / `u` | Close tab / undo close |
+| `r` | Reload |
+| `a` | Bookmark this page |
+| `yy` | Copy the page URL |
+| `gi` | Focus the first text box |
+| `/` `n` `N` | Find / next match / previous match |
+| `<C-d>` / `<C-u>` | Half page down / up |
+| `gg` / `G` | Top / bottom of the page |
+| `zi` / `zo` / `zz` | Zoom in / out / reset |
+| `<C-v>` | Send the next key to the page |
+| `<S-Insert>` | Ignore mode, all keys go to the page |
+| `<Escape>` | Back to normal mode |
 
 # ONLYOFFICE
 

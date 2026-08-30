@@ -11,9 +11,21 @@ set newtab https://duckduckgo.com
 bind J tabnext
 bind K tabprev
 
-" Leader: Space.
-bind <Space>gh tabopen https://github.com
-bind <Space>gy tabopen https://youtube.com
-bind <Space>gr tabopen https://reddit.com
+" Hints: f opens the link in a background tab, F in the current tab.
+bind f hint -b
+bind F hint
+
+" Release Ctrl+B, so Firefox gets it and toggles the bookmarks sidebar.
+unbind <C-b>
+
+" Go to: g. gh and gr replace the default home and reader binds.
+bind gb fillcmdline bmarks
+bind gh tabopen https://github.com
+bind gy tabopen https://youtube.com
+bind gr tabopen https://reddit.com
+bind gmz tabopen https://mail.google.com/mail/u/0/#inbox
+bind gmj tabopen https://mail.google.com/mail/u/1/#inbox
+
+" Current tab: Space.
 bind <Space>m mute toggle
 bind <Space>p pin
