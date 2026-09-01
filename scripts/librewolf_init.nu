@@ -8,9 +8,20 @@ use _lib.nu *
 def main [] { init-librewolf (dotfiles-repo-dir) }
 
 export def init-librewolf [repo_dir] {
+  link-librewolf-overrides $repo_dir
   link-librewolf-userchrome $repo_dir
   apply-librewolf-cookie-exceptions $repo_dir
   install-librewolf-extensions $repo_dir
+}
+
+# Links librewolf.overrides.cfg to where the installed LibreWolf reads it
+def link-librewolf-overrides [repo_dir] {
+  let overrides_file = (librewolf-overrides-file)
+  if $overrides_file == null {
+    warn 'LibreWolf profile not found. Start LibreWolf once, then rerun. Skipping librewolf.overrides.cfg.'
+    return
+  }
+  create-symbolic-link $'($repo_dir)/librewolf/librewolf.overrides.cfg' $overrides_file 'librewolf.overrides.cfg'
 }
 
 # Links userChrome.css into the LibreWolf profile, whose directory name is random

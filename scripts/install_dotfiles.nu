@@ -44,7 +44,6 @@ let symlinks = [
   { src: 'mako/config',                   desc: 'mako config',                dest: $'($config_dir)/mako/config',               linux_only: true }
   { src: 'qutebrowser/config.py',         desc: 'qutebrowser config.py',      dest: $'($qutebrowser_config_dir)/config.py',     skip_on_android: true }
   { src: 'qutebrowser/styles',            desc: 'qutebrowser styles',         dest: $'($qutebrowser_config_dir)/styles',        skip_on_android: true }
-  { src: 'librewolf/librewolf.overrides.cfg', desc: 'librewolf.overrides.cfg', dest: $'($home_dir)/.librewolf/librewolf.overrides.cfg', skip_on_android: true }
   { src: 'librewolf/tridactylrc',         desc: 'tridactylrc',                dest: $'($home_dir)/.tridactylrc',                skip_on_android: true }
   { src: 'mpv/mpv.conf',                  desc: 'mpv mpv.conf',               dest: $'($mpv_config_dir)/mpv.conf',                       skip_on_android: true }
   { src: 'mpv/scripts/sponsorblock.lua',  desc: 'mpv sponsorblock.lua',       dest: $'($mpv_config_dir)/scripts/sponsorblock.lua',       skip_on_android: true }

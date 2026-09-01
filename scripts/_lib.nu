@@ -23,17 +23,44 @@ export def warn [msg: string] {
   print -e $"(ansi yellow)($msg)(ansi reset)"
 }
 
+# Returns the root directory LibreWolf keeps its profiles in, or null.
+# The Arch package is an XDG build; the official builds are not.
+def librewolf-root-dir [] {
+  let candidates = if (is-windows) {
+    [$'($env.APPDATA)/librewolf']
+  } else {
+    let config_dir = ($env.XDG_CONFIG_HOME? | default $'($env.HOME)/.config')
+    [$'($config_dir)/librewolf/librewolf' $'($env.HOME)/.librewolf']
+  }
+  $candidates | where { |c| $'($c)/profiles.ini' | path exists } | path expand | get -o 0
+}
+
+# Returns the file LibreWolf reads its preference overrides from, or null
+export def librewolf-overrides-file [] {
+  # Windows keeps the profiles under APPDATA, but reads the overrides file from
+  # the user directory.
+  if (is-windows) { return $'($env.USERPROFILE)/.librewolf/librewolf.overrides.cfg' }
+
+  let root = (librewolf-root-dir)
+  if $root == null { return null }
+  $'($root)/librewolf.overrides.cfg'
+}
+
 # Returns the profile directory the installed LibreWolf opens, or null
 export def librewolf-profile-dir [] {
-  let root = if (is-windows) { $'($env.APPDATA)/librewolf' } else { $'($env.HOME)/.librewolf' }
-  let ini = $'($root)/profiles.ini'
-  if not ($ini | path exists) { return null }
+  let root = (librewolf-root-dir)
+  if $root == null { return null }
 
   # The [InstallXXX] section names the profile the browser opens. Its Default
   # holds a path, unlike the plain `Default=1` flag in [ProfileN].
-  let paths = (open $ini | lines | parse --regex '^Default=(?<rel>.*/.*)' | get rel)
-  if ($paths | is-empty) { return null }
-  let dir = $'($root)/($paths | first)'
+  let rel = (open $'($root)/profiles.ini'
+    | lines
+    | parse --regex '^Default=(?<rel>.+)'
+    | get rel
+    | where { |p| $p != '1' }
+    | get -o 0)
+  if $rel == null { return null }
+  let dir = $'($root)/($rel)'
   if ($dir | path exists) { $dir } else { null }
 }
 

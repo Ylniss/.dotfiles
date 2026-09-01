@@ -1,0 +1,288 @@
+{
+  "guid": "root________",
+  "title": "",
+  "index": 0,
+  "dateAdded": 1788275916267000,
+  "lastModified": 1788281589652000,
+  "typeCode": 2,
+  "type": "text/x-moz-place-container",
+  "root": "placesRoot",
+  "children": [
+    {
+      "guid": "toolbar_____",
+      "title": "toolbar",
+      "index": 1,
+      "dateAdded": 1788275916267000,
+      "lastModified": 1788281589652000,
+      "typeCode": 2,
+      "type": "text/x-moz-place-container",
+      "root": "toolbarFolder",
+      "children": [
+        {
+          "guid": "4ERBiro3ZIpH",
+          "title": "mail",
+          "index": 0,
+          "dateAdded": 1788121726000000,
+          "lastModified": 1788281502440000,
+          "typeCode": 2,
+          "type": "text/x-moz-place-container",
+          "children": [
+            {
+              "guid": "nxfkm_IqCR-f",
+              "title": "mail - zupqa0",
+              "index": 0,
+              "dateAdded": 1788121712000000,
+              "lastModified": 1788122357000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://mail.google.com/mail/u/0/#inbox",
+              "tags": "gmail,mail"
+            },
+            {
+              "guid": "6_Q4XVNDYto3",
+              "title": "mail - jan.olejek",
+              "index": 1,
+              "dateAdded": 1788121734000000,
+              "lastModified": 1788122381000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://mail.google.com/mail/u/1/#inbox",
+              "tags": "email,mail,work"
+            }
+          ]
+        },
+        {
+          "guid": "YKLd1aVh6OwD",
+          "title": "game-dev",
+          "index": 1,
+          "dateAdded": 1788115915000000,
+          "lastModified": 1788281506058000,
+          "typeCode": 2,
+          "type": "text/x-moz-place-container",
+          "children": [
+            {
+              "guid": "Y2XL9QzKPp5Q",
+              "title": "game-dev - pixel perfect image scaling tool",
+              "index": 0,
+              "dateAdded": 1788116119000000,
+              "lastModified": 1788122334000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://yal.cc/tools/upscale/",
+              "tags": "gamedev,rl,tool"
+            },
+            {
+              "guid": "lWC2LCvyDXoU",
+              "title": "game-dev - RogueBasin",
+              "index": 1,
+              "dateAdded": 1788122653000000,
+              "lastModified": 1788122653000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://roguebasin.com/index.php/Main_Page",
+              "tags": "gamedev,rl"
+            }
+          ]
+        },
+        {
+          "guid": "RvDlC3C4Ql_k",
+          "title": "$",
+          "index": 2,
+          "dateAdded": 1788121793000000,
+          "lastModified": 1788281508295000,
+          "typeCode": 2,
+          "type": "text/x-moz-place-container",
+          "children": [
+            {
+              "guid": "5PNc4sXv2sbT",
+              "title": "$ - Key To Freedom - Google Sheets",
+              "index": 0,
+              "dateAdded": 1788121796000000,
+              "lastModified": 1788122143000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://docs.google.com/spreadsheets/d/1MEZI8bvvTh8O-ulnvbFhzaANH7Phi8LhHfXF2qbE9fY/edit?pli=1&gid=779915050#gid=779915050",
+              "tags": "$"
+            },
+            {
+              "guid": "FxrklLw2YcsJ",
+              "title": "$ - Coinbase",
+              "index": 1,
+              "dateAdded": 1788121821000000,
+              "lastModified": 1788122201000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://www.coinbase.com/advanced-trade/spot/BTC-USD",
+              "tags": "$,crypto,market,stock"
+            },
+            {
+              "guid": "ob5XGvzmR53k",
+              "title": "$ - tradingview",
+              "index": 2,
+              "dateAdded": 1788121959000000,
+              "lastModified": 1788122227000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://www.tradingview.com/chart/JB0VWUL3/?symbol=BITSTAMP%3ABTCUSD",
+              "tags": "$,crypto,stock"
+            }
+          ]
+        },
+        {
+          "guid": "PkRYk4woAFpM",
+          "title": "movies",
+          "index": 3,
+          "dateAdded": 1788122290000000,
+          "lastModified": 1788281510424000,
+          "typeCode": 2,
+          "type": "text/x-moz-place-container",
+          "children": [
+            {
+              "guid": "jV2hT1ncXJAU",
+              "title": "movies - torrents 1337x.to",
+              "index": 0,
+              "dateAdded": 1788122272000000,
+              "lastModified": 1788122410000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://1337x.to/",
+              "tags": "movies,torrents"
+            },
+            {
+              "guid": "wSUYDpTO-6li",
+              "title": "movies - imdb",
+              "index": 1,
+              "dateAdded": 1788122437000000,
+              "lastModified": 1788122437000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://www.imdb.com/",
+              "tags": "movies"
+            }
+          ]
+        },
+        {
+          "guid": "dvgQBECjg40l",
+          "title": "music",
+          "index": 4,
+          "dateAdded": 1788122511000000,
+          "lastModified": 1788281512679000,
+          "typeCode": 2,
+          "type": "text/x-moz-place-container",
+          "children": [
+            {
+              "guid": "g8OhsQem7csG",
+              "title": "music - bandcamp",
+              "index": 0,
+              "dateAdded": 1788122530000000,
+              "lastModified": 1788122794000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://bandcamp.com/yolan12?ui_context=usernav",
+              "tags": "music"
+            },
+            {
+              "guid": "ebSv4k-_a5Zx",
+              "title": "music - Discogs",
+              "index": 1,
+              "dateAdded": 1788122827000000,
+              "lastModified": 1788122827000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://www.discogs.com/",
+              "tags": "music"
+            }
+          ]
+        },
+        {
+          "guid": "Kn1wkyl_14Wv",
+          "title": "vps",
+          "index": 5,
+          "dateAdded": 1788122761000000,
+          "lastModified": 1788281515063000,
+          "typeCode": 2,
+          "type": "text/x-moz-place-container",
+          "children": [
+            {
+              "guid": "GoCq4C54Obpv",
+              "title": "vps - DigitalOcean",
+              "index": 0,
+              "dateAdded": 1788122601000000,
+              "lastModified": 1788122764000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://cloud.digitalocean.com/",
+              "tags": "cloud,vps"
+            }
+          ]
+        },
+        {
+          "guid": "_lEd0R7PH_Nh",
+          "title": "to-buy",
+          "index": 6,
+          "dateAdded": 1788124054000000,
+          "lastModified": 1788281517585000,
+          "typeCode": 2,
+          "type": "text/x-moz-place-container",
+          "children": [
+            {
+              "guid": "AgRzw4r9klkG",
+              "title": "Bilety na DOPELORD",
+              "index": 0,
+              "dateAdded": 1788123236000000,
+              "lastModified": 1788124056000000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://biletomat.pl/wydarzenia/dopelord-32407?eventId=348515&locationId=71330e1e-09db-4c8b-9608-8f1850f303b4",
+              "tags": "music,ticket"
+            },
+            {
+              "guid": "z95Z_XS5K9XN",
+              "title": "v2b",
+              "index": 1,
+              "dateAdded": 1788124082000000,
+              "lastModified": 1788124084000000,
+              "typeCode": 2,
+              "type": "text/x-moz-place-container",
+              "children": [
+                {
+                  "guid": "3K23opGFpqd1",
+                  "title": "v2b - Somali Yacht Club - The Sun - 2LP",
+                  "index": 0,
+                  "dateAdded": 1788123259000000,
+                  "lastModified": 1788124119000000,
+                  "typeCode": 1,
+                  "type": "text/x-moz-place",
+                  "uri": "https://www.fan.pl/somali-yacht-club-the-sun/sklep/muzyka/2lp,p94250507",
+                  "tags": "music,v2b"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "guid": "pJeX0bnWHPvf",
+          "title": "art",
+          "index": 7,
+          "dateAdded": 1788281531484000,
+          "lastModified": 1788281589652000,
+          "typeCode": 2,
+          "type": "text/x-moz-place-container",
+          "children": [
+            {
+              "guid": "QpOoRuDHbu13",
+              "title": "art - wallpapers - wallhaven.cc",
+              "index": 0,
+              "dateAdded": 1788281582254000,
+              "lastModified": 1788281627021000,
+              "typeCode": 1,
+              "type": "text/x-moz-place",
+              "uri": "https://wallhaven.cc/",
+              "tags": "art,wallpapers"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

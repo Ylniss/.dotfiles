@@ -204,7 +204,9 @@ In mpv:
 
 # LibreWolf
 
-`install_dotfiles.nu` symlinks the preferences, `userChrome.css` and `tridactylrc`.
+`install_dotfiles.nu` symlinks `tridactylrc`, the preferences (`librewolf/librewolf.overrides.cfg`) and `userChrome.css`.
+
+The preferences and `userChrome.css` go to paths that change with the LibreWolf build and the random profile name. `librewolf_init.nu` links them, not the symlink table. Both need a profile: start LibreWolf once, then rerun. Restart LibreWolf to apply the preferences.
 
 The extensions and the cookie exceptions cannot be symlinked. `install_dotfiles.nu` applies them too, or apply them alone with LibreWolf closed:
 
@@ -238,7 +240,13 @@ To export, close LibreWolf and run:
 nu scripts/librewolf_bookmarks_export.nu
 ```
 
-To import: `Ctrl+Shift+O` -> `Import and Backup` -> `Import Bookmarks from HTML...` -> pick `librewolf/bookmarks.html`. The import adds bookmarks, it does not replace them.
+To import: `Ctrl+Shift+O` -> `Import and Backup` -> `Restore` -> `Choose File...` -> pick
+`librewolf/bookmarks.json`. The restore erases all current bookmarks first, so the file is the
+single source of truth.
+
+The file uses the backup format, not HTML. `Import Bookmarks from HTML...` ignores the root of
+each folder and puts the whole tree under Bookmarks Menu; `Restore` puts each root back where it
+belongs.
 
 ## Keybindings
 
