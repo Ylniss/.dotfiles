@@ -1,7 +1,7 @@
 #!/usr/bin/env nu
 
-# Updates background opacity (0.0–1.0) across wezterm, waybar, foot, fuzzel, mako, qutebrowser.
-# Re-renders fuzzel/mako outputs and signals foot/waybar/qutebrowser to reload.
+# Updates background opacity (0.0–1.0) across wezterm, waybar, foot, fuzzel, mako.
+# Re-renders fuzzel/mako outputs and signals foot/waybar to reload.
 #
 # Usage: nu set-opacity.nu 0.85
 
@@ -18,7 +18,6 @@ def main [opacity: float] {
     { path: $"($dotfiles_dir)/foot/foot.ini",                   pattern: '(?m)^alpha\s*=\s*[0-9.]+',                  replacement: $"alpha=($opacity)" }
     { path: $"($dotfiles_dir)/tinted-theming/render-fuzzel.nu", pattern: 'let opacity\s*=\s*[0-9.]+',                 replacement: $"let opacity = ($opacity)" }
     { path: $"($dotfiles_dir)/tinted-theming/render-mako.nu",   pattern: 'let opacity\s*=\s*[0-9.]+',                 replacement: $"let opacity = ($opacity)" }
-    { path: $"($dotfiles_dir)/qutebrowser/config.py",            pattern: '_opacity\s*=\s*[0-9.]+',                    replacement: $"_opacity = ($opacity)" }
   ]
 
   for replacement in $replacements {
@@ -37,9 +36,6 @@ def main [opacity: float] {
 
   try { ^pkill -USR1 foot err> /dev/null }
   try { ^pkill -USR2 waybar err> /dev/null }
-  if (^pgrep -x qutebrowser | complete | get exit_code) == 0 {
-    try { ^qutebrowser ':config-source' err> /dev/null }
-  }
 
   print "done."
 }

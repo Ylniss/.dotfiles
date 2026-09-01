@@ -165,15 +165,13 @@ Useful commands from any buffer:
 |---------|--------|
 | `:Obsidian new [title]` | Create a new note |
 
-# qutebrowser
+# mpv
 
-## Video playback (mpv)
+Plays YouTube and other video links with **yt-dlp** under the hood — no ads, no JS, no DOM. Includes [SponsorBlock](https://sponsor.ajay.app/) for skipping in-video sponsor segments.
 
-YouTube and other video links open in **mpv** instead of qutebrowser's web player — bypasses ads completely (yt-dlp grabs the raw stream, no JS, no DOM). Includes [SponsorBlock](https://sponsor.ajay.app/) for skipping in-video sponsor segments.
+Auto-fetches YouTube auto-generated English captions via yt-dlp; subs are off by default — toggle with `v`.
 
-Auto-fetches YouTube auto-generated English captions via yt-dlp; subs are off by default — toggle with `v` in mpv.
-
-### Dependencies
+## Dependencies
 
 **Linux (pacman)**
 
@@ -181,19 +179,7 @@ Auto-fetches YouTube auto-generated English captions via yt-dlp; subs are off by
 sudo pacman -S mpv yt-dlp
 ```
 
-### Keys
-
-| Key | Action |
-|-----|--------|
-| `<Space>w` | Watch video — spawn mpv with current page URL |
-| `<Space>gs` | Search via DuckDuckGo |
-| `<Space>gh` | Open GitHub |
-| `<Space>gy` | Open YouTube |
-| `<Space>gr` | Open Reddit |
-| `<Space>m` | Mute current tab |
-| `<Space>p` | Pin current tab |
-
-In mpv:
+## Keys
 
 | Key | Action |
 |-----|--------|
@@ -215,6 +201,8 @@ nu scripts/librewolf_init.nu
 ```
 
 Tridactyl needs its native messenger. Run `:installnative` once.
+
+Tridactyl uses the base16 colors. `tinted-theming/render-tridactyl.nu` writes them to `~/.config/tridactyl/themes/colors.css`; `tridactylrc` selects them with `colorscheme colors`.
 
 ## Extensions
 

@@ -4,6 +4,9 @@
 " source of truth.
 sanitise tridactyllocal tridactylsync
 
+" base16 colors, written by tinted-theming/render-tridactyl.nu.
+colorscheme colors
+
 " Tridactyl cannot run on about: pages, so redirect the new tab.
 set newtab https://duckduckgo.com
 
