@@ -206,19 +206,29 @@ In mpv:
 
 `install_dotfiles.nu` symlinks the preferences, `userChrome.css` and `tridactylrc`.
 
+The extensions and the cookie exceptions cannot be symlinked. `install_dotfiles.nu` applies them too, or apply them alone with LibreWolf closed:
+
+```
+nu scripts/librewolf_init.nu
+```
+
 Tridactyl needs its native messenger. Run `:installnative` once.
+
+## Extensions
+
+`librewolf/extensions.txt` lists the extensions LibreWolf must install, one per line: the extension id and the addons.mozilla.org slug.
+
+`librewolf_init.nu` writes the list into the `ExtensionSettings` policy of the installed LibreWolf, which installs the extensions at the next start. You can still disable or remove them.
+
+The policies file sits in the installation directory, so the script asks for administrator rights. Only the copy runs elevated. A LibreWolf update overwrites that file, but the extensions stay installed.
+
+uBlock Origin is missing from the list on purpose. LibreWolf installs it with its own policy.
 
 ## Cookies
 
 LibreWolf deletes cookies at shutdown. Sites listed in `librewolf/cookie-allow.txt` keep theirs, so their logins stay. Subdomains are covered.
 
-To apply the list, close LibreWolf and run:
-
-```
-nu scripts/librewolf_cookie_exceptions.nu
-```
-
-Each run replaces all exceptions. `install_dotfiles.nu` runs it too.
+`librewolf_init.nu` writes the list into the profile. Each run replaces all exceptions.
 
 ## Bookmarks
 

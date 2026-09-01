@@ -1,7 +1,7 @@
 #!/usr/bin/env nu
 
 use _lib.nu *
-use librewolf_cookie_exceptions.nu *
+use librewolf_init.nu *
 
 # -------------- MAIN --------------
 
@@ -79,110 +79,17 @@ for s in ($symlinks | where { |s|
   create-symbolic-link $'($repo_dir)/($s.src)' $s.dest $s.desc
 }
 
-link-librewolf-userchrome $repo_dir
-
 install-yazi-packages
 
 install-bat-syntaxes
 
-apply-librewolf-cookie-exceptions $repo_dir
+init-librewolf $repo_dir
 
 ensure-gitconfig-local $home_dir
 
 if (is-windows) { allow-cfa-apps-if-needed }
 
 # -------------- FUNCTIONS --------------
-
-# Reads where a symlink points (lists parent so directory symlinks aren't followed into)
-def read-symlink-target [link_path] {
-  let parent = ($link_path | path dirname)
-  let basename = ($link_path | path basename)
-  let matches = try {
-    ls --long $parent | where { |r| ($r.name | path basename) == $basename }
-  } catch { [] }
-  if ($matches | is-empty) { '' } else { ($matches | first | get target? | default '') }
-}
-
-# True if two paths point to the same location (case/slash-insensitive on Windows)
-def same-path [a: string, b: string] {
-  if (is-windows) {
-    ($a | str replace --all '\' '/' | str lowercase) == ($b | str replace --all '\' '/' | str lowercase)
-  } else {
-    $a == $b
-  }
-}
-
-# Creates a symlink, replacing existing file/dir; on Windows clears stale ancestor reparse points first
-def create-symbolic-link [target, link_path, description] {
-  # Remove any ancestor reparse point first so rm/mkdir below don't follow it
-  # into its target.
-  if (is-windows) {
-    mut anc = ($link_path | path dirname)
-    mut stale = ''
-    loop {
-      if ($anc | path exists -n) and (($anc | path type) == 'symlink') {
-        $stale = $anc
-        break
-      }
-      let up = ($anc | path dirname)
-      if $up == $anc { break }
-      $anc = $up
-    }
-    if ($stale | is-not-empty) {
-      print $'Removing stale directory symlink before linking ($description): ($stale)'
-      windows-delete-reparse $stale
-    }
-  }
-
-  let is_symlink = ($link_path | path exists -n) and (($link_path | path type) == 'symlink')
-
-  if $is_symlink {
-    let current_target = (read-symlink-target $link_path)
-    if (same-path $current_target $target) {
-      print $'($description) (ansi blue)symbolic link already exists.(ansi reset)'
-      return
-    }
-    print $'(ansi yellow)Updating(ansi reset) ($description) — was: ($current_target)'
-    if (is-windows) {
-      windows-delete-reparse $link_path
-    } else {
-      ^rm -f $link_path
-    }
-  }
-
-  if ($link_path | path exists) {
-    print $'Removing existing ($description) to replace with symbolic link'
-    rm -rf $link_path
-  }
-
-  let parent_dir = ($link_path | path dirname)
-  if not ($parent_dir | path exists) {
-    mkdir $parent_dir
-  }
-
-  print $'(ansi green)Creating symbolic link for(ansi reset) ($description)'
-  if (is-windows) {
-    let t = ($target | str replace --all '/' '\')
-    let l = ($link_path | str replace --all '/' '\')
-    if ($target | path type) == 'dir' {
-      ^cmd /c mklink /j $l $t
-    } else {
-      ^cmd /c mklink $l $t
-    }
-  } else {
-    ^ln -s $target $link_path
-  }
-}
-
-# Links userChrome.css into the LibreWolf profile, whose directory name is random
-def link-librewolf-userchrome [repo_dir] {
-  let profile_dir = (librewolf-profile-dir)
-  if $profile_dir == null {
-    warn 'LibreWolf profile not found. Skipping userChrome.css.'
-    return
-  }
-  create-symbolic-link $'($repo_dir)/librewolf/userChrome.css' $'($profile_dir)/chrome/userChrome.css' 'librewolf userChrome.css'
-}
 
 # Installs yazi plugins via `ya pkg install` (no-op if `ya` is missing)
 def install-yazi-packages [] {
@@ -240,19 +147,6 @@ def ensure-gitconfig-local [home_dir] {
 
 # -------------- WINDOWS --------------
 
-# Deletes a symlink or junction without touching its target
-def windows-delete-reparse [path] {
-  let del_script = '(Get-Item -Force -LiteralPath $env:DEL_PATH).Delete()'
-  with-env { DEL_PATH: ($path | str replace --all '/' '\') } {
-    ^powershell -NoProfile -Command $del_script
-  }
-}
-
-# True if the current process is running as Administrator
-def windows-is-admin [] {
-  (^powershell -NoProfile -Command "([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)" | str trim) == "True"
-}
-
 # True if Windows Developer Mode is enabled (allows symlinks without admin)
 def windows-dev-mode-enabled [] {
   let script = 'try { (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name AllowDevelopmentWithoutDevLicense -ErrorAction Stop).AllowDevelopmentWithoutDevLicense } catch { "0" }'
@@ -271,7 +165,7 @@ def windows-cfa-enabled [] {
 
 # Errors out unless admin or Developer Mode is enabled
 def windows-require-symlink-capability [] {
-  if (windows-is-admin) or (windows-dev-mode-enabled) { return }
+  if (is-elevated) or (windows-dev-mode-enabled) { return }
   error make { msg: "Cannot create symbolic links. Enable Developer Mode (Settings > System > For developers) or run this script as Administrator." }
 }
 
@@ -296,7 +190,7 @@ def allow-cfa-apps-if-needed [] {
 
   if ($resolved | is-empty) { return }
 
-  if (windows-is-admin) {
+  if (is-elevated) {
     for a in $resolved { allow-cfa-app $a.path $a.name }
     return
   }

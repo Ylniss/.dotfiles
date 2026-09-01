@@ -1,0 +1,8 @@
+# Extensions LibreWolf must install, one per line: <extension id> <addons.mozilla.org slug>.
+# `scripts/librewolf_init.nu` writes them into the policies file of the installed
+# LibreWolf, which installs them at the next start.
+# uBlock Origin is missing on purpose. LibreWolf installs it with its own policy.
+
+tridactyl.vim@cmcaine.co.uk               tridactyl-vim
+{7c42eea1-b3e4-4be4-a56f-82a5852b12dc}    phantom-app
+sponsorBlocker@ajay.app                   sponsorblock

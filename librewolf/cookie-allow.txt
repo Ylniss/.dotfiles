@@ -1,6 +1,6 @@
 # Origins whose cookies and site data survive LibreWolf's sanitize-on-shutdown.
 # One origin per line. Subdomains are covered, so https://google.com also keeps
-# accounts.google.com. Applied by scripts/librewolf_cookie_exceptions.nu.
+# accounts.google.com. Applied by scripts/librewolf_init.nu.
 
 https://youtube.com
 https://google.com
