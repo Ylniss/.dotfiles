@@ -273,6 +273,25 @@ Tridactyl defaults:
 | `<S-Insert>` | Ignore mode, all keys go to the page |
 | `<Escape>` | Back to normal mode |
 
+# Calcure
+
+TUI calendar in a floating foot window. Click the waybar clock or press `Super+Alt+C`.
+
+Install with `paru -S calcure`.
+
+`config.ini` sets `holiday_country = Poland`. Holiday names stay English — calcure has no Polish translation.
+
+## Keys
+
+| Key | Action |
+|-----|--------|
+| `j` / `k` | Next / previous month |
+| `g` | Go to a date |
+| `a` | Add an event |
+| `?` | Show all keys |
+
+`h` and `l` are not navigation — they mark an event important or low priority. Rebind keys in `~/.config/calcure/keybindings.ini` (untracked).
+
 # ONLYOFFICE
 
 Install with `paru -S onlyoffice-bin xdg-user-dirs`, then run `xdg-user-dirs-update` once.

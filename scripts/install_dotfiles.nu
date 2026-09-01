@@ -50,6 +50,7 @@ let symlinks = [
   { src: 'starship/starship.toml',        desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
   { src: 'tinted-theming/tinty/config.toml', desc: 'tinty config.toml',       dest: $'($config_dir)/tinted-theming/tinty/config.toml',  linux_only: true }
   { src: 'btop/btop.conf',                desc: 'btop btop.conf',             dest: $'($config_dir)/btop/btop.conf' }
+  { src: 'calcure/config.ini',            desc: 'calcure config.ini',         dest: $'($config_dir)/calcure/config.ini',         linux_only: true }
   { src: 'fastfetch',                     desc: 'fastfetch',                  dest: $'($config_dir)/fastfetch' }
   { src: 'nushell/config.nu',             desc: 'nushell config.nu',          dest: $'($appdata_dir)/nushell/config.nu' }
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdata_dir)/nushell/env.nu' }

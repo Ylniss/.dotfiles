@@ -37,7 +37,8 @@
 		}
 	},
 	"clock": {
-		"format": "{:%a, %d %b | %H:%M}"
+		"format": "{:%a, %d %b | %H:%M}",
+		"on-click": "~/.config/niri/scripts/toggle-floating-window-with-foot.nu calcure-float --size 110x35 calcure"
 	},
 	"wireplumber": {
 		"format": "\udb81\udd7e {volume}%",
