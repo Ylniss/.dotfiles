@@ -22,7 +22,8 @@ bind F hint
 unbind <C-b>
 
 " Go to: g. gh and gr replace the default home and reader binds.
-bind gb fillcmdline bmarks
+bind gb fillcmdline bmarks -t
+set completions.Bmark.autoselect false
 bind gh tabopen https://github.com
 bind gy tabopen https://youtube.com
 bind gr tabopen https://reddit.com
