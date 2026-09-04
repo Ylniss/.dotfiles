@@ -51,7 +51,8 @@ system = [
 ]
 imv = [
 	{ run = 'imv -n %s1 %d1', orphan = true, desc = "imv", for = "unix" },
-	{ run = 'start "" %s1', orphan = true, desc = "Open", for = "windows" },
+	# explorer, not `start`: cmd's start silently no-ops on Store-app associations (e.g. .png -> Photos)
+	{ run = 'explorer.exe %s1', orphan = true, desc = "Open", for = "windows" },
 ]
 
 # Scripts stay previewable as text, but run through the system opener
