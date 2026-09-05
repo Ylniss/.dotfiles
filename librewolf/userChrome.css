@@ -39,3 +39,11 @@
 .tab-icon-overlay {
   transform: scale(0.7);
 }
+
+/* Narrow the vertical tab strip. Its width is the widest child: a 32px tab
+   or tool button plus the inline margin on both sides (default --space-medium).
+   Shrinking both margins keeps the icons at 32px and removes only padding. */
+:root {
+  --tab-inner-inline-margin: 4px !important;
+  --sidebar-launcher-button-padding-inline: 4px !important;
+}
