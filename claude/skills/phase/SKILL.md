@@ -36,10 +36,10 @@ outline before code, review before commit.
   the files in Repo context and confirm they still exist and behave as
   described. On drift: report it, update the plan with the user, do not
   implement yet.
-- Review check: read the plan's **Reviewed** line. If it says `never`, is
-  missing, or its date is older than the **Last updated** date, the plan has
-  changed since it was last reviewed. Say so and ask whether to run
-  `/plan-review` first. The user may skip — do not block on it.
+- Review check: read the plan's **Reviewed** line. If it says `never` or is
+  missing, the plan has never been reviewed. Say so and ask whether to run
+  `/plan-review` first. The user may skip — do not block on it. A stamp
+  older than **Last updated** is fine — do not ask again.
 - Verify the phase's `Depends on` phases are `[x]`. If not, stop and say
   which are missing.
 
