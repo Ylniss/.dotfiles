@@ -1,182 +1,159 @@
 ---
 name: plan-review
 description: >
-  Adversarial review of a saved plan in plans/<slug>.md: verifies claims
-  against the repo, finds gaps, proposes alternatives. Use when user invokes
-  "/plan-review [plan]".
+  Adwersarialny przegląd zapisanego planu w plans/<slug>.md: weryfikuje
+  twierdzenia wobec repo, znajduje luki, proponuje alternatywy. Użyj, gdy
+  użytkownik wywołuje "/plan-review [plan]".
 argument-hint: "[plan]"
 ---
 
 # Plan review
 
-Review a plan written by the plan skill, before /phase spends work on it.
-Report-only until the user picks; then edit the plan file. This skill edits
-the plan file and nothing else — it never touches code.
+Przejrzyj plan napisany przez skill plan, zanim /phase włoży w niego pracę.
+Tylko raport, dopóki użytkownik nie wybierze; potem edytuj plik planu. Ten skill
+edytuje plik planu i nic więcej — nigdy nie dotyka kodu.
 
-Best run in a fresh context — after `/clear` or a compact. The session that
-wrote the plan tends to approve its own plan. This is advice, not a gate.
+Najlepiej uruchomić w świeżym kontekście — po `/clear` lub kompaktowaniu. Sesja,
+która napisała plan, ma skłonność go zatwierdzać. To rada, nie bramka.
 
-## 1. Pick the plan
+Przed raportem wczytaj `~/.claude/skills/_shared/report.md`. Obowiązują z niego
+tylko sekcje Tagi nagłówka, Format ciała i Słowa wyboru. Reszta dotyczy kodu,
+nie planu.
 
-- **Argument given** — resolve it as a slug or path under `<git-root>/plans/`.
-  If it does not resolve, fall through to the list below.
-- **No argument** — list every plan in `<git-root>/plans/`, numbered, each with
-  last-updated date, reviewed date, and phase count (done/total). Ask which
-  one. Never assume the newest.
-- No `plans/` directory, or it is empty — say so and stop.
+## 1. Wybierz plan
 
-Read the whole plan file before anything else.
+- **Podano argument** — rozwiąż go jako slug lub ścieżkę pod
+  `<git-root>/plans/`. Jeśli się nie rozwiązuje, przejdź do listy poniżej.
+- **Brak argumentu** — wypisz każdy plan w `<git-root>/plans/`, numerowany, z
+  datą last-updated, datą reviewed i liczbą faz (done/total). Zapytaj, który.
+  Nigdy nie zakładaj najnowszego.
+- Brak katalogu `plans/` lub pusty — powiedz to i zatrzymaj się.
 
-## 2. Drift check
+Przeczytaj cały plik planu przed czymkolwiek innym.
 
-Compare the plan's **Last updated** commit to current `HEAD`. Read the files
-named in **Repo context** and confirm they still exist and behave as the plan
-describes.
+## 2. Sprawdź rozjazd
 
-Drift is a finding like any other (category `claim`), reported with the rest.
-Do not fix it silently and do not bury it in a preamble.
+Porównaj commit z **Last updated** planu z aktualnym `HEAD`. Przeczytaj pliki
+wymienione w **Repo context** i potwierdź, że nadal istnieją i działają, jak
+opisuje plan.
 
-## 3. Verify claims (REQUIRED)
+Rozjazd to wynik jak każdy inny (kategoria `claim`), zgłaszany z resztą. Nie
+naprawiaj go po cichu i nie chowaj w preambule.
 
-Check every statement the repo can confirm or refute. Read and grep — memory
-is not evidence.
+## 3. Weryfikuj twierdzenia (WYMAGANE)
 
-At minimum:
+Sprawdź każde stwierdzenie, które repo może potwierdzić lub obalić. Czytaj i
+grepuj — pamięć nie jest dowodem.
 
-- file and directory paths
-- symbol names — functions, types, commands, config keys, env vars
-- counts and quantities — "12 call sites", "three places", "only used here"
-- versions, from the lockfile or manifest
-- "X already exists" and "Y does not exist yet"
-- claims about how existing code behaves
+Co najmniej:
 
-A claim finding without an `evidence` field is not reportable — drop it.
-Claims the repo cannot settle (external services, future work, taste) are out
-of scope for this step; they may still be a `gap`.
+- ścieżki plików i katalogów
+- nazwy symboli — funkcje, typy, komendy, klucze konfiguracji, zmienne
+  środowiskowe
+- liczby i ilości — "12 miejsc wywołania", "trzy miejsca", "używane tylko tu"
+- wersje, z lockfile lub manifestu
+- "X już istnieje" i "Y jeszcze nie istnieje"
+- twierdzenia o tym, jak działa istniejący kod
 
-## 4. Find gaps
+Wynik `claim` bez pola `evidence` nie nadaje się do zgłoszenia — odrzuć go.
+Twierdzenia, których repo nie rozstrzygnie (zewnętrzne usługi, przyszła praca,
+gust), są poza tym krokiem; mogą nadal być `gap`.
 
-Soft requirement, aimed at what the plan actually touches. Read the code the
-plan will change first, then ask what the plan does not say. Spawn an Explore
-agent when the subject spans more than you can read directly.
+## 4. Znajdź luki
 
-Starting points, not a closed set:
+Wymóg miękki, wycelowany w to, czego plan faktycznie dotyka. Najpierw przeczytaj
+kod, który plan zmieni, potem zapytaj, czego plan nie mówi. Odpal agenta
+Explore, gdy temat obejmuje więcej, niż da się przeczytać bezpośrednio.
 
-- a phase with no "Done when", or one that cannot be checked
-- a phase that leaves the repo broken on its own
-- `Depends on` order that does not match how the code really depends
-- no rollback, migration, or data path where the change needs one
-- a load-bearing assumption the plan never states
-- work the plan implies but assigns to no phase
+Punkty wyjścia, nie zamknięty zbiór:
 
-A gap found by reading code beats a gap found by reading the plan.
+- faza bez "Done when" lub z takim, którego nie da się sprawdzić
+- faza, która sama zostawia repo zepsute
+- kolejność `Depends on` niezgodna z tym, jak kod naprawdę zależy
+- brak rollbacku, migracji lub ścieżki danych tam, gdzie zmiana ich wymaga
+- założenie nośne, którego plan nigdy nie wypowiada
+- praca, którą plan implikuje, ale nie przypisuje żadnej fazie
 
-## 5. Alternatives (capped at two)
+Luka znaleziona przez czytanie kodu bije lukę znalezioną przez czytanie planu.
 
-Only when a different approach would materially change the plan — a different
-shape, not a variation. Two is the ceiling; zero is a normal result.
+## 5. Alternatywy (max dwie)
 
-Every alternative must name what the current plan does better. An alternative
-with no stated trade-off is not analysis — drop it.
+Tylko gdy inne podejście istotnie zmieniłoby plan — inny kształt, nie wariant.
+Dwie to sufit; zero to normalny wynik.
 
-Do not re-run the critique the plan skill already did before the plan was
-saved. Raise only what the written plan makes visible.
+Każda alternatywa musi nazwać, co obecny plan robi lepiej. Alternatywa bez
+podanego kompromisu to nie analiza — odrzuć ją.
 
-## 6. Rank and flag
+Nie powtarzaj krytyki, którą skill plan zrobił przed zapisem planu. Podnoś tylko
+to, co zapisany plan czyni widocznym.
 
-- Drop nitpicks. Only report what is worth changing in the plan.
-- Rank by impact: what would waste the most work first.
-- Set a confidence for every finding: H, M, or L. For `claim`, H means the
-  evidence settles it.
-- Set a recommend flag. `✓` when you would make the change yourself — the win
-  is real and the risk to the plan is low. `✗` for taste, for a deliberate
-  choice the plan already justifies, or for anything resting on an assumption
-  you could not verify.
-- If nothing is worth changing, say so, stamp the review (step 9), and stop.
-  Do not invent a finding to have something to report.
+## 6. Oceń i oflaguj
 
-## 7. Report (do not edit yet)
+- Odrzuć drobiazgi. Zgłaszaj tylko to, co warto zmienić w planie.
+- Szereguj wg wpływu: najpierw to, co zmarnowałoby najwięcej pracy.
+- Nadaj każdemu wynikowi pewność: H, M lub L. Dla `claim` H znaczy, że dowód
+  rozstrzyga.
+- Nadaj flagę rekomendacji. `✓`, gdy zastosowanie nie budzi wątpliwości — zysk
+  realny, ryzyko dla planu niskie. `✗` dla gustu, dla celowego wyboru, który
+  plan już uzasadnia, lub dla czegokolwiek opartego na założeniu, którego nie
+  dało się zweryfikować.
+- Jeśli nie ma nic wartego zmiany, powiedz to, ostempluj przegląd (krok 9) i
+  zatrzymaj się. Nie wymyślaj wyniku, żeby mieć co zgłosić.
 
-Numbered list so the user can pick:
+## 7. Raport (jeszcze nie edytuj)
 
-    **N. [category][H|M|L][✓|✗] <plan section or phase> — short title**
+Numerowana lista, żeby użytkownik mógł wybrać:
+
+    **N. [category][H|M|L][✓|✗] <sekcja planu lub faza> — krótki tytuł**
     ========== why ==========
-    <one line>
+    <jedna linia>
     ========== evidence ==========
-    <what the repo returned — claim findings only>
+    <co zwróciło repo — tylko wyniki claim>
     ========== fix ==========
-    <what changes in the plan, one line>
+    <co zmienia się w planie, jedna linia>
 
-Header tag rules — three tags, no spaces between them, always in this order:
+Kategoria w tagu: `claim`, `gap`, `sequencing`, `scope` lub `alternative`.
 
-1. Category: `claim`, `gap`, `sequencing`, `scope`, or `alternative`.
-2. Confidence: a single letter — `H`, `M`, or `L`.
-3. Recommend flag: `✓` if you recommend applying it, `✗` if you do not.
+Wskazuj sekcję lub nazwę fazy planu, nie numer linii — zastosowanie przepisuje
+plik.
 
-Never write "(confidence: high)" at the end of the line — the tags carry it.
+Pole `evidence` jest wymagane dla każdego wyniku `claim` i nazywa, co
+przeczytano lub zgrepowano, i co wróciło. Dla innych kategorii pomiń jego baner.
 
-Point at the plan's own section or phase name, not a line number — applying
-rewrites the file.
+Bez bloków diff. Proza planu źle czyta się jako diff; pole `fix` niesie zmianę.
 
-The `evidence` field is required for every `claim` finding and names what was
-read or grepped, and what came back. Omit its banner for the other categories.
+Zakończ: "Which to apply? (e.g. 1,3,5 / all / recommended / none)"
 
-No diff blocks. Plan prose reads badly as a diff; the `fix` field carries the
-change.
+## 8. Zastosuj — wplataj, nigdy nie dopisuj
 
-Format rules:
+Zastosuj tylko wyniki wybrane przez użytkownika, wg słów wyboru z pliku
+wspólnego.
 
-- Wrap the header line in `**` so it reads bold. Never make it a heading — a
-  heading adds a blank line under itself and breaks the tight block.
-- Write every banner as `========== <label> ==========` — ten `=` on each
-  side, one space around the label. Always ten, whatever the label length. Do
-  not pad the banner to a fixed width and do not centre the label.
-- Write no blank line inside a finding. The header line, every banner, and
-  every field sit on consecutive lines. One blank line separates two findings,
-  and nothing else.
-- A banner is plain text. Never put it in a code fence, and never add
-  backticks, bold, or a heading marker to it.
+Plan ma wyjść tak, jakby od początku był tak napisany:
 
-End with: "Which to apply? (e.g. 1,3,5 / all / recommended / none)"
+- Poprawione twierdzenie jest przepisane w swoim zdaniu, w miejscu.
+- Nowa faza jest wstawiona na właściwej pozycji, przenumerowana, z każdą
+  referencją `Depends on` i listą **Phases** u góry pliku zaktualizowanymi do
+  zgodności.
+- Usunięty zakres znika z linii Scope. Nie jest przekreślony, nie w nawiasie,
+  nie oznaczony "dropped".
+- Żadnego śladu przeglądu w treści planu: bez "(fixed in review)", bez sekcji
+  "Review findings", bez datowanej adnotacji przy poprawce.
+- Wyjątek: alternatywa odrzucona przez użytkownika trafia do **Key decisions**
+  jako odrzucona opcja z powodem. Ta sekcja istnieje dokładnie po to.
+- **Decisions log** jest append-only i należy do implementacji. Wyniki przeglądu
+  nigdy tam nie idą.
+- Każdą nietkniętą sekcję zostaw bajt w bajt. Nie zawijaj, nie zmieniaj wcięć
+  ani stylu prozy, której żaden wynik nie wskazał.
 
-## 8. Apply — weave, never append
+## 9. Ostempluj przegląd
 
-Apply only the findings the user picks.
+Zawsze, nawet gdy nic nie znaleziono i nic nie zastosowano:
 
-### Selection words
+- Ustaw `_Reviewed: YYYY-MM-DD — commit <sha>_` bezpośrednio pod linią Last
+  updated, z dzisiejszą datą i aktualnym `HEAD`. Wstaw ją, jeśli plan jest
+  starszy niż ta konwencja.
+- Podbij `_Last updated:_` tylko, jeśli treść pliku się zmieniła.
 
-- **numbers** (`1,3,5`) — exactly those findings.
-- **all** — every finding in the report, `✓` and `✗` alike. "all" never means
-  "recommended". Never drop a finding because you did not recommend it, and
-  never tell the user that "all" skips something.
-- **recommended** — every finding tagged `✓`, nothing tagged `✗`.
-- **none** — apply nothing.
-
-The plan must come out reading as though it had been written this way from the
-start:
-
-- A corrected claim is rewritten in its own sentence, in place.
-- A new phase is inserted at its right position, renumbered, with every
-  `Depends on` reference and the top-of-file **Phases** list updated to match.
-- Removed scope disappears from the Scope line. It is not struck through, not
-  parenthesised, not marked "dropped".
-- No trace of the review in the plan body: no "(fixed in review)", no "Review
-  findings" section, no dated annotation for a correction.
-- Exception: an alternative the user rejected belongs in **Key decisions** as a
-  rejected option with its reason. That section exists for exactly this.
-- The **Decisions log** is append-only and belongs to implementation. Review
-  outcomes never go there.
-- Leave every untouched section byte-identical. Do not rewrap, re-indent, or
-  restyle prose no finding named.
-
-## 9. Stamp the review
-
-Always, even when nothing was found and nothing was applied:
-
-- Set `_Reviewed: YYYY-MM-DD — commit <sha>_` directly under the Last updated
-  line, using today's date and current `HEAD`. Insert it if the plan predates
-  this convention.
-- Bump `_Last updated:_` only if the file content changed.
-
-Then report: which findings were applied, which were skipped, and what the
-plan file now says. No commit — the plan skill's rules stand.
+Potem zgłoś: które wyniki zastosowano, które pominięto i co plik planu teraz
+mówi. Bez commita — reguły skilla plan obowiązują.

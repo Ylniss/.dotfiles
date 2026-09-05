@@ -1,225 +1,136 @@
 ---
 name: clarify
 description: >
-  Review git changes or a given path for comment essence and name
-  directness. Use for "clarify", tightening comments, or improving naming.
+  Przegląd zmian git lub wskazanej ścieżki pod kątem esencji komentarzy i
+  bezpośredniości nazw. Użyj dla "clarify", zwięźlejszych komentarzy lub
+  lepszego nazewnictwa.
 argument-hint: "[base ref | path]"
 ---
 
 # Clarify
 
-Report-only review of the scope for clear comments and direct names, then
-apply the findings the user selects. Quality only — no logic changes.
+Przegląd zakresu pod kątem jasnych komentarzy i bezpośrednich nazw. Najpierw
+raport, potem zastosuj wyniki wybrane przez użytkownika. Tylko jakość — bez
+zmian logiki.
 
-## Boundary against the other reviews
+Przed startem wczytaj `~/.claude/skills/_shared/report.md`. Obowiązuje w
+całości: zakres, konflikty, ocena, format raportu, apply, weryfikacja. Poniżej
+tylko to, co własne dla tego skilla.
 
-- /polish changes code in place: a better expression on the same lines.
-- /clarify changes what the code is called and what the comments say.
-- /shape changes where code lives, how many units it is cut into, which unit
-  depends on which, and the order things sit in a file.
+## Granica wobec innych przeglądów
 
-If a finding rewrites logic, that is /polish. If it moves code, splits a unit,
-or merges two — that is /shape. Do not report either one here.
+Wynik, który przepisuje logikę, to /polish. Wynik, który przenosi kod, dzieli
+jednostkę lub łączy dwie, to /shape. Żadnego z nich tu nie zgłaszaj.
 
-## 1. Get the scope
+## 1. Przejrzyj komentarze
 
-The argument decides the scope. Work out which kind it is:
+Cel: każdy komentarz to sama esencja — proste słowa, wprost, bez waty,
+zrozumiały bez wysiłku.
 
-- **No argument** — review `git diff HEAD` (staged + unstaged tracked changes),
-  plus new untracked files from `git ls-files --others --exclude-standard`.
-- **A git ref or range** (`main`, `HEAD~3`, a branch) — review `git diff <arg>`.
-- **A path** (a directory or file that exists on disk) — review the whole
-  content of that path, not a diff. Say so in one line before you start, so the
-  user knows the scope is every file there, not just changed lines.
+Oceń KAŻDY komentarz w zakresie — nie próbkuj, nie wybieraj. Każdy komentarz
+dostaje jeden werdykt: zostaw / skróć / przeredaguj / usuń. Agresywne pokrycie,
+wybiórcze edycje — zgłaszaj tylko to, co wymaga zmiany.
 
-If the scope resolves to nothing — an empty diff, or a path with no source
-files — say so and stop.
+Stosuj w tej kolejności:
 
-### Out-of-scope findings are wanted
+- Skróć rozwlekłe komentarze do sedna.
+- Prosty język — zastąp żargon, wewnętrzne skróty i slang domenowy codziennymi
+  słowami (np. "flake the suite" → "break the tests"). Zachowaj sens; zmień
+  tylko słownictwo, żeby każdy czytelnik zrozumiał bez wysiłku.
+- Komentarz, który tylko powtarza to, co mówi kod → zaproponuj USUŃ, nie skróć.
+  Zbędny komentarz jest gorszy niż żaden.
+- Zbędny wobec nazwy → USUŃ. Jasna nazwa (klasy, metody, zmiennej) plus
+  oczywiste ciało często mówią wszystko, co komentarz. Test zasłonięcia: zakryj
+  komentarz — czy czytelnik nadal rozumie, co się dzieje, z samej nazwy i kodu?
+  Jeśli tak, komentarz to szum; usuń go. (Sprawdź też miejsce użycia: jeśli
+  DLACZEGO stoi już tam, gdzie rzecz jest podpięta, definicja nie musi tego
+  powtarzać.) Wybieraj jaśniejszą nazwę zamiast zachowania komentarza.
+- NIE ruszaj: komentarzy TODO, nagłówków licencyjnych/prawnych, komentarzy
+  dokumentujących kontrakt API (params/returns/throws) i komentarzy
+  wyjaśniających nieoczywiste DLACZEGO.
 
-A finding does not have to belong to the job the user is doing. It does not
-have to touch a line the user wrote. Report it the same way.
+## 2. Przejrzyj nazwy
 
-Never hedge. Do not write "this is outside the scope of your change", "this is
-pre-existing", or "unrelated to your work". The user wants those findings, and
-the disclaimer only adds noise.
+Cel: bez wysiłku wiadomo, co nazwa reprezentuje. Wprost i jednoznacznie — NIE
+tylko dłużej.
 
-## 2. Review comments
+Oceń KAŻDĄ nazwę zadeklarowaną w zakresie — nie próbkuj, nie wybieraj. Czyli
+wszystkie: zmienne lokalne, pola, właściwości, parametry, stałe, funkcje,
+metody, klasy, typy, interfejsy, enumy i ich elementy, moduły i pliki. Każda
+nazwa dostaje jeden werdykt: zostaw / zmień. Zgłoś każdą zmianę nazwy; nie
+zgłaszaj nazw, które zostają. Agresywne pokrycie, wybiórcze edycje.
 
-Goal: every comment is essence only — simple words, direct, no fluff, no
-mental leap to understand it.
+### Oceniaj w kontekście, nie na linii deklaracji
 
-Evaluate EVERY comment in the scope — do not sample or cherry-pick. Each comment
-gets one of these verdicts: keep as-is / shorten / reword / delete. Aggressive
-coverage, selective edits — report only what needs a change.
+Zanim ocenisz nazwę, przeczytaj, jak jest używana:
 
-Apply these, in priority order:
+- Przeczytaj miejsca użycia. Nazwa jest zła, gdy to, co tam trzyma lub robi, nie
+  zgadza się z tym, co mówi.
+- Przeczytaj wartość, jaką przyjmuje. Nazwa, która mówi mniej (lub więcej) niż
+  niesie wartość, to zmiana nazwy.
+- Sprawdź zasięg i czas życia. Krótka nazwa jest w porządku w trzyliniowym
+  bloku, a za mglista na poziomie pliku lub publicznym.
+- Sprawdź sąsiadów. Nazwa nie może pokrywać się znaczeniem z inną nazwą w tym
+  samym typie, funkcji lub liście parametrów.
+- Sprawdź słownictwo wołającego. Użyj słowa, którym otaczający kod i domena już
+  nazywają to pojęcie.
 
-- Shorten verbose comments to their core point.
-- Plain wording — replace jargon, insider shorthand, and domain slang with
-  everyday words (e.g. "flake the suite" → "break the tests"). Keep the meaning;
-  just change the vocabulary so any reader gets it with no mental leap.
-- A comment that just restates what the code already says → propose DELETE,
-  not shorten. A redundant comment is worse than none.
-- Redundant with the name → DELETE. A clear name (class, method, variable) plus
-  an obvious body often already says everything the comment does. Cover test:
-  hide the comment — can a reader still tell what's going on from the name and
-  code alone? If yes, the comment is noise; delete it. (Also check the usage
-  site: if the WHY is already stated where the thing is wired up, the definition
-  doesn't need to repeat it.) Prefer a clearer name over keeping a comment.
-- Do NOT touch: TODO comments, license/legal headers, API-contract doc
-  comments (params/returns/throws), and comments explaining a non-obvious WHY.
+### Zmień nazwę, gdy jest
 
-## 3. Review names
+- Myląca — sugeruje coś innego. Najwyższy priorytet; gorsza niż mglista.
+- Mglista — za krótka lub zbyt ogólna, by nieść znaczenie (`d`, `tmp`, `data`,
+  `mgr`).
+- Rozwlekła — dłuższa niż trzeba, bez zysku na jasności.
+- Niespójna — inne słowo na pojęcie, które otaczający kod już nazywa.
+- Do pobicia — istnieje lepsze słowo, które usuwa wysiłek umysłowy. Zgłoś to
+  nawet, gdy obecna nazwa nie jest zła. Nie zatrzymuj się na "akceptowalnej";
+  jeśli da się ująć lepiej, zaproponuj i zostaw decyzję użytkownikowi.
 
-Goal: no mental leap to know what a name represents. Direct and unambiguous —
-NOT merely longer.
+### Ograniczenia
 
-Evaluate EVERY name declared in the scope — do not sample or cherry-pick. That
-means all of: local variables, fields, properties, parameters, constants,
-functions, methods, classes, types, interfaces, enums and their members,
-modules, and files. Each name gets one verdict: keep / rename. Report every
-rename; report nothing for a name you keep. Aggressive coverage, selective
-edits.
+- Trzymaj się konwencji nazewnictwa z otaczającego kodu.
+- Przy każdej zmianie nazwy podaj zasięg rażenia: ile referencji dotyka i czy
+  przekracza granicę pliku lub publiczną/eksportowaną (safe vs risky).
+- Jeśli zmiana nazwy czyni pobliski komentarz zbędnym, też to zaznacz.
 
-### Judge in context, not on the declaration line
+## 3. Oceń i oflaguj
 
-For each name, read how it is used before you judge it:
+Poza regułami wspólnymi: flaga rekomendacji hamuje regułę "Do pobicia". Zgłoś
+marginalną zmianę nazwy, ale oflaguj ✗. Nigdy nie pompuj listy ✓, żeby wyglądać
+na dokładnego.
 
-- Read the use sites. The name is wrong when what it holds or does there does
-  not match what the name says.
-- Read the value it takes. A name that says less than the value carries (or
-  more) is a rename.
-- Check the scope and lifetime. A short name is fine in a three-line block and
-  too vague at file or public scope.
-- Check the neighbours. A name must not overlap in meaning with a sibling name
-  in the same type, function, or parameter list.
-- Check the caller's vocabulary. Use the word the surrounding code and the
-  domain already use for that concept.
+## 4. Raport (jeszcze nie koduj)
 
-### Rename when the name is
+Wyniki w jednej numerowanej sekwencji, w kolejności plików w zakresie, żeby
+użytkownik mógł wybrać `7,12`. Przed pierwszym wynikiem podaj w jednej linii
+liczbę wyników i liczbę plików.
 
-- Misleading — implies the wrong thing. Highest priority; worse than vague.
-- Vague — too short or generic to convey meaning (`d`, `tmp`, `data`, `mgr`).
-- Over-verbose — longer than needed without adding clarity.
-- Inconsistent — a different word for a concept the surrounding code already
-  names.
-- Beatable — a better word exists that removes a mental leap. Report this even
-  when the current name is not wrong. Do not stop at "acceptable"; if you can
-  phrase it better, propose it and let the user decide.
+Na wynik: linia nagłówka, blok diff, potem baner na każde pole:
 
-### Constraints
-
-- Match the naming conventions already used in the surrounding code.
-- For every rename, note the blast radius: how many references it touches and
-  whether it crosses a file or public/exported boundary (safe vs risky).
-- If a rename makes a nearby comment redundant, note that too.
-
-## 4. Rank and flag
-
-- Set a confidence for every finding: H (high), M (med), L (low).
-- Set a recommend flag for every finding. Recommend it when you would apply
-  the change yourself: the win is real and the risk is low. Do not recommend a
-  finding that is a matter of taste, that breaks a convention the file keeps on
-  purpose, or whose blast radius you could not check.
-- The recommend flag is the brake on the "Beatable" rule. Report the marginal
-  rename, but flag it ✗. Never inflate the ✓ list to look thorough.
-- If nothing needs a change, say so and stop. Do not invent a finding to have
-  something to report.
-
-## 5. Report (do not code yet)
-
-List the findings in one numbered sequence, in the order the files appear in
-the scope, so the user can pick `7,12`. Before the first finding, state the
-finding count and the file count in one line.
-
-Never print a file path above a finding. The number must start the finding, so
-nothing sits above it.
-
-Per finding, print a header line, the diff block, then a banner for every field:
-
-    **N. [comment|name][H|M|L][✓|✗] short title**
+    **N. [comment|name][H|M|L][✓|✗] krótki tytuł**
     ```diff
-    @@ <path from the repo root>:line @@
-    - <current code>
-    + <proposed code>
+    @@ <ścieżka od korzenia repo>:linia @@
+    - <obecny kod>
+    + <proponowany kod>
     ```
     ========== why ==========
-    <one line>
+    <jedna linia>
     ========== scope ==========
-    <only for renames: ref count + safe/risky>
+    <tylko dla zmian nazw: liczba referencji + safe/risky>
 
-Header tag rules — three tags, no spaces between them, always in this order:
+Kategoria w tagu: `comment` lub `name`.
 
-1. Kind: `comment` or `name`.
-2. Confidence: a single letter — `H`, `M`, or `L`.
-3. Recommend flag: `✓` if you recommend applying it, `✗` if you do not.
+Reguły własne:
 
-Never write "(confidence: high)" at the end of the line — the tags carry it.
+- Dla usuwanego komentarza pisz tylko linie `-`.
+- Dla zmiany nazwy pokaż tylko linię deklaracji. Pole `scope` niesie pozostałe
+  referencje; nigdy nie wypisuj ich jako linii diff.
 
-Format rules for the finding body:
+Klasy pominięć w zakończeniu, przykłady: "banery sekcji", "aliasy modułów
+bibliotek", "słownictwo domeny: bufnr, lnum".
 
-- Wrap the header line in `**` so it reads bold. Never make it a heading — a
-  heading adds a blank line under itself and breaks the tight block.
-- Write every banner as `========== <label> ==========` — ten `=` on each
-  side, one space around the label. Always ten, whatever the label length. Do
-  not pad the banner to a fixed width and do not centre the label.
-- Write no blank line inside a finding. The header line, every banner, and
-  every field sit on consecutive lines. One blank line separates two findings,
-  and nothing else.
-- A banner is plain text. Never put it in a code fence, and never add
-  backticks, bold, or a heading marker to it.
-- Print the banners and the fields as plain markdown lines. The diff block is
-  the only fence in a finding.
-- The diff block is the only place the before and after text appears. Do not
-  repeat it as prose.
-- The `@@ path:line @@` header is the only place the location appears. Write
-  the path from the repo root there. Never repeat it on the header line.
-- Show only the lines that change, plus the minimum context needed to read
-  them. Do not paste the whole function.
-- The terminal colours `-` lines red and `+` lines green. Colouring is per
-  line, so keep one finding to one change — do not merge two unrelated edits
-  into one block.
-- For a deleted comment, write only `-` lines.
-- For a rename, show the declaration line only. The `scope` field carries the
-  other references; never list them as diff lines.
+## 5. Zastosuj wybrane
 
-After the last finding, list what you reviewed and deliberately did not report,
-and why — one line per class (e.g. "section banners", "library module aliases",
-"domain vocabulary: bufnr, lnum"). This proves the coverage was aggressive and
-the edits selective.
-
-End with: "Which to apply? (e.g. 1,3,5 / all / recommended / none)"
-
-## 6. Apply selected
-
-Apply only the findings the user picks.
-
-### Selection words
-
-- **numbers** (`1,3,5`) — exactly those findings.
-- **all** — every finding in the report, `✓` and `✗` alike. "all" never means
-  "recommended". Never drop a finding because you did not recommend it, and
-  never tell the user that "all" skips something.
-- **recommended** — every finding tagged `✓`, nothing tagged `✗`.
-- **none** — apply nothing.
-
-### Rules
-
-- Make exactly the proposed change, nothing extra.
-- For renames, update every reference in scope. Then search the whole scope for
-  the old name and confirm zero hits remain.
-- Change only the lines a finding names. Do not reformat, re-indent, or
-  re-wrap anything else.
-- Keep the file's existing conventions: line endings, indent character, and
-  final newline. Read the file's current state before you write it back.
-
-## 7. Verify
-
-- After applying, run the project's formatter and linter if it has them
-  (check the repo config for the tool it uses), and confirm every changed file
-  still parses, compiles, or passes its tests. Report the command and its
-  result.
-- If a check fails, fix it or revert that finding. Never report the work as
-  done with a failing check.
-
+Poza regułami wspólnymi: przy zmianie nazwy zaktualizuj każdą referencję w
+zakresie. Potem przeszukaj cały zakres pod kątem starej nazwy i potwierdź zero
+trafień.

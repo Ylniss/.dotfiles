@@ -1,45 +1,64 @@
 ---
 name: plan
 description: >
-  High-level phased planning for a subject. Critiques the idea, refines
-  through Q&A, saves a self-contained plan to plans/<slug>.md. Use when user
-  invokes "/plan <subject>".
+  Wysokopoziomowe planowanie tematu w fazach. Krytykuje pomysł, doprecyzowuje
+  przez Q&A, zapisuje samodzielny plan do plans/<slug>.md. Użyj, gdy
+  użytkownik wywołuje "/plan <temat>".
 argument-hint: "<subject>"
 ---
 
 # Plan
 
-Plan the subject that follows. Output a phased, commitable plan saved as a single markdown file.
+Zaplanuj temat, który następuje. Wynik: plan w fazach, gotowy do commitów,
+zapisany jako jeden plik markdown.
 
-## Hard rules
+## Twarde reguły
 
-1. **No code, no commits, no edits to anything but the plan file.** This skill plans only.
-2. **Two approval gates: slug and save.** Confirm the slug before creating the file (rule 3), and do not save until you have said the exact phrase **"Plan is ready to save."** and the user approves. Do not write code from this plan — phase detail is a separate, fresh-context invocation.
-3. **Save location.** `<git-root>/plans/<slug>.md`. Create `plans/` if missing. Resolve git root with `git rev-parse --show-toplevel`. Slug from subject (kebab-case); propose and confirm before writing.
-4. **File is canonical after save.** Once saved, the file is the plan. Do not silently restate or revise plan content in conversation — either write the change to the file or stop. Otherwise the in-memory and on-disk plans diverge and fresh context inherits the stale one.
+1. **Bez kodu, bez commitów, bez edycji czegokolwiek poza plikiem planu.** Ten
+   skill tylko planuje.
+2. **Dwie bramki zatwierdzenia: slug i zapis.** Potwierdź slug przed utworzeniem
+   pliku (reguła 3) i nie zapisuj, dopóki nie powiesz dokładnej frazy **"Plan is
+   ready to save."** i użytkownik nie zatwierdzi. Nie pisz kodu z tego planu —
+   szczegół fazy to osobne wywołanie w świeżym kontekście.
+3. **Miejsce zapisu.** `<git-root>/plans/<slug>.md`. Utwórz `plans/`, jeśli
+   brak. Korzeń git z `git rev-parse --show-toplevel`. Slug z tematu
+   (kebab-case); zaproponuj i potwierdź przed zapisem.
+4. **Plik jest kanoniczny po zapisie.** Po zapisie plik jest planem. Nie
+   przeformułowuj ani nie rewiduj treści planu po cichu w rozmowie — albo zapisz
+   zmianę do pliku, albo się zatrzymaj. Inaczej plan w pamięci i na dysku się
+   rozjadą, a świeży kontekst odziedziczy nieaktualny.
 
-## Flow
+## Przebieg
 
-### 1. Brutal critique
+### 1. Brutalna krytyka
 
-First, ground the critique in code. If the subject touches files or systems you have not read, explore them before attacking — read the relevant code, grep for usage, or spawn an Explore agent for breadth. Generic critiques from assumption are the failure mode; do not produce them.
+Najpierw oprzyj krytykę na kodzie. Nieczytane pliki lub systemy, których temat
+dotyka, zbadaj przed atakiem — przeczytaj kod, grepuj użycia lub odpal agenta
+Explore dla szerokości. Ogólna krytyka z założeń to tryb porażki; nie twórz jej.
 
-Then attack the idea on these axes:
-- **Scope creep** — what is bundled in that does not need to be?
-- **Hidden complexity** — what looks small but is not?
-- **Rejected alternatives** — what other approaches exist; why is this one right?
-- **Sequencing risk** — what must be true for the plan to work, and is it?
-- **Load-bearing assumptions** — what single thing being wrong would invalidate the plan?
+Potem zaatakuj pomysł na tych osiach:
+- **Rozrost zakresu** — co jest dołączone, a nie musi być?
+- **Ukryta złożoność** — co wygląda na małe, a nie jest?
+- **Odrzucone alternatywy** — jakie inne podejścia istnieją; czemu to jest
+  właściwe?
+- **Ryzyko kolejności** — co musi być prawdą, by plan zadziałał, i czy jest?
+- **Założenia nośne** — która jedna rzecz, jeśli błędna, unieważnia plan?
 
-Be direct. No hedging. Then ask the clarifying questions that fall out of the critique.
+Wprost. Bez asekuracji. Potem zadaj pytania doprecyzowujące, które wynikają z
+krytyki.
 
-### 2. Refine
+### 2. Doprecyzuj
 
-Loop: user answers → integrate → surface what is still unresolved → ask again. Keep the plan structure visible (subject, goal, constraints, phases) so the user sees it taking shape. Stop when nothing remains to refine, then say verbatim: **"Plan is ready to save."** Wait for explicit approval before writing the file.
+Pętla: użytkownik odpowiada → wchłoń → pokaż, co nadal nierozstrzygnięte → pytaj
+dalej. Trzymaj strukturę planu na widoku (temat, cel, ograniczenia, fazy), żeby
+użytkownik widział, jak nabiera kształtu. Gdy nic nie zostało, zatrzymaj się i
+powiedz dosłownie: **"Plan is ready to save."** Czekaj na jawne zatwierdzenie
+przed zapisem pliku.
 
-### 3. Save
+### 3. Zapisz
 
-On approval, write `<git-root>/plans/<slug>.md` using the template below. Self-contained: a fresh Claude with no memory of this conversation must be able to pick it up.
+Po zatwierdzeniu zapisz `<git-root>/plans/<slug>.md` wg szablonu poniżej.
+Samodzielny: świeży Claude bez pamięci tej rozmowy musi móc go podjąć.
 
 ````markdown
 # <Subject>
@@ -81,25 +100,40 @@ Append-only. Each entry: `YYYY-MM-DD — decision — why`. Future sessions add 
 Deferred items. Empty if none.
 ````
 
-The top-of-file **Phases** list is the index: phase number and one short line per phase. No goal, no sha, no detail. It carries the same state mark as the matching **Phase detail** heading.
+Lista **Phases** u góry pliku to indeks: numer fazy i jedna krótka linia na
+fazę. Bez celu, bez sha, bez szczegółów. Niesie ten sam znacznik stanu co
+odpowiadający nagłówek w **Phase detail**.
 
-### 4. Updating the plan after a phase
+### 4. Aktualizacja planu po fazie
 
-When a phase changes state, update its heading in place, and set the same
-mark on its line in the top-of-file **Phases** list:
-- Pending: `### [ ] Phase 1: <name>`
-- Done: `### [x] Phase 1: <name> — <commit-sha-or-range>` (use a range or PR ref if it spans several commits)
-- Blocked: `### [!] Phase 1: <name>` — add a Decisions log entry explaining the block
-- Abandoned: `### [~] Phase 1: <name>` — add a Decisions log entry explaining why
+Gdy faza zmienia stan, zaktualizuj jej nagłówek w miejscu i ustaw ten sam
+znacznik na jej linii w liście **Phases** u góry pliku:
+- Oczekująca: `### [ ] Phase 1: <name>`
+- Gotowa: `### [x] Phase 1: <name> — <commit-sha-or-range>` (zakres lub ref PR,
+  jeśli obejmuje kilka commitów)
+- Zablokowana: `### [!] Phase 1: <name>` — dodaj wpis w Decisions log
+  wyjaśniający blokadę
+- Porzucona: `### [~] Phase 1: <name>` — dodaj wpis w Decisions log wyjaśniający
+  dlaczego
 
-Bump the **Last updated** line at the top of the file on every change (date + current `HEAD` sha). Decisions made during a phase go in the **Decisions log**, not the pre-implementation section.
+Podbij linię **Last updated** u góry pliku przy każdej zmianie (data + aktualny
+sha `HEAD`). Decyzje podjęte w trakcie fazy idą do **Decisions log**, nie do
+sekcji pre-implementation.
 
-Leave the **Reviewed** line alone. Only the plan-review skill stamps it, so a plan edited after its last review shows as unreviewed — which is correct.
+Zostaw linię **Reviewed** w spokoju. Stempluje ją tylko skill plan-review, więc
+plan edytowany po ostatnim przeglądzie pokazuje się jako nieprzeglądany — i
+słusznie.
 
-## Phasing rules
+## Reguły podziału na fazy
 
-1. **Single phase if small.** If the work fits one logical PR with one concern, do not manufacture phases.
-2. **Risk-last by default.** Low-risk wins early so they ship even if later phases stall.
-3. **Forced ordering wins.** If a high-risk foundational change must go first (cannot build on a broken abstraction), put it first and note why in that phase.
-4. **Each phase mergeable on its own.** No phase leaves the repo in a broken state.
-5. **Logical or risk grouping.** A phase can span many file changes if they share one concern. Granularity is coarse, not fine.
+1. **Jedna faza, jeśli małe.** Praca na jeden logiczny PR z jednym zagadnieniem:
+   nie fabrykuj faz.
+2. **Ryzyko na koniec domyślnie.** Niskie ryzyko idzie wcześnie, więc wychodzi
+   nawet, gdy późniejsze fazy utkną.
+3. **Wymuszona kolejność wygrywa.** Jeśli wysokoryzykowna zmiana fundamentów
+   musi iść pierwsza (nie da się budować na zepsutej abstrakcji), daj ją
+   pierwszą i zaznacz dlaczego w tej fazie.
+4. **Każda faza mergowalna sama.** Żadna faza nie zostawia repo w zepsutym
+   stanie.
+5. **Grupowanie logiczne lub wg ryzyka.** Faza może obejmować wiele zmian
+   plików, jeśli dzielą jedno zagadnienie. Granulacja gruba, nie drobna.

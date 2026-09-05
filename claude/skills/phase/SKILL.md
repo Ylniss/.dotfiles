@@ -1,91 +1,93 @@
 ---
 name: phase
 description: >
-  Execute one phase of a saved plan from plans/<slug>.md, from outline gate
-  to commit. Use when user invokes "/phase <plan> [N]".
-argument-hint: "<plan> [N]"
+  Wykonuje jedną fazę zapisanego planu z plans/<slug>.md, od bramki zarysu
+  do commita. Użyj, gdy użytkownik wywołuje "/phase [plan] [N]".
+argument-hint: "[plan] [N]"
 ---
 
 # Phase
 
-Execute a single phase from a plan produced by the plan skill. Two gates:
-outline before code, review before commit.
+Wykonaj jedną fazę planu ze skilla plan. Dwie bramki: zarys przed kodem,
+przegląd przed commitem.
 
-## Hard rules
+## Twarde reguły
 
-1. **One phase per invocation.** Scope is the phase's own Scope section —
-   nothing else. Adjacent improvements go into the findings list or the
-   plan's Open questions, not into the diff.
-2. **Two approval gates.** No code before the user approves the outline.
-   No commit before the user approves at the commit gate.
-3. **The plan file is canonical.** Every state change (phase done/blocked,
-   decisions made) is written to the plan file using the plan skill's
-   update rules. Never let the file and reality diverge.
-4. **Green gate.** Build clean and full test suite passing before the
-   commit gate. Never commit red.
+1. **Jedna faza na wywołanie.** Zakres to sekcja Scope tej fazy — nic więcej.
+   Sąsiednie ulepszenia trafiają na listę wyników lub do Open questions planu,
+   nie do diffa.
+2. **Dwie bramki zatwierdzenia.** Żadnego kodu przed zatwierdzeniem zarysu.
+   Żadnego commita przed zatwierdzeniem na bramce commita.
+3. **Plik planu jest kanoniczny.** Każdą zmianę stanu (faza done/blocked,
+   podjęte decyzje) zapisuj do pliku planu wg reguł aktualizacji ze skilla plan.
+   Plik i rzeczywistość nigdy nie mogą się rozjechać.
+4. **Zielona bramka.** Czysty build i pełny zestaw testów przechodzi przed
+   bramką commita. Nigdy nie commituj na czerwono.
 
-## Flow
+## Przebieg
 
-### 1. Load and verify
+### 1. Wczytaj i zweryfikuj
 
-- Resolve the plan: the arg is a slug or path under `<git-root>/plans/`.
-  If it doesn't resolve, list available plans and stop.
-- Pick the phase: explicit N if given, else the first `[ ]` phase in **Phase detail**.
-  If none remain, say so and stop.
-- Staleness check: compare the plan's Last-updated commit to `HEAD`; read
-  the files in Repo context and confirm they still exist and behave as
-  described. On drift: report it, update the plan with the user, do not
-  implement yet.
-- Review check: read the plan's **Reviewed** line. If it says `never` or is
-  missing, the plan has never been reviewed. Say so and ask whether to run
-  `/plan-review` first. The user may skip — do not block on it. A stamp
-  older than **Last updated** is fine — do not ask again.
-- Verify the phase's `Depends on` phases are `[x]`. If not, stop and say
-  which are missing.
+- Rozwiąż plan: arg to slug lub ścieżka pod `<git-root>/plans/`. Jeśli się nie
+  rozwiązuje, wypisz dostępne plany i zatrzymaj się. Brak argumentu: jeden plan
+  w `plans/` → weź go; więcej → wypisz je i zapytaj.
+- Wybierz fazę: jawne N, jeśli podano, inaczej pierwsza faza `[ ]` w **Phase
+  detail**. Jeśli żadna nie została, powiedz to i zatrzymaj się.
+- Sprawdź nieaktualność: porównaj commit z Last updated planu z `HEAD`;
+  przeczytaj pliki z Repo context i potwierdź, że nadal istnieją i działają jak
+  opisano. Przy rozjeździe: zgłoś go, zaktualizuj plan z użytkownikiem, jeszcze
+  nie implementuj.
+- Sprawdź przegląd: linia **Reviewed** planu. `never` lub brak = plan nigdy nie
+  był przeglądany. Powiedz to i zapytaj, czy najpierw uruchomić `/plan-review`.
+  Użytkownik może pominąć — nie blokuj na tym. Stempel starszy niż **Last
+  updated** jest w porządku — nie pytaj ponownie.
+- Sprawdź, że fazy z `Depends on` są `[x]`. Jeśli nie, zatrzymaj się i powiedz,
+  których brakuje.
 
-### 2. Outline gate
+### 2. Bramka zarysu
 
-Produce a short implementation outline grounded in current code: approach,
-files touched, order of changes, and how "Done when" will be verified.
-No code yet. Ask for go — the user's go approves code for this phase's
-scope only.
+Przedstaw krótki zarys implementacji oparty na aktualnym kodzie: podejście,
+dotykane pliki, kolejność zmian i jak zweryfikujesz "Done when". Jeszcze bez
+kodu. Poproś o zgodę — zatwierdza ona kod tylko dla zakresu tej fazy.
 
-### 3. Implement
+### 3. Implementuj
 
-- Stay inside the phase Scope.
-- Append choices made along the way to the plan's Decisions log
-  (`YYYY-MM-DD — decision — why`).
-- If the phase turns out unimplementable as planned: stop, report why,
-  propose marking it `[!]` blocked with a Decisions-log entry, and wait.
+- Trzymaj się Scope fazy.
+- Wybory podjęte po drodze dopisuj do Decisions log planu (`YYYY-MM-DD — decyzja
+  — dlaczego`).
+- Jeśli faza okaże się niewykonalna jak zaplanowano: zatrzymaj się, zgłoś
+  dlaczego, zaproponuj oznaczenie `[!]` blocked z wpisem w Decisions log i
+  czekaj.
 
-### 4. Verify
+### 4. Weryfikuj
 
-- Run the project's build and full test suite (commands from project
-  CLAUDE.md or the obvious project convention; ask if unclear).
-- Check the phase's "Done when" criterion explicitly.
-- Red → fix within scope. Can't fix within scope → stop and report;
-  do not widen scope silently.
+- Uruchom build i pełny zestaw testów projektu (komendy z CLAUDE.md projektu lub
+  oczywistej konwencji; zapytaj, jeśli niejasne).
+- Sprawdź jawnie kryterium "Done when" fazy.
+- Czerwono → napraw w zakresie. Nie da się w zakresie → zatrzymaj się i zgłoś;
+  nie poszerzaj zakresu po cichu.
 
-### 5. Self-review
+### 5. Samoprzegląd
 
-Apply the clarify skill's review criteria (comment essence + name
-directness) and the polish skill's criteria (simplification, optimization,
-modern-library patterns — context7-backed) to the phase diff only — the
-changes this phase made, not everything in `git diff HEAD`. Report-only:
-skip those skills' own apply/ask steps and merge both reviews into one
-numbered findings list.
+Wczytaj `~/.claude/skills/clarify/SKILL.md`, `~/.claude/skills/polish/SKILL.md`
+i ich plik wspólny `~/.claude/skills/_shared/report.md`. Zastosuj kryteria
+przeglądu obu skilli (clarify: esencja komentarzy + bezpośredniość nazw; polish:
+uproszczenie, optymalizacja, nowoczesne wzorce bibliotek — poparte context7)
+tylko do diffa fazy — zmian tej fazy, nie całego `git diff HEAD`. Tylko raport:
+pomiń własne kroki apply/ask tych skilli i scal oba przeglądy w jedną numerowaną
+listę wyników.
 
-### 6. Commit gate
+### 6. Bramka commita
 
-Present together: diff summary (files + what changed per concern), test
-result, findings list. Ask which findings to apply and whether to commit.
+Przedstaw razem: podsumowanie diffa (pliki + co się zmieniło per zagadnienie),
+wynik testów, listę wyników. Zapytaj, które wyniki zastosować i czy commitować.
 
-On approval:
+Po zatwierdzeniu:
 
-- Apply only the selected findings; re-run tests if they changed code.
-- Commit: one commit if the phase is a single concern, else split by
-  concern. Short one-line messages.
-- Update the plan: mark the phase `[x] — <sha or range>` in Phase detail,
-  mark `[x]` in the top-of-file Phases list, bump Last updated (date +
-  `HEAD` sha), then commit the plan update separately.
-- Report: phase done, commits made, next pending phase.
+- Zastosuj tylko wybrane wyniki; uruchom testy ponownie, jeśli zmieniły kod.
+- Commit: jeden, jeśli faza to jedno zagadnienie, inaczej podziel per
+  zagadnienie.
+- Zaktualizuj plan: oznacz fazę `[x] — <sha lub zakres>` w Phase detail, oznacz
+  `[x]` na liście Phases u góry, podbij Last updated (data + sha `HEAD`), potem
+  osobny commit aktualizacji planu.
+- Zgłoś: faza gotowa, wykonane commity, następna oczekująca faza.

@@ -1,218 +1,218 @@
 ---
 name: prune
 description: >
-  Cut what does not earn its place in CLAUDE.md, AGENTS.md or a SKILL.md, then
-  compress what stays. Use for "prune", "trim this file", or "what here is
-  unnecessary".
+  Wytnij z CLAUDE.md, AGENTS.md lub SKILL.md to, co nie zasługuje na miejsce,
+  potem skompresuj resztę. Użyj dla "prune", "trim this file" lub "what here
+  is unnecessary".
 argument-hint: "[path]"
 ---
 
 # Prune
 
-Report-only review of a context file, then apply the findings the user selects.
-Two operations: **cut** (the content leaves this file — deleted or moved) and
-**compress** (same facts, fewer words).
+Przegląd pliku kontekstu. Najpierw raport, potem zastosuj wyniki wybrane przez
+użytkownika. Dwie operacje: **cut** (treść opuszcza ten plik — usunięta lub
+przeniesiona) i **compress** (te same fakty, mniej słów).
 
-## Boundary against the other reviews
+## Granica wobec innych przeglądów
 
-- /shorten compresses any text, preserving every fact. It never removes one.
-- /prune decides which facts belong in *this* file at all, then compresses what
-  survives.
-- /shape, /polish, /clarify review code, not context files.
+- /shorten kompresuje dowolny tekst, zachowując każdy fakt. Nigdy żadnego nie
+  usuwa.
+- /prune decyduje, które fakty w ogóle należą do *tego* pliku, potem kompresuje
+  resztę.
+- /shape, /polish, /clarify przeglądają kod, nie pliki kontekstu.
 
-## 1. Get the scope
+## 1. Ustal zakres
 
-- **No argument** — `CLAUDE.md` at the repo root, plus every nested
+- **Brak argumentu** — `CLAUDE.md` w korzeniu repo plus każdy zagnieżdżony
   `CLAUDE.md` / `AGENTS.md`.
-- **A path** — that file: a context file, a `SKILL.md`, or a skill's reference
-  file.
+- **Ścieżka** — ten plik: plik kontekstu, `SKILL.md` lub plik referencyjny
+  skilla.
 
-Name the files and their kind in one line. If none exists, say so and stop.
+Wymień pliki i ich rodzaj w jednej linii. Jeśli żaden nie istnieje, powiedz to i
+zatrzymaj się.
 
-## 2. The test, and the bar
+## 2. Test i poprzeczka
 
-One question for every line: **if it vanished, would a session do anything
-differently?** Not "is it true", not "is it well written" — would the work
-change. A true, well-written line that changes nothing is what this skill
-removes.
+Jedno pytanie do każdej linii: **gdyby zniknęła, czy sesja zrobiłaby coś
+inaczej?** Nie "czy prawdziwa", nie "czy dobrze napisana" — czy praca by się
+zmieniła. Prawdziwa, dobrze napisana linia, która nic nie zmienia, to właśnie to
+usuwa ten skill.
 
-How hard to press depends on how often the file loads:
+Siła nacisku zależy od częstości ładowania pliku:
 
-| File | Loads | Bar |
+| Plik | Ładuje się | Poprzeczka |
 |---|---|---|
-| `CLAUDE.md`, `AGENTS.md` | every session | hardest — must change unrelated work |
-| `SKILL.md` body | only sessions doing that task | medium — must change *this* task |
-| Reference file | only when the body sends you there | loosest — detail belongs here |
+| `CLAUDE.md`, `AGENTS.md` | każda sesja | najwyższa — musi zmieniać niezwiązaną pracę |
+| Treść `SKILL.md` | tylko sesje z tym zadaniem | średnia — musi zmieniać *to* zadanie |
+| Plik referencyjny | tylko gdy treść tam odsyła | najniższa — szczegół należy tutaj |
 
-From this follows the direction rule: **content flows toward the file that loads
-less often.** A `SKILL.md` repeating `CLAUDE.md` is the skill's problem;
-`CLAUDE.md` repeating a `SKILL.md` is `CLAUDE.md`'s. Detail a skill needs on
-only some invocations belongs in its reference file, not its body.
+Stąd reguła kierunku: **treść płynie ku plikowi, który ładuje się rzadziej.**
+`SKILL.md` powtarzający `CLAUDE.md` to problem skilla; `CLAUDE.md` powtarzający
+`SKILL.md` to problem `CLAUDE.md`. Szczegół, którego skill potrzebuje tylko przy
+niektórych wywołaniach, należy do jego pliku referencyjnego, nie do treści.
 
-## 3. Measure first
+## 3. Najpierw zmierz
 
-Print the byte count per item, sorted descending, before judging anything. Fat
-concentrates in a few lines and counting finds them faster than reading. For a
-bullet list:
+Wydrukuj liczbę bajtów na element, malejąco, zanim cokolwiek ocenisz. Tłuszcz
+skupia się w kilku liniach, a liczenie znajduje je szybciej niż czytanie. Dla
+listy punktowanej:
 
 ```bash
 awk '/^- \*\*/ {n=$0; sub(/^- \*\*/,"",n); sub(/\*\*.*/,"",n); printf "%5d  %s\n", length($0), n}' FILE | sort -rn
 ```
 
-## 4. Cut categories
+## 4. Kategorie cięć
 
-Every cut finding gets exactly one.
+Każdy wynik cut dostaje dokładnie jedną.
 
 ### discoverable
 
-Visible from the file tree, a config or manifest file, or one grep — a directory
-listing written out as prose. Project names, `.editorconfig`, the filenames
-inside a folder whose name already says what it holds.
+Widoczne z drzewa plików, pliku konfiguracji lub manifestu, albo jednego grepa —
+listing katalogu przepisany prozą. Nazwy projektów, `.editorconfig`, nazwy
+plików w folderze, którego nazwa już mówi, co trzyma.
 
-**Proof:** name the command that surfaces it, and run it.
+**Dowód:** podaj komendę, która to ujawnia, i uruchom ją.
 
 ### duplicate
 
-The fact already reaches the session another way: a file that loads more often
-(section 2), a skill that loads on demand, the tool schema, or another line of
-this same file.
+Fakt już dociera do sesji inną drogą: plikiem, który ładuje się częściej (sekcja
+2), skillem ładowanym na żądanie, schematem narzędzia lub inną linią tego samego
+pliku.
 
-A summary duplicating a detailed source turns into a staleness trap the moment
-it drifts — a table of three where the source now lists six. Cut it; do not fix
-it.
+Streszczenie duplikujące szczegółowe źródło staje się pułapką nieaktualności w
+chwili rozjazdu — tabela z trzema, gdy źródło wymienia już sześć. Wytnij; nie
+naprawiaj.
 
-**Proof:** name the other location and open it. "The skill probably covers this"
-is not proof — read it and confirm the fact is really there.
+**Dowód:** podaj drugą lokalizację i otwórz ją. "Skill pewnie to pokrywa" to nie
+dowód — przeczytaj i potwierdź, że fakt naprawdę tam jest.
 
 ### inconsequential
 
-True, not duplicated, and still changes nothing. Fallbacks you would find
-anyway, a pointer to a list that is already complete, an exclusion nobody would
-assume otherwise.
+Prawdziwe, nie zduplikowane, a nadal nic nie zmienia. Fallbacki, które i tak by
+się znalazło, wskaźnik na już kompletną listę, wykluczenie, którego nikt by
+inaczej nie założył.
 
-**Proof:** state what you would do with the line, and show it is the same as
-without.
+**Dowód:** powiedz, co zrobiono by z tą linią, i pokaż, że to samo co bez niej.
 
 ### belongs-elsewhere
 
-Right content, wrong file. Detail in a `SKILL.md` body that only some
-invocations need → its reference file. A rule in `CLAUDE.md` that only one
-task ever needs → the skill for that task. Project-wide truth restated in a
-skill → delete, `CLAUDE.md` already carries it.
+Dobra treść, zły plik. Szczegół w treści `SKILL.md`, potrzebny tylko niektórym
+wywołaniom → jego plik referencyjny. Reguła w `CLAUDE.md`, potrzebna tylko
+jednemu zadaniu → skill tego zadania. Prawda o całym projekcie powtórzona w
+skillu → usuń, `CLAUDE.md` już ją niesie.
 
-The proposed change is a move. Name the destination file.
+Proponowana zmiana to przeniesienie. Podaj plik docelowy.
 
 ### too-local
 
-*Always-loaded files only.* One feature, mechanic, or subsystem described in a
-section about the whole project. Test: **would this change how I approach an
-_unrelated_ task?** A turn model or an input-layer stack shapes every change and
-stays; one mechanic's folder split does not — a task touching it scans those
-files anyway.
+*Tylko pliki zawsze ładowane.* Jedna funkcja, mechanika lub podsystem opisany w
+sekcji o całym projekcie. Test: **czy to zmieniłoby podejście do _niezwiązanego_
+zadania?** Model tur lub stos warstwy wejścia kształtuje każdą zmianę i zostaje;
+podział folderu jednej mechaniki nie — zadanie, które jej dotyka, i tak skanuje
+te pliki.
 
-In a `SKILL.md`, being local is the point. Never raise this there.
+W `SKILL.md` lokalność jest celem. Nigdy nie podnoś tego tam.
 
 ### enumeration
 
-A list where a rule is shorter *and* more correct. A list of the six places that
-must be English misses the seventh; "everything written down" covers all of them
-in four words. Prefer the rule whenever the list is an instance of one.
+Lista, gdzie reguła jest krótsza *i* poprawniejsza. Lista sześciu miejsc, które
+muszą być po angielsku, pomija siódme; "wszystko, co zapisane" pokrywa je
+wszystkie w trzech słowach. Wybieraj regułę, ilekroć lista jest jej instancją.
 
-## 5. What to keep (check before cutting)
+## 5. Co zostawić (sprawdź przed cięciem)
 
-Do not cut a line that is any of these, however long:
+Nie wycinaj żadnej z poniższych, choćby była długa:
 
-- **Silent-failure guard** — the mistake it prevents fails quietly. "A new asset
-  needs a manifest entry" prevents an asset that never loads and never warns.
-- **Non-obvious runtime or control flow** — startup order, what pauses the loop,
-  what the dispatch order is. Not inferable from names.
-- **The why behind a surprising constraint** — why a project is excluded from
-  the build, why a call blocks instead of awaiting. Without it the constraint
-  looks like a bug and gets "fixed".
-- **Cross-boundary routing** — a shared contract in a third project, a folder
-  outside the obvious tree.
-- **A decision rule between two shapes** — when A and when B. This is where an
-  unguided session goes wrong most often.
-- **A worked example that blocks a wrong shape** (`SKILL.md` only) — a skill
-  earns the example that `CLAUDE.md` cannot afford.
+- **Strażnik cichej porażki** — błąd, któremu zapobiega, pada po cichu. "Nowy
+  asset wymaga wpisu w manifeście" zapobiega assetowi, który nigdy się nie
+  ładuje i nigdy nie ostrzega.
+- **Nieoczywisty przepływ działania lub sterowania** — kolejność startu, co
+  pauzuje pętlę, jaka jest kolejność dispatchu. Nie do wywnioskowania z nazw.
+- **Dlaczego za zaskakującym ograniczeniem** — czemu projekt jest wyłączony z
+  builda, czemu wywołanie blokuje zamiast await. Bez tego ograniczenie wygląda
+  jak bug i zostaje "naprawione".
+- **Routing przez granice** — wspólny kontrakt w trzecim projekcie, folder poza
+  oczywistym drzewem.
+- **Reguła decyzji między dwoma kształtami** — kiedy A, a kiedy B. Tu sesja bez
+  wskazówek myli się najczęściej.
+- **Przykład blokujący zły kształt** (tylko `SKILL.md`) — skill zasługuje na
+  przykład, na który `CLAUDE.md` nie może sobie pozwolić.
 
-Length is not the criterion. The longest item is often the one that earns its
-place most.
+Długość nie jest kryterium. Najdłuższy element często najbardziej zasługuje na
+miejsce.
 
-## 6. Compress findings
+## 6. Wyniki compress
 
-For what survives, apply /shorten's techniques: merge clauses, drop filler,
-imperative form, symbols (`→`, `=`, `—`), a rule in place of a list. **Zero
-information loss** — a compress finding that drops a fact is a cut finding and
-must be reported as one.
+Do tego, co przetrwa, zastosuj techniki /shorten: scal zdania składowe, usuń
+wypełniacze, forma rozkazująca, symbole (`→`, `=`, `—`), reguła zamiast listy.
+**Zero utraty informacji** — wynik compress, który gubi fakt, jest wynikiem cut
+i musi być tak zgłoszony.
 
-## 7. Resolve clashes
+## 7. Rozwiąż konflikty
 
-- Two findings on the same line → keep the better one.
-- A compress finding on a line another finding cuts → drop the compress one.
-- Every finding must apply on its own, in any order.
+- Dwa wyniki na tej samej linii → zostaw lepszy.
+- Wynik compress na linii, którą inny wynik wycina → odrzuć compress.
+- Każdy wynik musi dać się zastosować sam, w dowolnej kolejności.
 
-## 8. Rank and flag
+## 8. Oceń i oflaguj
 
-- Confidence: H / M / L. Recommend flag: `✓` when you would apply it yourself.
-- Flag `✗` when the cut rests on a skill you could not confirm triggers, when
-  the line guards something you cannot verify, or when it is taste.
-- If nothing needs a change, say so and stop. Do not invent a finding.
+- Pewność: H / M / L. Flaga rekomendacji: `✓`, gdy zastosowanie nie budzi
+  wątpliwości.
+- Oflaguj `✗`, gdy cięcie opiera się na skillu, którego wyzwalania nie dało się
+  potwierdzić, gdy linia strzeże czegoś, czego nie da się zweryfikować, lub gdy
+  to gust.
+- Jeśli nic nie wymaga zmiany, powiedz to i zatrzymaj się. Nie wymyślaj wyniku.
 
-## 9. Report (do not edit yet)
+## 9. Raport (jeszcze nie edytuj)
 
-Two lettered sections so the user can take one and not the other: **A. Cut**
-(content leaves the file), **B. Compress** (nothing leaves). Number within each:
-`A1`, `A2`, `B1`. Before the first finding, state the files, the finding count
-and the current size in one line.
+Dwie literowane sekcje, żeby użytkownik mógł wziąć jedną bez drugiej: **A. Cut**
+(treść opuszcza plik), **B. Compress** (nic nie opuszcza). Numeruj wewnątrz
+każdej: `A1`, `A2`, `B1`. Przed pierwszym wynikiem podaj w jednej linii pliki,
+liczbę wyników i obecny rozmiar.
 
-Per finding:
+Na wynik:
 
-    **A1. [category][H|M|L][✓|✗] short title**
+    **A1. [category][H|M|L][✓|✗] krótki tytuł**
     ```diff
-    @@ <path>:line @@
-    - <current text>
-    + <proposed text, or nothing for a deletion>
+    @@ <ścieżka>:linia @@
+    - <obecny tekst>
+    + <proponowany tekst, lub nic przy usunięciu>
     ```
     ========== why ==========
-    <one line: what changes if it goes>
+    <jedna linia: co się zmieni, gdy zniknie>
     ========== proof ==========
-    <the command run, the file opened, the location that already holds it>
+    <uruchomiona komenda, otwarty plik, lokalizacja, która już to trzyma>
     ========== saves ==========
-    <bytes, and the destination file for a move>
+    <bajty, a przy przeniesieniu plik docelowy>
 
-Format rules:
+Tagi, banery i słowa wyboru wg `~/.claude/skills/_shared/report.md` (sekcje Tagi
+nagłówka, Format ciała, Słowa wyboru). Reszta tego pliku dotyczy kodu, nie
+plików kontekstu.
 
-- Bold the header; never a heading — a heading breaks the tight block.
-- Banners are `========== <label> ==========`, ten `=` each side, plain text,
-  never fenced.
-- No blank line inside a finding. One blank line between findings.
-- `proof` is required on `discoverable`, `duplicate` and `inconsequential`.
-  Without it, drop the finding. Compress findings need no `proof`.
+`proof` jest wymagany dla `discoverable`, `duplicate` i `inconsequential`. Bez
+niego odrzuć wynik. Wyniki compress nie potrzebują `proof`.
 
-After the last finding, list what you reviewed and deliberately kept, one line
-each, naming the rule in section 5 that saved it. That half proves the review
-was aggressive rather than destructive.
+Po ostatnim wyniku wypisz, co przejrzano i celowo zostawiono, po jednej linii, z
+nazwą reguły z sekcji 5, która to uratowała. Ta połowa dowodzi, że przegląd był
+agresywny, a nie destrukcyjny.
 
-End with: "Which to apply? (e.g. A1,B2 / all / recommended / none)"
+Zakończ: "Which to apply? (e.g. A1,B2 / all / recommended / none)"
 
-## 10. Apply selected
+## 10. Zastosuj wybrane
 
-- **A1,B2** — exactly those. **all** — every finding, `✓` and `✗` alike.
-  **recommended** — every `✓`. **none** — nothing.
-- Make exactly the proposed change. Do not reformat neighbouring lines.
-- Keep the file's line endings, indent character and final newline.
-- For a move, write the content into the destination before deleting it here.
-- After a cut, re-read the section: one left-over item, or a paragraph that only
-  introduced the cut line, needs the same judgment.
+- Zrób dokładnie proponowaną zmianę. Nie formatuj sąsiednich linii.
+- Zachowaj końce linii, znak wcięcia i końcowy newline pliku.
+- Przy przeniesieniu zapisz treść w pliku docelowym, zanim usuniesz ją tutaj.
+- Po cięciu przeczytaj sekcję ponownie: jeden pozostały element lub akapit,
+  który tylko wprowadzał wyciętą linię, wymaga tego samego osądu.
 
-## 11. Verify
+## 11. Weryfikuj
 
-- Re-read the file top to bottom. It must stand alone for a session that never
-  saw this conversation. For a `SKILL.md`, it must still complete its task
-  without the cut lines.
-- Report size before and after, with the percentage.
-- Say plainly which facts now live **only** in a skill or a reference file, and
-  that they reach a session only while that skill keeps triggering and the body
-  keeps pointing at that reference. That is the one way this skill can quietly
-  make things worse.
+- Przeczytaj plik od góry do dołu. Musi stać sam dla sesji, która nigdy nie
+  widziała tej rozmowy. `SKILL.md` musi nadal wykonać swoje zadanie bez
+  wyciętych linii.
+- Podaj rozmiar przed i po, z procentem.
+- Powiedz wprost, które fakty żyją teraz **tylko** w skillu lub pliku
+  referencyjnym, i że docierają do sesji tylko, dopóki ten skill się wyzwala, a
+  treść wskazuje na tę referencję. To jedyny sposób, w jaki ten skill może po
+  cichu pogorszyć sprawę.

@@ -1,26 +1,27 @@
 ---
 name: shorten
 description: >
-  Shortens markdown content while preserving all information.
-  Use when user says "shorten", "make shorter", "tighten",
-  "make concise", or "reduce length" about any text or file.
+  Skraca treść markdown, zachowując wszystkie informacje.
+  Użyj, gdy użytkownik mówi "shorten", "make shorter", "tighten",
+  "make concise" lub "reduce length" o dowolnym tekście lub pliku.
 ---
- 
+
 # Shorten
- 
-Reduce text length while preserving every piece of information.
- 
-## Techniques
-- Merge related clauses into one sentence
-- Use symbols: → for "goes to", = for "means", — for inline clauses
-- Drop filler words (just, really, basically, in order to, that being said)
-- Drop implied context ("when it improves readability" after a readability rule)
-- Convert verbose phrases: "in the event that" → "if", "make sure to" → drop
-- Use imperative form: "You should always check" → "Check"
-- Collapse bullet descriptions into tighter phrasing
- 
-## Hard rules
-- Zero information loss. Every fact, rule, and nuance must survive.
-- Don't merge separate rules into one — keep them individually addressable.
-- Don't change meaning by oversimplifying.
-- Preserve original structure (headers, bullet hierarchy).
+
+Skróć tekst, zachowując każdą informację.
+
+## Techniki
+- Scal powiązane zdania składowe w jedno zdanie
+- Używaj symboli: → dla "prowadzi do", = dla "znaczy", — dla wtrąceń
+- Usuń wypełniacze (just, really, basically, in order to, that being said)
+- Usuń domyślny kontekst ("when it improves readability" po regule o
+  czytelności)
+- Zamień rozwlekłe frazy: "in the event that" → "if", "make sure to" → usuń
+- Forma rozkazująca: "You should always check" → "Check"
+- Zwiń opisy punktów w zwięźlejsze frazy
+
+## Twarde reguły
+- Zero utraty informacji. Każdy fakt, reguła i niuans musi przetrwać.
+- Nie scalaj osobnych reguł w jedną — każda musi zostać adresowalna osobno.
+- Nie zmieniaj znaczenia przez nadmierne uproszczenie.
+- Zachowaj oryginalną strukturę (nagłówki, hierarchia punktów).
