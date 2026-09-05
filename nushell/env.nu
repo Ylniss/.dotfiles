@@ -19,7 +19,7 @@ if ($env.NU_PLUGIN_DIRS? | is-empty) {
 
 if (is-windows) {
   $env.Path = ($env.Path | split row (char esep) | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')
-  for dir in ['C:\Program Files\Aseprite' 'C:\Program Files\Inkscape\bin'] {
+  for dir in ['C:\Program Files\Aseprite' 'C:\Program Files\Inkscape\bin' $'($env.LOCALAPPDATA)\Programs\GIMP 3\bin'] {
     if ($dir | path exists) {
       $env.Path = ($env.Path | prepend $dir)
     }
