@@ -24,3 +24,18 @@
   box-shadow: none !important;
   border: none !important;
 }
+
+/* Hide the close button on tabs; tabs are closed with a shortcut or middle click. */
+.tab-close-button {
+  display: none !important;
+}
+
+/* Shrink the audio indicator on tabs (default icon is 12px). */
+.tab-audio-button {
+  --icon-size: 8px !important;
+}
+
+/* Pinned tabs show sound as an overlay on the favicon instead. */
+.tab-icon-overlay {
+  transform: scale(0.7);
+}

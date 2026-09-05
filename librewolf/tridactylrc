@@ -10,6 +10,12 @@ colorscheme colors
 " Tridactyl cannot run on about: pages, so redirect the new tab.
 set newtab https://duckduckgo.com
 
+" Never let a page focus an input on load, so j and k scroll instead of typing.
+set allowautofocus false
+
+" Ctrl+I in a text field edits it in nvim. Tridactyl waits for the window to close.
+set editorcmd wezterm start --always-new-process -- nvim %f
+
 " Vertical tabs: J moves down the list, K moves up, as in vim.
 bind J tabnext
 bind K tabprev
@@ -33,3 +39,4 @@ bind gmj tabopen https://mail.google.com/mail/u/1/#inbox
 " Current tab: Space.
 bind <Space>m mute toggle
 bind <Space>p pin
+bind <Space>d tabdetach
