@@ -57,6 +57,7 @@
     ../../packages/graphics/gimp.nix
 
     # Media
+    ../../packages/media/audacity.nix
     ../../packages/media/spotify.nix
     ../../packages/media/vlc.nix
 
