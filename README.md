@@ -300,6 +300,10 @@ Install with `paru -S onlyoffice-bin xdg-user-dirs`, then run `xdg-user-dirs-upd
 
 The override is a trimmed copy of the packaged entry. Compare it with `/usr/share/applications/onlyoffice-desktopeditors.desktop` after a major ONLYOFFICE update.
 
+# Crawl (DCSS)
+
+Windows builds read their options from `init.txt` in the game directory only, so `install_dotfiles.nu` sets a user-level `CRAWL_RC` variable instead. Start a new shell after the first run.
+
 # Claude Code
 
 Config (settings, skills, agents, rules, hooks) is symlinked by `install_dotfiles.nu`. The context7 MCP server lives in `~/.claude.json` (untracked) and must be re-added on a new machine:

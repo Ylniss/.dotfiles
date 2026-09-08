@@ -46,6 +46,7 @@ let symlinks = [
   { src: 'mpv/scripts/sponsorblock.lua',  desc: 'mpv sponsorblock.lua',       dest: $'($mpv_config_dir)/scripts/sponsorblock.lua',       skip_on_android: true }
   { src: 'mpv/script-opts/sponsorblock.conf', desc: 'mpv sponsorblock.conf',  dest: $'($mpv_config_dir)/script-opts/sponsorblock.conf',  skip_on_android: true }
   { src: 'imv/config',                    desc: 'imv config',                 dest: $'($config_dir)/imv/config',                linux_only: true }
+  { src: 'crawl/.crawlrc',                desc: 'crawl .crawlrc',             dest: $'($home_dir)/.crawlrc',                    linux_only: true }
   { src: 'onlyoffice/onlyoffice-desktopeditors.desktop', desc: 'onlyoffice desktop entry', dest: $'($applications_dir)/onlyoffice-desktopeditors.desktop', linux_only: true }
   { src: 'starship/starship.toml',        desc: 'starship.toml',              dest: $'($home_dir)/.config/starship.toml' }
   { src: 'tinted-theming/tinty/config.toml', desc: 'tinty config.toml',       dest: $'($config_dir)/tinted-theming/tinty/config.toml',  linux_only: true }
@@ -84,7 +85,10 @@ init-librewolf $repo_dir
 
 ensure-gitconfig-local $home_dir
 
-if (is-windows) { allow-cfa-apps-if-needed }
+if (is-windows) {
+  set-crawl-rc-env $repo_dir
+  allow-cfa-apps-if-needed
+}
 
 # -------------- FUNCTIONS --------------
 
@@ -143,6 +147,24 @@ def ensure-gitconfig-local [home_dir] {
 }
 
 # -------------- WINDOWS --------------
+
+# Points Crawl at the .crawlrc in this repo. Windows builds read their options
+# from init.txt in the game directory only, so a user-level CRAWL_RC is what
+# keeps the file here. It also outlives a game update, unlike the game directory.
+def set-crawl-rc-env [repo_dir] {
+  let rc_path = ($'($repo_dir)/crawl/.crawlrc' | str replace --all '/' '\')
+  let get_script = "[Environment]::GetEnvironmentVariable('CRAWL_RC', 'User')"
+  if (^powershell -NoProfile -Command $get_script | str trim) == $rc_path {
+    print $'CRAWL_RC (ansi blue)already points at the repo .crawlrc.(ansi reset)'
+    return
+  }
+
+  let set_script = "[Environment]::SetEnvironmentVariable('CRAWL_RC', $env:CRAWL_RC_PATH, 'User')"
+  with-env { CRAWL_RC_PATH: $rc_path } {
+    ^powershell -NoProfile -Command $set_script
+  }
+  print $'(ansi green)Setting CRAWL_RC to(ansi reset) ($rc_path)'
+}
 
 # True if Windows Developer Mode is enabled (allows symlinks without admin)
 def windows-dev-mode-enabled [] {

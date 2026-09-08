@@ -1,0 +1,65 @@
+##### Dungeon Crawl Stone Soup options ##############################
+# Linux: symlinked to ~/.crawlrc.
+# Windows: read through the CRAWL_RC variable, set by install_dotfiles.nu.
+# Windows builds look for init.txt in the game directory only, so the
+# variable is what keeps this file in the repo.
+# The start screen prints the options file the game loaded.
+# Full reference: docs/options_guide.txt in the game directory.
+#
+# A comment must start its own line. Crawl reads the rest of an option
+# line as part of the value, so trailing comments break the option.
+
+##### Tiles view ####################################################
+# Scales the dungeon view only, and 3.0 gives the same 96 pixel tiles
+# as the legacy tile_cell_pixels = 96. Ctrl+- and ctrl+= change it in
+# game.
+tile_viewport_scale = 3.0
+
+tile_sidebar_pixels = 40
+
+# 0 auto-sizes the minimap.
+tile_map_pixels = 0
+
+# No blur on scaled-up tiles.
+tile_filter_scaling = false
+
+tile_font_crt_size  = 20
+tile_font_stat_size = 20
+tile_font_msg_size  = 20
+tile_font_tip_size  = 20
+tile_font_lbl_size  = 20
+
+# Go straight to the menu after loading.
+tile_skip_title = true
+
+##### Danger warnings ###############################################
+# Low hitpoint warning below this percentage (default 10).
+hp_warning = 30
+
+# Tab refuses to attack below this percentage (default 50).
+autofight_stop = 60
+
+# Stop the message flood for events that need a decision.
+force_more_message += You suddenly lose the ability to move
+force_more_message += You are turning to stone
+force_more_message += You become entangled
+force_more_message += You are engulfed
+force_more_message += You are cast into the Abyss
+force_more_message += You feel yourself slow down
+force_more_message += wrath finds you
+force_more_message += Ouch! That really hurt
+
+##### Travel and rest ###############################################
+# Rest without a redraw per turn.
+rest_delay = -1
+
+show_travel_trail = true
+
+# force_more_message does not interrupt travel or rest by itself.
+runrest_stop_message += You feel yourself slow down
+runrest_stop_message += wrath finds you
+
+##### Notes #########################################################
+# Take a note whenever hitpoints drop below this percentage
+# (default 5). The morgue file then shows where a game got close.
+note_hp_percent = 30
