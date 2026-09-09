@@ -70,7 +70,7 @@ desc = "Edit in GIMP"
 
 [[mgr.prepend_keymap]]
 on = ["e", "u"]
-run = 'shell --orphan "audacity %h"'
+run = 'shell --orphan "Audacity4 %h"'
 desc = "Edit in Audacity"
 
 [[mgr.prepend_keymap]]
