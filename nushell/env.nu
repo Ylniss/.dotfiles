@@ -21,7 +21,7 @@ if (is-windows) {
   $env.Path = ($env.Path | split row (char esep) | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')
   for dir in ['C:\Program Files\Aseprite' 'C:\Program Files\Audacity 4\bin' 'C:\Program Files\Inkscape\bin' 'C:\Program Files\GIMP 3\bin' $'($env.LOCALAPPDATA)\Programs\GIMP 3\bin'] {
     if ($dir | path exists) {
-      $env.Path = ($env.Path | prepend $dir)
+      $env.Path = ($env.Path | append $dir)
     }
   }
   $env.Path = ($env.Path | prepend ($nu.home-dir | path join 'go' 'bin'))
