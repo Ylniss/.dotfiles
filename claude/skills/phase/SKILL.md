@@ -2,14 +2,14 @@
 name: phase
 description: >
   Wykonuje jedną fazę zapisanego planu z plans/<slug>.md, od bramki zarysu
-  do commita. Użyj, gdy użytkownik wywołuje "/phase [plan] [N]".
+  do bramki przeglądu. Użyj, gdy użytkownik wywołuje "/phase [plan] [N]".
 argument-hint: "[plan] [N]"
 ---
 
 # Phase
 
 Wykonaj jedną fazę planu ze skilla plan. Dwie bramki: zarys przed kodem,
-przegląd przed commitem.
+przegląd po weryfikacji.
 
 ## Twarde reguły
 
@@ -17,12 +17,15 @@ przegląd przed commitem.
    Sąsiednie ulepszenia trafiają na listę wyników lub do Open questions planu,
    nie do diffa.
 2. **Dwie bramki zatwierdzenia.** Żadnego kodu przed zatwierdzeniem zarysu.
-   Żadnego commita przed zatwierdzeniem na bramce commita.
+   Żadnej zmiany z listy wyników przed zatwierdzeniem na bramce przeglądu.
 3. **Plik planu jest kanoniczny.** Każdą zmianę stanu (faza done/blocked,
    podjęte decyzje) zapisuj do pliku planu wg reguł aktualizacji ze skilla plan.
    Plik i rzeczywistość nigdy nie mogą się rozjechać.
 4. **Zielona bramka.** Czysty build i pełny zestaw testów przechodzi przed
-   bramką commita. Nigdy nie commituj na czerwono.
+   bramką przeglądu. Nigdy nie zgłaszaj fazy jako gotowej na czerwono.
+5. **Nigdy nie commituj.** Ten skill nie robi `git commit` i nie pyta o commit.
+   Faza kończy się niezacommitowanymi zmianami w drzewie roboczym. Commit wydaje
+   użytkownik.
 
 ## Przebieg
 
@@ -77,17 +80,14 @@ tylko do diffa fazy — zmian tej fazy, nie całego `git diff HEAD`. Tylko rapor
 pomiń własne kroki apply/ask tych skilli i scal oba przeglądy w jedną numerowaną
 listę wyników.
 
-### 6. Bramka commita
+### 6. Bramka przeglądu
 
 Przedstaw razem: podsumowanie diffa (pliki + co się zmieniło per zagadnienie),
-wynik testów, listę wyników. Zapytaj, które wyniki zastosować i czy commitować.
+wynik testów, listę wyników. Zapytaj, które wyniki zastosować.
 
 Po zatwierdzeniu:
 
 - Zastosuj tylko wybrane wyniki; uruchom testy ponownie, jeśli zmieniły kod.
-- Commit: jeden, jeśli faza to jedno zagadnienie, inaczej podziel per
-  zagadnienie.
-- Zaktualizuj plan: oznacz fazę `[x] — <sha lub zakres>` w Phase detail, oznacz
-  `[x]` na liście Phases u góry, podbij Last updated (data + sha `HEAD`), potem
-  osobny commit aktualizacji planu.
-- Zgłoś: faza gotowa, wykonane commity, następna oczekująca faza.
+- Zaktualizuj plan: oznacz fazę `[x]` w Phase detail, oznacz `[x]` na liście
+  Phases u góry, podbij Last updated (data + sha `HEAD`).
+- Zgłoś: faza gotowa, zmiany niezacommitowane, następna oczekująca faza.

@@ -109,8 +109,8 @@ odpowiadający nagłówek w **Phase detail**.
 Gdy faza zmienia stan, zaktualizuj jej nagłówek w miejscu i ustaw ten sam
 znacznik na jej linii w liście **Phases** u góry pliku:
 - Oczekująca: `### [ ] Phase 1: <name>`
-- Gotowa: `### [x] Phase 1: <name> — <commit-sha-or-range>` (zakres lub ref PR,
-  jeśli obejmuje kilka commitów)
+- Gotowa: `### [x] Phase 1: <name>`; dopisz ` — <commit-sha-or-range>`, gdy
+  commit fazy już istnieje (zakres lub ref PR, jeśli obejmuje kilka commitów)
 - Zablokowana: `### [!] Phase 1: <name>` — dodaj wpis w Decisions log
   wyjaśniający blokadę
 - Porzucona: `### [~] Phase 1: <name>` — dodaj wpis w Decisions log wyjaśniający
