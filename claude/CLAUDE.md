@@ -1,8 +1,9 @@
 # Global Rules
 
-## Approval
+## Workflow
 
-- Never modify files or `git commit` without my approval.
+- Discuss the problem and get my approval before you change files or commit.
+- Change files with Edit and Write. Use the shell only for bulk edits.
 
 ## Code Style
 
