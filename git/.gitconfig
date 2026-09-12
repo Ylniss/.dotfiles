@@ -1,5 +1,7 @@
 [core]
 	autocrlf = false
+	eol = lf
+	attributesFile = ~/.gitattributes-global
 	pager = delta
 [include]
 	path = ~/.gitconfig-local

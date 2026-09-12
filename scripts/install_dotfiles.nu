@@ -18,6 +18,7 @@ let applications_dir = $'($home_dir)/.local/share/applications'
 let symlinks = [
   { src: 'nvim',                          desc: 'nvim',                       dest: $'($config_dir)/nvim' }
   { src: 'git/.gitconfig',                desc: '.gitconfig',                 dest: $'($home_dir)/.gitconfig' }
+  { src: 'git/gitattributes-global',      desc: '.gitattributes-global',      dest: $'($home_dir)/.gitattributes-global' }
   { src: 'ideavim/.ideavimrc',            desc: '.ideavimrc',                 dest: $'($home_dir)/.ideavimrc',                  skip_on_android: true }
   { src: 'wezterm/wezterm.lua',           desc: 'wezterm wezterm.lua',        dest: $'($home_dir)/.config/wezterm/wezterm.lua',     skip_on_android: true }
   { src: 'wezterm/nvim-splits.lua',       desc: 'wezterm nvim-splits.lua',    dest: $'($home_dir)/.config/wezterm/nvim-splits.lua', skip_on_android: true }

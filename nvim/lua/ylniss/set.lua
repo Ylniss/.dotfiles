@@ -28,6 +28,9 @@ vim.o.shellredir = "| save %s"
 -- Don't add trailing newline to files missing one
 vim.o.fixeol = false
 
+-- Write LF, not CRLF, in new files
+vim.o.fileformats = "unix,dos"
+
 -- Sync clipboard between OS and Neovim
 vim.o.clipboard = "unnamedplus"
 
