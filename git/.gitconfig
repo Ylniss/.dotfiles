@@ -15,8 +15,6 @@
 	conflictstyle = diff3
 [diff]
 	colorMoved = default
-[credential]
-	helper = manager
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
