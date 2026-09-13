@@ -124,8 +124,11 @@ layout {
     // Top and bottom struts will simply add outer gaps in addition to the area occupied by
     // layer-shell panels and regular gaps.
     struts {
-        // left 64
-        // right 64
+        // both sides, so the neighbour column always peeks out and gives touch a target.
+        // a full-width column fills the work area minus gaps, so the peek is exactly
+        // this many logical px — 3 is about 0.6 mm on this screen
+        left 3
+        right 3
         // top 64
         // bottom 64
     }
