@@ -18,7 +18,9 @@ input {
         tap
         dwt // disable when typing
         natural-scroll
-        disabled-on-external-mouse
+        // no disabled-on-external-mouse — the Type Cover exposes a separate "Mouse" node,
+        // so libinput reads it as an external mouse and disables the touchpad after every
+        // re-enumeration (resume, folding the cover)
     }
 
     mouse {
@@ -28,6 +30,10 @@ input {
         off
     }
 }
+
+// Written by `touchpad off`, removed by `touchpad on`. Must come after the input
+// block, because an include only overrides options set before it.
+include optional=true "~/.config/niri/touchpad-off.kdl"
 
 // You can configure outputs by their name, which you can find
 // by running `niri msg outputs` while inside a niri instance.
