@@ -17,6 +17,9 @@ Przed startem wczytaj `~/.claude/skills/_shared/report.md`. Obowiązuje w
 całości: zakres, konflikty, ocena, format raportu, apply, weryfikacja. Poniżej
 tylko to, co własne dla tego skilla.
 
+Jednostką zakresu jest deklaracja, nie linia: gdy diff dotyka sygnatury, ciała
+lub komentarza funkcji, klasy albo pola, oceń jej nazwę i cały komentarz.
+
 ## Granica wobec innych przeglądów
 
 Wynik, który przepisuje logikę, to /polish. Wynik, który przenosi kod, dzieli
@@ -36,7 +39,9 @@ Stosuj w tej kolejności:
 - Skróć rozwlekłe komentarze do sedna.
 - Prosty język — zastąp żargon, wewnętrzne skróty i slang domenowy codziennymi
   słowami (np. "flake the suite" → "break the tests"). Zachowaj sens; zmień
-  tylko słownictwo, żeby każdy czytelnik zrozumiał bez wysiłku.
+  tylko słownictwo, żeby każdy czytelnik zrozumiał bez wysiłku. Słowo domeny to
+  nazwa z kodu lub pojęcie zdefiniowane w docs repo; słowo żyjące tylko w
+  komentarzach ("nestles", "crowd-part") to żargon.
 - Komentarz, który tylko powtarza to, co mówi kod → zaproponuj USUŃ, nie skróć.
   Zbędny komentarz jest gorszy niż żaden.
 - Zbędny wobec nazwy → USUŃ. Jasna nazwa (klasy, metody, zmiennej) plus
@@ -45,6 +50,8 @@ Stosuj w tej kolejności:
   Jeśli tak, komentarz to szum; usuń go. (Sprawdź też miejsce użycia: jeśli
   DLACZEGO stoi już tam, gdzie rzecz jest podpięta, definicja nie musi tego
   powtarzać.) Wybieraj jaśniejszą nazwę zamiast zachowania komentarza.
+- Test zimnego czytelnika: z samej nazwy i komentarza, bez ciała, wiesz, co
+  jednostka zwraca, co zmienia i kiedy się poddaje? Jeśli nie → przeredaguj.
 - NIE ruszaj: komentarzy TODO, nagłówków licencyjnych/prawnych, komentarzy
   dokumentujących kontrakt API (params/returns/throws) i komentarzy
   wyjaśniających nieoczywiste DLACZEGO.
@@ -80,6 +87,8 @@ Zanim ocenisz nazwę, przeczytaj, jak jest używana:
 - Myląca — sugeruje coś innego. Najwyższy priorytet; gorsza niż mglista.
 - Mglista — za krótka lub zbyt ogólna, by nieść znaczenie (`d`, `tmp`, `data`,
   `mgr`).
+- Obrazowa — metafora zamiast tego, co jednostka zwraca lub zmienia
+  (`Accommodate`, `Nestle`).
 - Rozwlekła — dłuższa niż trzeba, bez zysku na jasności.
 - Niespójna — inne słowo na pojęcie, które otaczający kod już nazywa.
 - Do pobicia — istnieje lepsze słowo, które usuwa wysiłek umysłowy. Zgłoś to
