@@ -17,7 +17,7 @@ return {
 			},
 		},
 		picker = { name = "fzf-lua" },
-		-- markview.nvim renders markdown (and sets conceallevel); don't double-render.
+		-- md-render.nvim renders markdown; don't double-render.
 		ui = { enable = false },
 		frontmatter = { enabled = false },
 		checkbox = { order = { " ", "x" } },
