@@ -21,6 +21,6 @@ def wthr [city?: string] {
 
   let current_city = ($city | default ($wttr_info | rg "Weather report: ([^,]+)" -Nor "$1"))
 
-  finger $'($current_city)@graph.no' | skip-lines 2 | drop 2 | colorize-weather | print
+  $"($current_city)\r\n" | curl -sS telnet://graph.no:79 | lines | drop 2 | colorize-weather | print
   $wttr_info | skip-lines 1 | print
 }
