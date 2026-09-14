@@ -1,7 +1,8 @@
 alias gi = lazygit
 alias gits = git status
 
-# Git Add changes in a specified path, or the current directory if no path is given.
+# Stage changes in a path.
+# If you give no path, or the path does not exist, stage the current directory.
 def gita --wrapped [path?: string, ...opts] {
   let target = if (($path | is-not-empty) and ($path | path exists)) { $path } else { "." }
   git add ...$opts $target
@@ -12,26 +13,24 @@ def gitl [--graph (-g)] {
   if $graph {
     git log --all --decorate --oneline --graph --pretty=format:'%C(auto)%h %<(12,trunc)%an %<(16,trunc)%ar %s %d'
   } else { 
-    git log --reverse $"--pretty=(ansi yellow)%h(ansi reset)»¦«%s»¦«%aN»¦«%as" | lines | split column "»¦«" commit message name date | upsert message {|r| $r.message | str substring 0..65} | sort-by date
+    git log --reverse $"--pretty=(ansi yellow)%h(ansi reset)»¦«%s»¦«%aN»¦«%as" | lines | split column "»¦«" commit message name date | update message { str substring 0..65 } | sort-by date
   }  
 }
 
 # Show unstaged then staged changes under labeled headers.
 def gitd --wrapped [...opts] {
-  let git_diff_output = git diff
-  if $git_diff_output != "" {
+  if (git diff | is-not-empty) {
     print $"(ansi red)\n --------------------- Unstaged Changes --------------------- (ansi reset)"
     git diff ...$opts
   }
-  let git_diff_staged_output = git diff --staged
-  if $git_diff_staged_output != "" {
+  if (git diff --staged | is-not-empty) {
     print $"(ansi green)\n --------------------- Staged Changes --------------------- (ansi reset)"
     git diff --staged ...$opts
   }
 }
 
 def gitc --wrapped [...opts, message?: string] {
-  if not ($message | is-empty) {
+  if ($message | is-not-empty) {
     git commit ...$opts -m $message 
   } else {
     git commit ...$opts
@@ -39,9 +38,9 @@ def gitc --wrapped [...opts, message?: string] {
 }
 
 # Git Push: Pushes to origin, optionally targeting a specific branch.
-def gitp --wrapped [branch_name?: string, ...opts] {
-  if not ($branch_name | is-empty) {
-    git push origin $branch_name ...$opts
+def gitp --wrapped [branch?: string, ...opts] {
+  if ($branch | is-not-empty) {
+    git push origin $branch ...$opts
   } else {
     git push ...$opts
   }
@@ -49,15 +48,13 @@ def gitp --wrapped [branch_name?: string, ...opts] {
 
 alias gitch = git checkout
 alias gitb = git branch
-def gitbch [branch: string] {
-  git checkout -b $branch
-}
+alias gitbch = git checkout -b
 
 def gitmrg [branch: string] {
   let current_branch = git rev-parse --abbrev-ref HEAD
   git fetch --all
 
-  # Set upstream to origin/<branch> if none is configured (needed before merge).
+  # Set the upstream to origin/<current branch> if the current branch has none.
   if (git rev-parse --abbrev-ref --symbolic-full-name @{u} | is-empty) {
     git branch $'--set-upstream-to=origin/($current_branch)' $current_branch
   }
@@ -81,64 +78,58 @@ def giti [
   touch ($dir | path join '.gitignore')
 }
 
-# Git Worktree Add: Creates a new worktree with a new branch.
-# Usage: gitwta <branch> — creates worktree at ../{current_dir}-{branch}
+# Git Worktree Add: create a branch in a new worktree at ../<current dir>-<branch>.
+# Then cd into the worktree and open layout-dev in WezTerm. Use --stay to skip both.
 def --env gitwta [branch: string, --stay (-s)] {
   let dir_name = (pwd | path basename)
   let path = $"../($dir_name)-($branch)"
   git worktree add $path -b $branch
-  if not $stay {
-    cd $path
-    if 'WEZTERM_PANE' in $env {
-      layout-dev
-    }
+  if $stay { return }
+  cd $path
+  if 'WEZTERM_PANE' in $env {
+    layout-dev
   }
 }
 
-# Git Worktree Finish: Pushes branch, merges into base branch, then removes worktree.
-# Usage: gitwtf <path> | gitwtf .
+# Git Worktree Finish: push the worktree branch and merge it into the base branch.
+# Then delete the worktree and its local branch. Pass . for the current worktree.
 def --env gitwtf [path: string] {
-  let resolved = if $path == "." { pwd } else { $path | path expand }
+  let worktree_path = if $path == "." { pwd } else { $path | path expand }
 
-  # Validate: is a git repo and get branch
-  let branch = try { git -C $resolved rev-parse --abbrev-ref HEAD | str trim } catch {
+  let branch = try { git -C $worktree_path rev-parse --abbrev-ref HEAD } catch {
     print $"(ansi red)Not a git repository(ansi reset)"
     return
   }
 
-  # Get main worktree (base repo) path — always first in porcelain output
-  let base_path = (git -C $resolved worktree list --porcelain
+  # Git lists the main worktree (base repo) first.
+  let base_path = (git -C $worktree_path worktree list --porcelain
     | lines
-    | where {|l| $l starts-with 'worktree '}
     | first
     | str replace 'worktree ' '')
 
-  # Validate: not the main worktree
-  if ($resolved | path expand | str lowercase) == ($base_path | str lowercase) {
+  if ($worktree_path | path expand | str lowercase) == ($base_path | str lowercase) {
     print $"(ansi red)This is the main worktree — refusing to remove(ansi reset)"
     return
   }
 
-  # Validate: base repo exists
   if not ($base_path | path exists) {
     print $"(ansi red)Base repo not found at ($base_path)(ansi reset)"
     return
   }
 
-  # Safety: abort if working tree is dirty
-  let dirty = (git -C $resolved status --porcelain | str trim)
+  let dirty = (git -C $worktree_path status --porcelain)
   if ($dirty | is-not-empty) {
     print $"(ansi red)Uncommitted changes — commit first(ansi reset)"
     return
   }
 
   # Push worktree branch, merge into base branch, push
-  let base_branch = (git -C $base_path rev-parse --abbrev-ref HEAD | str trim)
+  let base_branch = (git -C $base_path rev-parse --abbrev-ref HEAD)
   try {
-    git -C $resolved push origin $branch
-    git -C $resolved fetch origin
-    git -C $resolved merge $"origin/($base_branch)"
-    git -C $resolved push origin $"HEAD:($base_branch)"
+    git -C $worktree_path push origin $branch
+    git -C $worktree_path fetch origin
+    git -C $worktree_path merge $"origin/($base_branch)"
+    git -C $worktree_path push origin $"HEAD:($base_branch)"
   } catch {
     print $"(ansi red)Push/merge failed — resolve and retry(ansi reset)"
     return
@@ -149,22 +140,18 @@ def --env gitwtf [path: string] {
     cd $base_path
   }
 
-  # Pull latest into base repo
-  try { git -C $base_path pull } catch {}
+  try { git -C $base_path pull }
 
   # Remove directory (retry once for Windows handle release)
-  if ($resolved | path exists) {
-    try { rm -rf $resolved } catch {
-      sleep 1sec
-      try { rm -rf $resolved } catch {
-        print $"(ansi yellow)Warning: could not remove directory — remove it manually(ansi reset)"
-      }
+  try { rm -rf $worktree_path } catch {
+    sleep 1sec
+    try { rm -rf $worktree_path } catch {
+      print $"(ansi yellow)Warning: could not remove directory — remove it manually(ansi reset)"
     }
   }
 
-  # Clean up git state
   git -C $base_path worktree prune
-  try { git -C $base_path branch -D $branch } catch {}
+  try { git -C $base_path branch -D $branch }
 }
 
 # Git Parents: Shows the parent branch chain with ahead/behind counts.
@@ -180,8 +167,8 @@ def --env gitwtf [path: string] {
 #   ahead  = commits on feature-x not in develop (your work since branching)
 #   behind = commits on develop not in feature-x (new work on develop you haven't pulled)
 def gitpar [] {
-  let all = (git branch --format='%(refname:short)' | lines | str trim)
-  mut current = (git rev-parse --abbrev-ref HEAD | str trim)
+  let local_branches = (git branch --format='%(refname:short)' | lines)
+  mut current = (git rev-parse --abbrev-ref HEAD)
   mut chain = [$current]
 
   loop {
@@ -189,36 +176,28 @@ def gitpar [] {
     let cur = $current
     let seen = $chain
 
-    let sha = (git rev-parse $"refs/heads/($cur)" | str trim)
-    let parent = (git log $sha --first-parent --simplify-by-decoration --format='%D' --
+    let candidates = (git log $"refs/heads/($cur)" --first-parent --simplify-by-decoration --format='%D' --
       | lines
-      | str trim
-      | where {|l| $l != ''}
-      | each {|l| $l | split row ', ' | str trim}
-      | flatten
-      | each {|r| $r | str replace 'HEAD -> ' '' | str replace 'origin/' ''}
-      | where {|r| $r != $cur and not ($r | str starts-with 'tag:') and $r != 'HEAD' and $r in $all}
-      | uniq
-      | where {|r| $r not-in $seen}
+      | split row ', '
+      | str replace 'HEAD -> ' ''
+      | str replace 'origin/' ''
+      | where {|r| $r in $local_branches and $r not-in $seen}
     )
 
-    if ($parent | is-empty) { break }
-    let p = ($parent | first)
-    $chain = ($chain | append $p)
-    $current = $p
+    if ($candidates | is-empty) { break }
+    let parent = ($candidates | first)
+    $chain = ($chain | append $parent)
+    $current = $parent
   }
 
   let ch = $chain
   0..(($ch | length) - 1) | each {|i|
     let name = ($ch | get $i)
     let label = if $i == 0 { $name } else { $"('' | fill -c ' ' -w (($i - 1) * 2))← ($name)" }
-    if $i < (($ch | length) - 1) {
-      let parent = ($ch | get ($i + 1))
-      let ahead = (git rev-list --count $"refs/heads/($parent)..refs/heads/($name)" | str trim | into int)
-      let behind = (git rev-list --count $"refs/heads/($name)..refs/heads/($parent)" | str trim | into int)
-      {branch: $label, ahead: $ahead, behind: $behind}
-    } else {
-      {branch: $label, ahead: null, behind: null}
-    }
+    if $i == (($ch | length) - 1) { return {branch: $label, ahead: null, behind: null} }
+    let parent = ($ch | get ($i + 1))
+    let ahead = (git rev-list --count $"refs/heads/($parent)..refs/heads/($name)" | str trim | into int)
+    let behind = (git rev-list --count $"refs/heads/($name)..refs/heads/($parent)" | str trim | into int)
+    {branch: $label, ahead: $ahead, behind: $behind}
   }
 }

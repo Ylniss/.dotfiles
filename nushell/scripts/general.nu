@@ -1,10 +1,6 @@
 # Change directory to repo, optionally into a subdirectory
-def --env repo [subdir?: string] {
-  let target = if $subdir == null { $env.REPO } else { $env.REPO | path join $subdir }
-  if not ($target | path exists) {
-    print -e $"repo: directory does not exist: ($target)"
-    return
-  }
+def --env repo [subdir: string = ""] {
+  let target = ($env.REPO | path join $subdir)
   cd $target
 }
 
@@ -14,51 +10,6 @@ alias knowtes = cd $env.NOTES
 
 # List files with mode permissions
 def lsmod [path: glob = "."] { ls -al $path | select name type size modified mode }
-
-def --env notes [] { cd $env.NOTES }
-
-# Sync notes with remote: commit dirty changes, rebase, push.
-# Toasts via `notify` and exits non-zero on failure.
-def "notes up" [] {
-  cd $env.NOTES
-
-  try { git fetch --quiet } catch { |e|
-    notify "notes up" $"fetch failed: ($e.msg)"
-    error make { msg: "notes up: fetch failed" }
-  }
-
-  let branch = (git rev-parse --abbrev-ref HEAD | str trim)
-  let upstream = $"origin/($branch)"
-
-  let dirty = (git status --porcelain | str trim)
-  if ($dirty | is-not-empty) {
-    try {
-      git add .
-      git commit --quiet -m "update"
-    } catch { |e|
-      notify "notes up" $"commit failed: ($e.msg)"
-      error make { msg: "notes up: commit failed" }
-    }
-  }
-
-  let behind = (git rev-list --count $"HEAD..($upstream)" | str trim | into int)
-  if $behind > 0 {
-    try { git rebase --quiet $upstream } catch {
-      notify "notes up" "rebase failed — resolve manually"
-      error make { msg: "notes up: rebase failed" }
-    }
-  }
-
-  let ahead = (git rev-list --count $"($upstream)..HEAD" | str trim | into int)
-  if $ahead > 0 {
-    try { git push --quiet } catch { |e|
-      notify "notes up" $"push failed: ($e.msg)"
-      error make { msg: "notes up: push failed" }
-    }
-  }
-
-  print $"(ansi green_bold)notes synced(ansi reset) — (ansi cyan)↑ ($ahead)(ansi reset) uploaded, (ansi yellow)↓ ($behind)(ansi reset) downloaded"
-}
 
 # Make directory and enter inside
 def --env mkdircd [dir_name: string] {
@@ -87,32 +38,29 @@ def clip [] {
 
 # Extract archive into directory named after the archive
 def extract [file: path] {
-  let lower = ($file | str lowercase)
-  let dir = ($file | path basename | str replace -r '(?i)\.(tar\.(gz|bz2|xz)|tgz|zip|7z|rar|tar)$' '')
+  let name_parts = ($file | path basename | parse -r '(?i)^(?<dir>.*?)\.(?<ext>tar\.(?:gz|bz2|xz)|tgz|zip|7z|rar|tar)$')
+  if ($name_parts | is-empty) {
+    print $"Unsupported archive format: ($file)"
+    return
+  }
+  let dir = $name_parts.0.dir
 
   mkdir $dir
 
-  if ($lower | str ends-with ".tar.gz") or ($lower | str ends-with ".tgz") {
-    tar -xzf $file -C $dir
-  } else if ($lower | str ends-with ".tar.bz2") {
-    tar -xjf $file -C $dir
-  } else if ($lower | str ends-with ".tar.xz") {
-    tar -xJf $file -C $dir
-  } else if ($lower | str ends-with ".tar") {
-    tar -xf $file -C $dir
-  } else if ($lower | str ends-with ".zip") {
-    if (is-windows) {
-      tar -xf $file -C $dir
-    } else {
-      unzip $file -d $dir
+  match ($name_parts.0.ext | str lowercase) {
+    'tar.gz' | 'tgz' => { tar -xzf $file -C $dir }
+    'tar.bz2' => { tar -xjf $file -C $dir }
+    'tar.xz' => { tar -xJf $file -C $dir }
+    'tar' => { tar -xf $file -C $dir }
+    'zip' => {
+      if (is-windows) {
+        tar -xf $file -C $dir
+      } else {
+        unzip $file -d $dir
+      }
     }
-  } else if ($lower | str ends-with ".7z") {
-    7z x $file $"-o($dir)"
-  } else if ($lower | str ends-with ".rar") {
-    unrar x $file $"($dir)/"
-  } else {
-    rm -r $dir
-    print $"Unsupported archive format: ($file)"
+    '7z' => { 7z x $file $"-o($dir)" }
+    'rar' => { unrar x $file $"($dir)/" }
   }
 }
 

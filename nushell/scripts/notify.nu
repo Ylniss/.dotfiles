@@ -1,4 +1,4 @@
-# Cross-platform toast. Silent if OS tool missing.
+# Cross-platform toast. Ignore all errors.
 #   linux:   notify-send            (apt install libnotify-bin)
 #   macos:   osascript              (built-in)
 #   windows: BurntToast             (Install-Module BurntToast)

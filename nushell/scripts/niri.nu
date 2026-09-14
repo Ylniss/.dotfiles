@@ -2,8 +2,9 @@
 # The main config includes it with `optional=true`, so a missing file means touchpad on.
 const TOUCHPAD_OVERRIDE = ("~/.config/niri/touchpad-off.kdl" | path expand)
 
-# Persists across reboots. --hide-cursor also hides the pointer: niri has no permanent
-# hide, but with the touchpad off the cursor stops moving, so a 1 ms idle timeout sticks.
+# The change stays after a reboot.
+# niri cannot hide the cursor permanently. With the touchpad off the cursor does not move,
+# so --hide-cursor sets a 1 ms idle timeout, and the cursor stays hidden.
 def "touchpad off" [--hide-cursor] {
   mut config = r#'// Written by the `touchpad off` command. Remove it with `touchpad on`.
 input {

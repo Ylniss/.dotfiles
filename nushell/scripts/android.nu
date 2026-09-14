@@ -1,18 +1,18 @@
-def android-only [] {
+def require-android [] {
   if not (is-android) {
-    error make { msg: 'this command is android-only' }
+    error make 'this command is android-only'
   }
 }
 
 # -------------- NAV --------------
 
 def --env strg [] {
-  android-only
+  require-android
   cd $env.STORAGE
 }
 
 def --env cam [] {
-  android-only
+  require-android
   cd $env.CAMERA
 }
 
@@ -20,7 +20,7 @@ def --env cam [] {
 
 # Update apt db and all installed packages
 def 'apt up' [] {
-  android-only
+  require-android
   apt update
   apt upgrade
 }

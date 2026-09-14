@@ -1,13 +1,10 @@
-# Change dir with fzf
+# Pick a path with fzf and change directory to it. For a file, use its parent directory.
 def --env fcd [] {
   let path = fzf
-  let type = $path | path type
-  if ($path | path exists) {
-    if $type in ['dir' 'symlink'] {
-      cd $path
-    } else {
-      cd ($path | path dirname)
-    }
+  if ($path | path type) in ['dir' 'symlink'] {
+    cd $path
+  } else {
+    cd ($path | path dirname)
   }
 }
 

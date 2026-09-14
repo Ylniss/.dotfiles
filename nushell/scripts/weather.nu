@@ -1,12 +1,7 @@
-# Get weather information for specified city or current location city if not specified
+# Print the weather for a city. With no city, use the city of the current location.
 def wthr [city?: string] {
-  def skip-lines [lines_to_skip: int] {
-    $in | lines | skip $lines_to_skip
-  }
-
   def colorize-weather [] {
-    $in | each { |line|
-      $line | str replace -a "-" $"(ansi yellow)-(ansi reset)"
+    str replace -a "-" $"(ansi yellow)-(ansi reset)"
       | str replace -a "^" $"(ansi green)^(ansi reset)"
       | str replace -a "=" $"(ansi blue)=(ansi reset)"
       | str replace -a "=V=" $"(ansi red)=V=(ansi reset)"
@@ -14,13 +9,12 @@ def wthr [city?: string] {
       | str replace -a "|" $"(ansi cyan)|(ansi reset)"
       | str replace -a "!" $"(ansi blue)!(ansi reset)"
       | str replace -a "*" $"(ansi white)*(ansi reset)"
-    }
   }
 
   let wttr_info = curl -sS wttr.in
 
-  let current_city = ($city | default ($wttr_info | rg "Weather report: ([^,]+)" -Nor "$1"))
+  let current_city = ($city | default ($wttr_info | parse --regex 'Weather report: (?<city>[^,]+)' | get 0.city))
 
   $"($current_city)\r\n" | curl -sS telnet://graph.no:79 | lines | drop 2 | colorize-weather | print
-  $wttr_info | skip-lines 1 | print
+  $wttr_info | lines | skip 1 | print
 }

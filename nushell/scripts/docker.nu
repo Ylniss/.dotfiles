@@ -2,11 +2,12 @@ alias dockercu = docker compose up
 alias dockercub = docker compose up --build
 
 def "docker stop all" [] {
-  let names = (docker ps | from ssv | get NAMES)
-  if ($names | is-not-empty) { docker stop ...$names }
+  let ids = (docker ps --quiet | lines)
+  if ($ids | is-not-empty) { docker stop ...$ids }
 }
 
-# List all containers within a compose
+# List running containers of a compose project.
+# The last argument is the project name. The other arguments go to 'docker ps'.
 def "docker psc" --wrapped [...args] {
   let filter_arg = $'-f label=com.docker.compose.project=($args | last)'
   docker ps ...($args | drop) $filter_arg | from ssv
@@ -21,8 +22,7 @@ def --env "docker psqls" [
   postgres_password: string,
   db_name: string
 ] {
-  let container_running = (docker ps | from ssv | where NAMES == $container_name | length) > 0
-  if not $container_running {
+  if (docker ps | from ssv | where NAMES == $container_name | is-empty) {
     docker run --name $container_name -e $'POSTGRES_USER=($postgres_user)' -e $'POSTGRES_PASSWORD=($postgres_password)' -e $'POSTGRES_DB=($db_name)' -d postgres
   }
 
