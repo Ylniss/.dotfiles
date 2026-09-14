@@ -45,10 +45,18 @@ return {
 						IblWhitespace = { fg = palette.base02 },
 						IblScope = { fg = palette.base04 },
 
-						GitSignsAdd = { fg = palette.base0B, bg = "none" },
-						GitSignsChange = { fg = palette.base0D, bg = "none" },
-						GitSignsDelete = { fg = palette.base08, bg = "none" },
-						GitSignsDeleteVirtLn = { fg = palette.base08, bg = "none" },
+						MiniDiffSignAdd = { fg = palette.base0B, bg = "none" },
+						MiniDiffSignChange = { fg = palette.base0D, bg = "none" },
+						MiniDiffSignDelete = { fg = palette.base08, bg = "none" },
+
+						-- Overlay: old text red, new text green; changed words get a stronger tint.
+						-- `darken` amount is the share of theme background mixed into the color.
+						MiniDiffOverDelete = { fg = palette.base08, bg = { darken = palette.base08, amount = 0.75 } },
+						MiniDiffOverContext = { link = "MiniDiffOverDelete" },
+						MiniDiffOverChange = { fg = palette.base05, bg = { darken = palette.base08, amount = 0.45 } },
+						MiniDiffOverAdd = { bg = { darken = palette.base0B, amount = 0.75 } },
+						MiniDiffOverContextBuf = { link = "MiniDiffOverAdd" },
+						MiniDiffOverChangeBuf = { bg = { darken = palette.base0B, amount = 0.45 } },
 
 						CursorLine = { bg = palette.base02, underline = false },
 
