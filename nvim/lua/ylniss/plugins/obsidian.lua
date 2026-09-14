@@ -12,12 +12,11 @@ return {
 		workspaces = {
 			{
 				name = "knowtes",
-				-- Fix letter case on Windows ("stuff" -> "Stuff") so the workspace matches.
-				path = vim.uv.fs_realpath(vim.fn.expand("~/stuff/knowtes")) or vim.fn.expand("~/stuff/knowtes"),
+				path = "~/stuff/knowtes",
 			},
 		},
 		picker = { name = "fzf-lua" },
-		-- md-render.nvim renders markdown; don't double-render.
+		-- Keep the note buffer plain. md-render.nvim shows the rendered view in a separate buffer.
 		ui = { enable = false },
 		frontmatter = { enabled = false },
 		checkbox = { order = { " ", "x" } },
@@ -25,27 +24,19 @@ return {
 			enter_note = function(_)
 				-- Set our mappings before deleting the defaults, so a failed delete doesn't skip them.
 				local actions = require("obsidian.actions")
-				local api = require("obsidian.api")
 				local function nmap(lhs, rhs, desc)
 					vim.keymap.set("n", lhs, rhs, { buffer = true, desc = "obsidian: " .. desc })
 				end
 
-				nmap("gd", function()
-					-- actions.follow_link won't find the link under the cursor; pass it in.
-					local link = api.cursor_link()
-					if link then
-						actions.follow_link(link)
-					end
-				end, "follow link under cursor")
+				nmap("gd", actions.follow_link, "follow link under cursor")
 				nmap("gb", "<cmd>Obsidian backlinks<CR>", "show backlinks")
 				nmap("<leader>sf", "<cmd>Obsidian quick_switch<CR>", "fuzzy-find notes (overrides fzf-lua)")
 				nmap("<leader>sg", "<cmd>Obsidian search<CR>", "grep vault (overrides fzf-lua)")
 				nmap("<leader>t", actions.toggle_checkbox, "toggle checkbox")
 
-				-- Drop plugin defaults that shadow our <CR> or delay ]/[.
-				-- pcall: defaults vary by buffer state; skip if not registered.
-				for _, lhs in ipairs({ "<CR>", "]o", "[o", "]l", "[l" }) do
-					pcall(vim.keymap.del, "n", lhs, { buffer = true })
+				-- Delete plugin defaults that override our <CR> or make ]/[ wait for timeout.
+				for _, lhs in ipairs({ "<CR>", "]o", "[o" }) do
+					vim.keymap.del("n", lhs, { buffer = true })
 				end
 			end,
 		},

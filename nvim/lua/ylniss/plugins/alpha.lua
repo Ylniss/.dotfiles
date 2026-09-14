@@ -5,7 +5,7 @@
 return {
 	"goolord/alpha-nvim",
 	dependencies = { "nvim-tree/nvim-web-devicons" },
-	config = function()
+	opts = function()
 		local dashboard = require("alpha.themes.dashboard")
 		local logo = [[
 @@@  @@@  @@@@@@@@   @@@@@@   @@@  @@@  @@@  @@@@@@@@@@   
@@ -41,11 +41,10 @@ return {
 		dashboard.section.footer.val = " 󰈈 󰈈 󰈈  B  R  U  H 󰈈 󰈈 󰈈 "
 
 		dashboard.section.header.opts.hl = "Function"
-		dashboard.section.buttons.opts.hl = "Keyword"
 		dashboard.section.footer.opts.hl = "Type"
 
 		dashboard.opts.opts.noautocmd = true
 
-		require("alpha").setup(dashboard.opts)
+		return dashboard.opts
 	end,
 }

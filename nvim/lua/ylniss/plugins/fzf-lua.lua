@@ -10,28 +10,22 @@ return {
 		fzf.setup({
 			files = {
 				fd_opts = "--type f --hidden --exclude .git",
-				git_icons = false,
-			},
-			grep = {
-				git_icons = false,
 			},
 			keymap = { fzf = { ["ctrl-q"] = "select-all+accept" } },
 			defaults = { formatter = "path.filename_first" },
 		})
 
-		local function find_git_root()
-			local buf_path = vim.api.nvim_buf_get_name(0)
-			local start_dir = buf_path == "" and vim.fn.getcwd() or vim.fn.fnamemodify(buf_path, ":h")
-			local git_dir = vim.fs.find(".git", { upward = true, path = start_dir })[1]
-			if not git_dir then
+		local function git_root_or_cwd()
+			local root = vim.fs.root(0, ".git")
+			if not root then
 				vim.notify("Not a git repository. Searching on current working directory", vim.log.levels.WARN)
 				return vim.fn.getcwd()
 			end
-			return vim.fs.dirname(git_dir)
+			return root
 		end
 
 		local function live_grep_git_root()
-			fzf.live_grep({ cwd = find_git_root() })
+			fzf.live_grep({ cwd = git_root_or_cwd() })
 		end
 
 		local function live_grep_open_files()
@@ -45,20 +39,7 @@ return {
 			fzf.live_grep({ search_paths = paths })
 		end
 
-		vim.keymap.set("n", "<leader><space>", fzf.buffers, { desc = "find existing buffers" })
-		vim.keymap.set("n", "<leader>?", fzf.oldfiles, { desc = "find recently opened files" })
-		vim.keymap.set("n", "<leader>/", fzf.grep_curbuf, { desc = "fuzzily search in current buffer" })
-		vim.keymap.set("n", "<leader>s/", live_grep_open_files, { desc = "search in Open Files" })
-		vim.keymap.set("n", "<leader>st", fzf.builtin, { desc = "select fzf-lua picker" })
-		vim.keymap.set("n", "<leader>ss", fzf.git_files, { desc = "search git files" })
-		vim.keymap.set("n", "<leader>sf", fzf.files, { desc = "search files" })
-		vim.keymap.set("n", "<leader>sp", function()
-			fzf.files({ cwd = "~/stuff/repo/" })
-		end, { desc = "search repo" })
-		vim.keymap.set("n", "<leader>sh", fzf.help_tags, { desc = "search help" })
-		vim.keymap.set("n", "<leader>sw", fzf.grep_cword, { desc = "search current word" })
-		vim.keymap.set("n", "<leader>sg", live_grep_git_root, { desc = "search by grep on git root" })
-		vim.keymap.set("n", "<leader>sd", function()
+		local function search_diagnostics()
 			local fzf_utils = require("fzf-lua.utils")
 			local actions = require("fzf-lua.actions")
 			local nbsp = fzf_utils.nbsp
@@ -85,28 +66,22 @@ return {
 					goto continue
 				end
 				local style = severity_styles[diag.severity]
-				if not style then
-					goto continue
-				end
 
 				local rel_path = vim.fn.fnamemodify(bufname, ":~:.")
+				local loc = string.format("%s:%d:%d", rel_path, diag.lnum + 1, diag.col + 1)
 				local msg = diag.message:match("^[^\n]+") or diag.message
-				local lnum = diag.lnum + 1
-				local col = diag.col + 1
 
 				local icon = fzf_utils.ansi_from_hl(style.hl, style.icon)
-				local dim_path = fzf_utils.ansi_from_hl("Comment", string.format("%s:%d:%d", rel_path, lnum, col))
+				local dim_loc = fzf_utils.ansi_from_hl("Comment", loc)
 
-				-- entry_to_file() splits by nbsp, finds first part matching :%d+:
-				-- Field 1 (hidden): path:lnum:col: for parsing/preview/actions
-				-- Field 2: severity icon
-				-- Field 3: message + dimmed path
+				-- entry_to_file() reads the location from the first nbsp field that matches :%d+:.
+				-- Field 1 holds the location for preview and actions. `--with-nth` hides field 1.
 				table.insert(
 					entries,
 					table.concat({
-						string.format("%s:%d:%d:", rel_path, lnum, col),
+						loc .. ":",
 						icon,
-						string.format("%s  %s", msg, dim_path),
+						string.format("%s  %s", msg, dim_loc),
 					}, nbsp)
 				)
 
@@ -121,7 +96,7 @@ return {
 			fzf.fzf_exec(entries, {
 				cwd = vim.fn.getcwd(),
 				actions = {
-					["default"] = actions.file_edit_or_qf,
+					["enter"] = actions.file_edit_or_qf,
 					["ctrl-s"] = actions.file_split,
 					["ctrl-v"] = actions.file_vsplit,
 					["ctrl-t"] = actions.file_tabedit,
@@ -134,7 +109,22 @@ return {
 					["--wrap"] = true,
 				},
 			})
-		end, { desc = "search diagnostics" })
+		end
+
+		vim.keymap.set("n", "<leader><space>", fzf.buffers, { desc = "find existing buffers" })
+		vim.keymap.set("n", "<leader>?", fzf.oldfiles, { desc = "find recently opened files" })
+		vim.keymap.set("n", "<leader>/", fzf.grep_curbuf, { desc = "fuzzily search in current buffer" })
+		vim.keymap.set("n", "<leader>s/", live_grep_open_files, { desc = "search in Open Files" })
+		vim.keymap.set("n", "<leader>st", fzf.builtin, { desc = "select fzf-lua picker" })
+		vim.keymap.set("n", "<leader>ss", fzf.git_files, { desc = "search git files" })
+		vim.keymap.set("n", "<leader>sf", fzf.files, { desc = "search files" })
+		vim.keymap.set("n", "<leader>sp", function()
+			fzf.files({ cwd = "~/stuff/repo/" })
+		end, { desc = "search repo" })
+		vim.keymap.set("n", "<leader>sh", fzf.help_tags, { desc = "search help" })
+		vim.keymap.set("n", "<leader>sw", fzf.grep_cword, { desc = "search current word" })
+		vim.keymap.set("n", "<leader>sg", live_grep_git_root, { desc = "search by grep on git root" })
+		vim.keymap.set("n", "<leader>sd", search_diagnostics, { desc = "search diagnostics" })
 		vim.keymap.set("n", "<leader>sb", fzf.marks, { desc = "search bookmarks" })
 		vim.keymap.set("n", "<leader>sk", fzf.keymaps, { desc = "search keymaps" })
 		vim.keymap.set("n", "<leader>sr", fzf.resume, { desc = "search resume" })

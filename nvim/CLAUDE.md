@@ -4,7 +4,7 @@ Personal config for config/text file editing. Namespace: `ylniss`.
 
 ## Layout
 
-- Filetype indentation lives in `tabs.lua`, not in plugin configs.
+- Filetype indentation lives in `indent.lua`, not in plugin configs.
 
 ## Plugin Specs
 
@@ -26,7 +26,7 @@ Every plugin needs a lazy trigger unless immediately visible (colorscheme, statu
 
 ## LSP (plugins/lsp.lua)
 
-- **stylua LSP disabled**: used only as formatter via conform. Disabled with `vim.lsp.enable("stylua", false)`.
+- **stylua LSP disabled**: used only as formatter via conform. Excluded from mason-lspconfig `automatic_enable`.
 - **Platform guards**: mason auto-install is off on NixOS (`uname.version:match("NixOS")`) and Android (`fs_stat("~/storage/dcim/camera")`). Keep both when changing mason setup.
 
 ## Gotchas

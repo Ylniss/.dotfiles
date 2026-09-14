@@ -1,14 +1,14 @@
 -- ========================================================
 -- LSP
--- Language server protocol configuration with Mason
+-- Language server settings; Mason installs servers and formatters
 -- ========================================================
 return {
 	"neovim/nvim-lspconfig",
 	ft = { "dockerfile", "json", "jsonc", "yaml", "toml", "terraform", "lua" },
 	cmd = { "Mason", "MasonInstall", "MasonUninstall", "MasonUpdate" },
 	dependencies = {
-		"williamboman/mason.nvim",
-		"williamboman/mason-lspconfig.nvim",
+		"mason-org/mason.nvim",
+		"mason-org/mason-lspconfig.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 	},
 	config = function()
@@ -28,10 +28,8 @@ return {
 			lua_ls = {
 				Lua = {
 					workspace = { checkThirdParty = false },
-					telemetry = { enable = false },
 					diagnostics = {
 						disable = { "missing-fields" },
-						globals = { "vim", "require" },
 					},
 				},
 			},
@@ -45,21 +43,19 @@ return {
 			return
 		end
 
-		require("mason-lspconfig").setup({
-			ensure_installed = vim.tbl_keys(servers),
-		})
-
 		for server_name, server_settings in pairs(servers) do
 			vim.lsp.config(server_name, { settings = server_settings })
 		end
-		vim.lsp.enable(vim.tbl_keys(servers))
-		vim.lsp.enable("stylua", false)
+
+		require("mason-lspconfig").setup({
+			ensure_installed = vim.tbl_keys(servers),
+			automatic_enable = { exclude = { "stylua" } },
+		})
 
 		require("mason-tool-installer").setup({
 			ensure_installed = {
 				"stylua",
 				"prettier",
-				"taplo",
 				"roslyn",
 			},
 		})

@@ -12,7 +12,7 @@ vim.keymap.set({ "n", "v" }, "<C-u>", "<C-u>zz", { desc = "scroll half screen up
 vim.keymap.set("n", "]", vim.cmd.bnext, { desc = "go to next buffer" })
 vim.keymap.set("n", "[", vim.cmd.bprevious, { desc = "go to previous buffer" })
 
--- =========================== Reverse paste p and P commands ===========================
+-- ==================================== Swap p and P ====================================
 vim.keymap.set({ "n", "v" }, "p", "P", { desc = "paste without overwriting clipboard" })
 vim.keymap.set({ "n", "v" }, "P", "p", { desc = "paste with overwriting clipboard" })
 
@@ -23,7 +23,7 @@ vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
 -- ========================= Unbind space, it is the leader key =========================
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 
--- =============================== Dealing with word wrap ===============================
+-- ======================== Move by screen line in wrapped text =========================
 vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
@@ -39,7 +39,7 @@ vim.keymap.set("n", "<leader>h", vim.cmd.split, { desc = "open new horizontal sp
 -- ======================================= Misc =======================================
 vim.keymap.set("v", "<leader>r", '"hy:%s/<C-r>h//gc<left><left><left>', { desc = "find and replace" })
 
-vim.keymap.set("n", "yf", "<cmd>%y<CR>", { noremap = true, desc = "yank whole file" })
+vim.keymap.set("n", "yf", "<cmd>%y<CR>", { desc = "yank whole file" })
 
 vim.keymap.set("n", "<leader>yd", function()
 	local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
@@ -56,13 +56,9 @@ vim.keymap.set("n", "<leader>yd", function()
 	vim.fn.setreg("+", table.concat(msgs, "\n"))
 end, { desc = "yank diagnostic under cursor to clipboard" })
 
--- ====================================== Yazi ========================================
-vim.keymap.set("n", "<leader>e", "<cmd>Yazi<CR>", { desc = "open yazi at current file" })
-vim.keymap.set("n", "<leader>E", "<cmd>Yazi cwd<CR>", { desc = "open yazi at cwd" })
-
 -- ================================= Git actions =================================
-vim.keymap.set("n", "<leader>g>", "<cmd>!git push<CR>", { noremap = true, desc = "git push" })
-vim.keymap.set("n", "<leader>g<", "<cmd>!git pull<CR>", { noremap = true, desc = "git pull" })
+vim.keymap.set("n", "<leader>g>", "<cmd>!git push<CR>", { desc = "git push" })
+vim.keymap.set("n", "<leader>g<", "<cmd>!git pull<CR>", { desc = "git pull" })
 
 -- Add every changed/untracked file (skip deletions) to the buffer list and open the first.
 local function git_status_to_buffers()
@@ -77,31 +73,19 @@ local function git_status_to_buffers()
 		vim.notify("git status failed", vim.log.levels.ERROR)
 		return
 	end
-	local output = result.stdout
-
 	local first_bufnr
-	local i = 1
-	while i <= #output do
-		local nul = output:find("\0", i, true)
-		if not nul then
-			break
-		end
-		local entry = output:sub(i, nul - 1)
-		i = nul + 1
-
-		local x = entry:sub(1, 1)
-		local y = entry:sub(2, 2)
+	local entries = vim.gsplit(result.stdout, "\0", { plain = true, trimempty = true })
+	for entry in entries do
+		local index_status = entry:sub(1, 1)
+		local worktree_status = entry:sub(2, 2)
 		local path = entry:sub(4)
 
 		-- Renames/copies are followed by an extra NUL-terminated old path
-		if x == "R" or x == "C" then
-			local nul2 = output:find("\0", i, true)
-			if nul2 then
-				i = nul2 + 1
-			end
+		if index_status == "R" or index_status == "C" then
+			entries()
 		end
 
-		if x ~= "D" and y ~= "D" then
+		if index_status ~= "D" and worktree_status ~= "D" then
 			local bufnr = vim.fn.bufadd(vim.fs.joinpath(git_root, path))
 			vim.bo[bufnr].buflisted = true
 			if not first_bufnr then
@@ -115,15 +99,14 @@ local function git_status_to_buffers()
 		return
 	end
 
-	vim.fn.bufload(first_bufnr)
 	vim.api.nvim_set_current_buf(first_bufnr)
 end
 
 vim.keymap.set("n", "<leader>gs", git_status_to_buffers, { desc = "add git status files to buffers" })
 
 -- =================================== Commenting ===================================
--- Map both forms: terminals using legacy xterm encoding send 0x1f (<C-_>); terminals
--- using kitty keyboard protocol / CSI u (recent wezterm) send the modern <C-/> form.
+-- Ctrl+/ arrives as <C-_> in legacy terminals and as <C-/> in terminals
+-- with the kitty keyboard protocol (for example, recent WezTerm). Map both.
 for _, lhs in ipairs({ "<C-_>", "<C-/>" }) do
 	vim.keymap.set("n", lhs, "gcc", { remap = true, desc = "toggle line comment" })
 	vim.keymap.set("v", lhs, "gc", { remap = true, desc = "toggle line comment" })
@@ -133,11 +116,8 @@ end
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(ev)
 		local bufnr = ev.buf
-		local lsp_keymap = function(keys, func, desc)
-			if desc then
-				desc = "lsp: " .. desc
-			end
-			vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
+		local lsp_keymap = function(lhs, rhs, desc)
+			vim.keymap.set("n", lhs, rhs, { buffer = bufnr, desc = "lsp: " .. desc })
 		end
 
 		lsp_keymap("<leader>r", vim.lsp.buf.rename, "rename")
@@ -163,23 +143,4 @@ vim.api.nvim_create_autocmd("FileType", {
 		vmap("<C-b>", [[c**<C-r>"**<Esc>]], "markdown: bold (**)")
 		vmap("<C-i>", [[c*<C-r>"*<Esc>]], "markdown: italic (*)")
 	end,
-})
-
--- ========================== Document existing key chains ==========================
-local which_key = require("which-key")
-which_key.add({
-	{ "<leader>e", group = "explore" },
-	{ "<leader>e_", hidden = true },
-	{ "<leader>g", group = "git" },
-	{ "<leader>g_", hidden = true },
-	{ "<leader>gh", group = "git hunks" },
-	{ "<leader>gh_", hidden = true },
-	{ "<leader>s", group = "search" },
-	{ "<leader>s_", hidden = true },
-})
-
--- Required for visual <leader>hs (hunk stage) to work
-which_key.add({
-	{ "<leader>", group = "VISUAL <leader>", mode = "v" },
-	{ "<leader>h", desc = "git hunk", mode = "v" },
 })

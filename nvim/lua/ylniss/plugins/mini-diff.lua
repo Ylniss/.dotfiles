@@ -7,7 +7,7 @@ return {
 	event = "BufReadPre",
 	config = function()
 		local minidiff = require("mini.diff")
-		local git_source = minidiff.gen_source.git()
+		local index_source = minidiff.gen_source.git()
 
 		-- Reference is git index normally and HEAD while overlay is on, so overlay shows staged changes too.
 		local overlay_on = false
@@ -16,7 +16,7 @@ return {
 			name = "git",
 			attach = function(buf)
 				if not overlay_on then
-					return git_source.attach(buf)
+					return index_source.attach(buf)
 				end
 				local path = vim.uv.fs_realpath(vim.api.nvim_buf_get_name(buf))
 				if not path then
@@ -33,14 +33,14 @@ return {
 					end)
 				end)
 			end,
-			detach = git_source.detach,
+			detach = index_source.detach,
 			apply_hunks = function(buf, hunks)
 				-- Patch is built from reference text; applying a HEAD-based patch to index can silently corrupt it
 				if overlay_on then
 					vim.notify("Turn off git diff overlay (<leader>gd) to stage hunks", vim.log.levels.WARN)
 					return
 				end
-				git_source.apply_hunks(buf, hunks)
+				index_source.apply_hunks(buf, hunks)
 			end,
 		}
 
@@ -98,7 +98,7 @@ return {
 		end
 
 		-- Buffer without reference text (not loaded yet) has no hunks, so ask git about the file on disk
-		local function has_changes(buf)
+		local function has_git_changes(buf)
 			local data = minidiff.get_buf_data(buf)
 			if data and data.ref_text then
 				return #data.hunks > 0
@@ -120,7 +120,7 @@ return {
 
 		-- Enter buffer and jump to its first/last hunk range; false when it has none
 		local function jump_to_buffer_hunk(buf, forward)
-			if not has_changes(buf) then
+			if not has_git_changes(buf) then
 				return false
 			end
 			vim.api.nvim_set_current_buf(buf)
@@ -136,7 +136,7 @@ return {
 			return true
 		end
 
-		-- Go to next/previous hunk range; past the edge continue in the nearest listed buffer with changes
+		-- Go to the next or previous hunk range. If this buffer has no more ranges, continue in the nearest listed buffer with changes.
 		local function jump_hunk(forward)
 			local buf, line = vim.api.nvim_get_current_buf(), vim.fn.line(".")
 			local starts = hunk_starts(buf)

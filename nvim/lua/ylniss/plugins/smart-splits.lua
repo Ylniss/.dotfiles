@@ -1,6 +1,6 @@
 -- ========================================================
 -- Smart-splits
--- Window resize and navigation across terminal splits
+-- Resize and navigate Neovim and WezTerm splits
 -- ========================================================
 return {
 	"mrjones2014/smart-splits.nvim",
