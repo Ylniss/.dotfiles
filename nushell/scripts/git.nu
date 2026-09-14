@@ -107,7 +107,9 @@ def --env gitwtf [path: string] {
     | first
     | str replace 'worktree ' '')
 
-  if ($worktree_path | path expand | str lowercase) == ($base_path | str lowercase) {
+  let git_dir = (git -C $worktree_path rev-parse --path-format=absolute --git-dir)
+  let common_dir = (git -C $worktree_path rev-parse --path-format=absolute --git-common-dir)
+  if $git_dir == $common_dir {
     print $"(ansi red)This is the main worktree — refusing to remove(ansi reset)"
     return
   }
