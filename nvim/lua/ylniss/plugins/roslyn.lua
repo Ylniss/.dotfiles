@@ -7,11 +7,6 @@ return {
 	ft = "cs",
 	opts = {
 		filewatching = "off",
-		args = {
-			"--stdio",
-			"--logLevel=Information",
-			"--extensionLogDirectory=" .. vim.fs.dirname(vim.lsp.log.get_filename()),
-		},
 	},
 	config = function(_, opts)
 		require("roslyn").setup(opts)

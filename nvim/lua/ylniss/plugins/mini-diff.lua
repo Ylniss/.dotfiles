@@ -115,7 +115,7 @@ return {
 		end
 
 		local function jump_to_line(line)
-			vim.cmd("normal! " .. line .. "G^zv")
+			vim.cmd("normal! " .. line .. "G^zvzz")
 		end
 
 		-- Enter buffer and jump to its first/last hunk range; false when it has none
