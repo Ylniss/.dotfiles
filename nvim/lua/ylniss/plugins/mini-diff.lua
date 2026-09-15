@@ -62,6 +62,23 @@ return {
 			},
 		})
 
+		-- Overlay interleaves reference and buffer lines of equal-size change hunks. No option turns this off,
+		-- so patch private `H` to show all reference lines above the hunk, as for unequal sizes.
+		-- `toggle_overlay` uses only `H`, so it is upvalue 1
+		local _, H = debug.getupvalue(minidiff.toggle_overlay, 1)
+		assert(H.append_overlay_change, "mini.diff internals changed: update overlay change hunk patch")
+		H.append_overlay_change = function(overlay_lines, hunk, ref_lines, _, priority)
+			local changed_lines = {}
+			for i = hunk.ref_start, hunk.ref_start + hunk.ref_count - 1 do
+				table.insert(changed_lines, { { ref_lines[i] .. H.overlay_suffix, "MiniDiffOverChange" } })
+			end
+			local data = { type = "change", lines = changed_lines, show_above = true, priority = priority }
+			H.append_overlay(overlay_lines, hunk.buf_start, data)
+			for lnum = hunk.buf_start + 1, hunk.buf_start + hunk.buf_count - 1 do
+				H.append_overlay(overlay_lines, lnum, { type = "change", priority = priority })
+			end
+		end
+
 		vim.keymap.set("n", "<leader>ghs", function()
 			return minidiff.operator("apply") .. "gh"
 		end, { expr = true, remap = true, desc = "git stage hunk" })
