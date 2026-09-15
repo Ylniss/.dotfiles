@@ -7,10 +7,19 @@ return {
 	event = "VeryLazy",
 	config = function()
 		local fzf = require("fzf-lua")
+		-- With file icons, fzf-lua defaults to `--nth -1..` to skip the icon field when matching.
+		-- On Windows, a process with `-1..` in its command line starts 0.2-2 s late, most likely from a Defender scan.
+		-- `-1` selects the same field.
+		local nth_skip_icon = { ["--nth"] = "-1" }
 		fzf.setup({
+			-- An absolute path skips the PATH lookups for fzf on every picker start (~50 ms on Windows).
+			fzf_bin = vim.fn.exepath("fzf"),
 			files = {
 				fd_opts = "--type f --hidden --exclude .git",
+				fzf_opts = nth_skip_icon,
 			},
+			git = { files = { fzf_opts = nth_skip_icon } },
+			oldfiles = { fzf_opts = nth_skip_icon },
 			keymap = { fzf = { ["ctrl-q"] = "select-all+accept" } },
 			defaults = { formatter = "path.filename_first" },
 		})

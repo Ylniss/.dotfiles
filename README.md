@@ -1,5 +1,13 @@
 Nushell + Wezterm + Neovim config for Windows and Linux. Bootstrap with `scripts/install_dotfiles.nu`.
 
+# Windows
+
+Install CLI tools with winget, not Chocolatey. A Chocolatey shim starts one more process for each command, and the Neovim pickers start several commands. Portable winget packages install per user and link into `%LOCALAPPDATA%\Microsoft\WinGet\Links`.
+
+```
+winget install junegunn.fzf sharkdp.fd BurntSushi.ripgrep.MSVC dandavison.delta jqlang.jq rsteube.Carapace Starship.Starship tldr-pages.tlrc aristocratos.btop4win
+```
+
 # Git (Nushell)
 
 | Command | Action |
@@ -64,7 +72,8 @@ Pane nav (`Ctrl+HJKL`) is shared with Neovim splits via smart-splits.
 **Windows**
 
 ```
-winget install --scope machine ImageMagick.ImageMagick sharkdp.bat Inkscape.Inkscape JesseDuffield.lazygit
+winget install --scope machine ImageMagick.ImageMagick Inkscape.Inkscape
+winget install sharkdp.bat JesseDuffield.lazygit
 scoop install --global ffmpeg poppler resvg
 ```
 
