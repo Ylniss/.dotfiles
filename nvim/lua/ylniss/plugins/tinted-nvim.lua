@@ -30,13 +30,13 @@ return {
 					MiniDiffSignDelete = { fg = palette.base08, bg = "none" },
 
 					-- Overlay: old text red, new text green; changed words get a stronger tint.
-					-- `darken` amount is the share of theme background mixed into the color.
-					MiniDiffOverDelete = { fg = palette.base08, bg = { darken = palette.base08, amount = 0.75 } },
+					-- Fixed colors: base08/base0B are not red/green in every scheme, and blending with background grays them out.
+					MiniDiffOverDelete = { fg = palette.base08, bg = "#40070c" },
 					MiniDiffOverContext = { link = "MiniDiffOverDelete" },
-					MiniDiffOverChange = { fg = palette.base05, bg = { darken = palette.base08, amount = 0.45 } },
-					MiniDiffOverAdd = { bg = { darken = palette.base0B, amount = 0.75 } },
+					MiniDiffOverChange = { fg = palette.base05, bg = "#770d16" },
+					MiniDiffOverAdd = { bg = "#063706" },
 					MiniDiffOverContextBuf = { link = "MiniDiffOverAdd" },
-					MiniDiffOverChangeBuf = { bg = { darken = palette.base0B, amount = 0.45 } },
+					MiniDiffOverChangeBuf = { bg = "#0b650b" },
 
 					CursorLine = { bg = palette.base02, underline = false },
 
