@@ -27,34 +27,65 @@ jednostkę lub łączy dwie, to /shape. Żadnego z nich tu nie zgłaszaj.
 
 ## 1. Przejrzyj komentarze
 
-Cel: każdy komentarz to sama esencja — proste słowa, wprost, bez waty,
-zrozumiały bez wysiłku.
+Cel: mało komentarzy, a każdy to sama esencja — jeden fakt, proste słowa,
+wprost, zrozumiały bez wysiłku.
 
 Oceń KAŻDY komentarz w zakresie — nie próbkuj, nie wybieraj. Każdy komentarz
 dostaje jeden werdykt: zostaw / skróć / przeredaguj / usuń. Agresywne pokrycie,
 wybiórcze edycje — zgłaszaj tylko to, co wymaga zmiany.
 
-Stosuj w tej kolejności:
+Domyślny werdykt to USUŃ. Komentarz musi zasłużyć na miejsce: zostaje tylko,
+gdy bez niego czytelnik popełni błąd albo straci czas na odtworzenie tej
+informacji z kodu. Komentarz prawdziwy, ale drugorzędny, też usuń.
 
-- Skróć rozwlekłe komentarze do sedna.
-- Prosty język — zastąp żargon, wewnętrzne skróty i slang domenowy codziennymi
-  słowami (np. "flake the suite" → "break the tests"). Zachowaj sens; zmień
-  tylko słownictwo, żeby każdy czytelnik zrozumiał bez wysiłku. Słowo domeny to
-  nazwa z kodu lub pojęcie zdefiniowane w docs repo; słowo żyjące tylko w
-  komentarzach ("nestles", "crowd-part") to żargon.
-- Komentarz, który tylko powtarza to, co mówi kod → zaproponuj USUŃ, nie skróć.
-  Zbędny komentarz jest gorszy niż żaden.
-- Zbędny wobec nazwy → USUŃ. Jasna nazwa (klasy, metody, zmiennej) plus
-  oczywiste ciało często mówią wszystko, co komentarz. Test zasłonięcia: zakryj
-  komentarz — czy czytelnik nadal rozumie, co się dzieje, z samej nazwy i kodu?
-  Jeśli tak, komentarz to szum; usuń go. (Sprawdź też miejsce użycia: jeśli
-  DLACZEGO stoi już tam, gdzie rzecz jest podpięta, definicja nie musi tego
-  powtarzać.) Wybieraj jaśniejszą nazwę zamiast zachowania komentarza.
-- Test zimnego czytelnika: z samej nazwy i komentarza, bez ciała, wiesz, co
-  jednostka zwraca, co zmienia i kiedy się poddaje? Jeśli nie → przeredaguj.
-- NIE ruszaj: komentarzy TODO, nagłówków licencyjnych/prawnych, komentarzy
-  dokumentujących kontrakt API (params/returns/throws) i komentarzy
-  wyjaśniających nieoczywiste DLACZEGO.
+Stosuj w tej kolejności — najpierw pytaj "usunąć?", potem "skrócić?", na końcu
+"przeredagować?":
+
+1. Usuń:
+   - Komentarz, który tylko powtarza to, co mówi kod. Nie skracaj go — usuń.
+     Zbędny komentarz jest gorszy niż żaden.
+   - Komentarz zbędny wobec nazwy. Jasna nazwa (klasy, metody, zmiennej) plus
+     oczywiste ciało często mówią wszystko, co komentarz. Test zasłonięcia:
+     zakryj komentarz — czy czytelnik nadal rozumie, co się dzieje, z samej
+     nazwy i kodu? Jeśli tak, usuń. (Sprawdź też miejsce użycia: jeśli
+     DLACZEGO stoi już tam, gdzie rzecz jest podpięta, definicja nie musi tego
+     powtarzać.) Wybieraj jaśniejszą nazwę zamiast zachowania komentarza.
+   - Komentarz, który nie przechodzi testu wartości z góry.
+2. Skróć:
+   - Jeden fakt na komentarz. Tnij nawiasy, wyliczenia przypadków, przykłady,
+     odsyłacze do innych komentarzy i docs oraz informacje poboczne.
+   - Limit: jedna linia. Dwie tylko dla nieoczywistego DLACZEGO, którego nie da
+     się skrócić. Dłuższy komentarz to zawsze wynik.
+3. Przeredaguj:
+   - Prosty język — zastąp żargon, wewnętrzne skróty i slang domenowy
+     codziennymi słowami (np. "flake the suite" → "break the tests"). Zachowaj
+     sens; zmień tylko słownictwo. Słowo domeny to nazwa z kodu lub pojęcie
+     zdefiniowane w docs repo; słowo żyjące tylko w komentarzach ("nestles",
+     "crowd-part") to żargon.
+   - Test zimnego czytelnika: z samej nazwy i komentarza, bez ciała, wiesz, co
+     jednostka zwraca, co zmienia i kiedy się poddaje? Jeśli nie, najpierw
+     popraw nazwę. Komentarz tylko skróć lub przeredaguj.
+   - Przeredagowanie nigdy nie wydłuża: nowy tekst jest krótszy od starego. Nie
+     dopisuj brakujących informacji.
+
+NIE ruszaj:
+
+- Komentarzy TODO i nagłówków licencyjnych/prawnych.
+- Kontraktu publicznego API — ale tylko informacji, której nie widać w
+  sygnaturze: znaczenie null, jednostki, rzucane wyjątki. Doc prywatnej
+  składowej i doc, który streszcza ciało, to nie kontrakt.
+- Nieoczywistego DLACZEGO — ale tylko samego DLACZEGO. Resztę tego komentarza
+  tnij jak każdy inny.
+
+Testy: komentarz zostaje, gdy wyjaśnia liczby z asercji albo opisuje przypadek
+testu parametryzowanego (np. wiersz `[InlineData]` przy `[Theory]`). Resztę mówi
+nazwa testu — usuń.
+
+### Gęstość
+
+Porównaj gęstość komentarzy każdego pliku w zakresie z 3 sąsiednimi plikami tego
+samego rodzaju. Plik wyraźnie gęstszy dostaje osobny wynik `comment` z listą
+najsłabszych komentarzy do usunięcia.
 
 ## 2. Przejrzyj nazwy
 
@@ -132,6 +163,9 @@ Kategoria w tagu: `comment` lub `name`.
 Reguły własne:
 
 - Dla usuwanego komentarza pisz tylko linie `-`.
+- Usunięcia zgłaszaj zbiorczo: jeden wynik "usuń N komentarzy" na plik, z
+  blokiem diff samych linii `-` (hunk na każde miejsce). Skrócenie i
+  przeredagowanie to nadal osobne wyniki.
 - Dla zmiany nazwy pokaż tylko linię deklaracji. Pole `scope` niesie pozostałe
   referencje; nigdy nie wypisuj ich jako linii diff.
 

@@ -3,6 +3,9 @@ CLAUDE.local.md
 .claude/settings.local.json
 .claude/worktrees/
 
+# Claude Code skill sync cache (writes into the symlinked ~/.claude/skills)
+claude/skills/synced/
+
 # Windows
 *.stackdump
 

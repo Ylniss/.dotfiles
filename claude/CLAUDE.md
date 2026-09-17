@@ -9,6 +9,7 @@
 
 - No dead code — don't add params, fields, or logic nothing currently uses.
 - Keep TODO comments unless implementing what they describe.
+- Comment only a non-obvious WHY. No doc comment on a private member or on a type whose names already say it.
 - Invert conditions and return/continue early instead of nesting ifs.
 - Fail fast — no defensive null checks for values that can't be null; a null there is a bug, let it throw.
 
