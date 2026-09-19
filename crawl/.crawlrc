@@ -13,9 +13,9 @@
 # Scales the dungeon view only, and 3.0 gives the same 96 pixel tiles
 # as the legacy tile_cell_pixels = 96. Ctrl+- and ctrl+= change it in
 # game.
-tile_viewport_scale = 3.0
+tile_viewport_scale = 4.0
 
-tile_sidebar_pixels = 40
+tile_sidebar_pixels = 30
 
 # 0 auto-sizes the minimap.
 tile_map_pixels = 0
@@ -48,6 +48,10 @@ force_more_message += You are cast into the Abyss
 force_more_message += You feel yourself slow down
 force_more_message += wrath finds you
 force_more_message += Ouch! That really hurt
+
+##### Skills ########################################################
+default_manual_training = true
+default_show_all_skills = true
 
 ##### Travel and rest ###############################################
 # Rest without a redraw per turn.
