@@ -65,6 +65,8 @@ let symlinks = [
   { src: 'claude/agents',                 desc: 'claude agents',              dest: $'($home_dir)/.claude/agents' }
   { src: 'claude/rules',                  desc: 'claude rules',               dest: $'($home_dir)/.claude/rules' }
   { src: 'claude/hooks',                  desc: 'claude hooks',               dest: $'($home_dir)/.claude/hooks' }
+  { src: 'claude/skills',                 desc: 'codex skills',               dest: $'($home_dir)/.agents/skills' }
+  { src: 'codex/dotfiles.config.toml',    desc: 'codex dotfiles profile',     dest: $'($home_dir)/.codex/dotfiles.config.toml' }
 ]
 
 if (is-windows) { windows-require-symlink-capability }

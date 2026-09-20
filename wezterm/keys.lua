@@ -42,8 +42,19 @@ M.bindings = {
 
 	{ key = "v", mods = "CTRL", action = act.PasteFrom("Clipboard") },
 
-	-- for Claude Code
-	{ key = "Enter", mods = "SHIFT", action = act.SendString("\n") },
+	-- Claude Code expects LF; Codex handles Alt+Enter as Insert Newline.
+	{
+		key = "Enter",
+		mods = "SHIFT",
+		action = wezterm.action_callback(function(window, pane)
+			local process = (pane:get_foreground_process_name() or ""):lower()
+			if process:match("codex%.exe$") then
+				window:perform_action(act.SendString("\x1b\r"), pane)
+				return
+			end
+			window:perform_action(act.SendString("\n"), pane)
+		end),
+	},
 
 	-- copy if text is selected, otherwise send interrupt
 	{

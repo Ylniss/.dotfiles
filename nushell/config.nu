@@ -132,6 +132,7 @@ $env.config = {
 }
 
 source android.nu
+source codex.nu
 source docker.nu
 source fzf.nu
 source notify.nu
