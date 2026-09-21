@@ -1,6 +1,8 @@
 [core]
 	autocrlf = false
 	eol = lf
+	# Git for Windows defaults to false and checks symlinks out as text files; needs Developer Mode.
+	symlinks = true
 	attributesFile = ~/.gitattributes-global
 	pager = delta
 [include]
