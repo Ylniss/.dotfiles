@@ -7,6 +7,7 @@ https://google.com
 https://gemini.google.com
 https://claude.ai
 https://claude.com
+https://chatgpt.com
 https://github.com
 https://reddit.com
 https://www.pyszne.pl

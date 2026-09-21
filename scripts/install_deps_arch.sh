@@ -13,4 +13,3 @@ pacman -Syu --noconfirm --needed \
   nushell neovim yazi starship \
   bat ripgrep fd fzf jq tldr libnotify wl-clipboard \
   lazygit unzip \
-  mpv yt-dlp

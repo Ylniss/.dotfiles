@@ -12,7 +12,6 @@ let config_dir = if (is-windows) { $env.LOCALAPPDATA } else { $'($env.HOME)/.con
 let appdata_dir = if (is-windows) { $env.APPDATA } else { $'($env.HOME)/.config' }
 let yazi_config_dir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $'($config_dir)/yazi' }
 let niri_config_dir = $'($config_dir)/niri'
-let mpv_config_dir = if (is-windows) { $'($env.APPDATA)/mpv' } else { $'($config_dir)/mpv' }
 let applications_dir = $'($home_dir)/.local/share/applications'
 
 let symlinks = [
@@ -43,9 +42,6 @@ let symlinks = [
   { src: 'fuzzel/fuzzel.ini',             desc: 'fuzzel fuzzel.ini',          dest: $'($config_dir)/fuzzel/fuzzel.ini',         linux_only: true }
   { src: 'mako/config',                   desc: 'mako config',                dest: $'($config_dir)/mako/config',               linux_only: true }
   { src: 'librewolf/tridactylrc',         desc: 'tridactylrc',                dest: $'($home_dir)/.tridactylrc',                skip_on_android: true }
-  { src: 'mpv/mpv.conf',                  desc: 'mpv mpv.conf',               dest: $'($mpv_config_dir)/mpv.conf',                       skip_on_android: true }
-  { src: 'mpv/scripts/sponsorblock.lua',  desc: 'mpv sponsorblock.lua',       dest: $'($mpv_config_dir)/scripts/sponsorblock.lua',       skip_on_android: true }
-  { src: 'mpv/script-opts/sponsorblock.conf', desc: 'mpv sponsorblock.conf',  dest: $'($mpv_config_dir)/script-opts/sponsorblock.conf',  skip_on_android: true }
   { src: 'imv/config',                    desc: 'imv config',                 dest: $'($config_dir)/imv/config',                linux_only: true }
   { src: 'crawl/.crawlrc',                desc: 'crawl .crawlrc',             dest: $'($home_dir)/.crawlrc',                    linux_only: true }
   { src: 'onlyoffice/onlyoffice-desktopeditors.desktop', desc: 'onlyoffice desktop entry', dest: $'($applications_dir)/onlyoffice-desktopeditors.desktop', linux_only: true }

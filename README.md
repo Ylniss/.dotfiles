@@ -174,29 +174,6 @@ Useful commands from any buffer:
 |---------|--------|
 | `:Obsidian new [title]` | Create a new note |
 
-# mpv
-
-Plays YouTube and other video links with **yt-dlp** under the hood — no ads, no JS, no DOM. Includes [SponsorBlock](https://sponsor.ajay.app/) for skipping in-video sponsor segments.
-
-Auto-fetches YouTube auto-generated English captions via yt-dlp; subs are off by default — toggle with `v`.
-
-## Dependencies
-
-**Linux (pacman)**
-
-```
-sudo pacman -S mpv yt-dlp
-```
-
-## Keys
-
-| Key | Action |
-|-----|--------|
-| `v` | Toggle subtitle visibility |
-| `j` | Cycle subtitle tracks |
-| `b` | Toggle SponsorBlock skipping |
-| `q` | Quit mpv |
-
 # LibreWolf
 
 `install_dotfiles.nu` symlinks `tridactylrc`, the preferences (`librewolf/librewolf.overrides.cfg`) and `userChrome.css`.
