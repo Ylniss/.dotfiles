@@ -31,6 +31,9 @@ vim.o.fileformats = "unix,dos"
 -- Sync clipboard between OS and Neovim
 vim.o.clipboard = "unnamedplus"
 
+-- editorconfig maps max_line_length to textwidth, which hard-wraps lines while typing
+require("editorconfig").properties.max_line_length = nil
+
 vim.o.breakindent = true
 
 -- Keep undo history after Neovim closes
