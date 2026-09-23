@@ -6,3 +6,12 @@ approvals_reviewer = "auto_review"
 
 [windows]
 sandbox = "elevated"
+
+[projects.'c:\users\janol\stuff\repo\beautyboxweb']
+trust_level = "trusted"
+
+[projects.'c:\users\janol\stuff\repo\beautybox-api']
+trust_level = "trusted"
+
+[tui.model_availability_nux]
+gpt-6-astra = 4

@@ -54,7 +54,7 @@ let symlinks = [
   { src: 'nushell/env.nu',                desc: 'nushell env.nu',             dest: $'($appdata_dir)/nushell/env.nu' }
   { src: 'nushell/scripts',               desc: 'nushell scripts',            dest: $'($appdata_dir)/nushell/scripts' }
   { src: 'nushell/android-vendor-autoload/yazi.nu', desc: 'android yazi vendor-autoload override', dest: $'($home_dir)/.local/share/nushell/vendor/autoload/yazi.nu', android_only: true }
-  { src: 'claude/CLAUDE.md',              desc: 'claude CLAUDE.md',           dest: $'($home_dir)/.claude/CLAUDE.md' }
+  { src: 'claude/AGENTS.md',              desc: 'claude CLAUDE.md',          dest: $'($home_dir)/.claude/CLAUDE.md' }
   { src: 'claude/settings.json',          desc: 'claude settings.json',       dest: $'($home_dir)/.claude/settings.json' }
   { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', dest: $'($home_dir)/.claude/statusline-command.sh' }
   { src: 'claude/skills',                 desc: 'claude skills',              dest: $'($home_dir)/.claude/skills' }
@@ -63,6 +63,7 @@ let symlinks = [
   { src: 'claude/hooks',                  desc: 'claude hooks',               dest: $'($home_dir)/.claude/hooks' }
   { src: 'claude/skills',                 desc: 'codex skills',               dest: $'($home_dir)/.agents/skills' }
   { src: 'codex/dotfiles.config.toml',    desc: 'codex dotfiles profile',     dest: $'($home_dir)/.codex/dotfiles.config.toml' }
+  { src: 'claude/AGENTS.md',              desc: 'codex AGENTS.md',            dest: $'($home_dir)/.codex/AGENTS.md' }
 ]
 
 if (is-windows) { windows-require-symlink-capability }

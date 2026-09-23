@@ -136,8 +136,8 @@ na jedną zmianę. Zgłoś go. Użytkownik zbiera takie i wraca do nich późnie
 Reguły wyniku redesign:
 
 - Zawsze flaga ✗. Nigdy nie jest rekomendowany, choćby pomysł był świetny.
-- Podaj, co daje i co kosztuje, po jednej linii. Pomysł bez kosztu to nie
-  propozycja.
+- Podaj, co daje (`why yes`) i co kosztuje (`why not`), po jednej linii. Pomysł
+  bez kosztu to nie propozycja.
 - "recommended" nigdy go nie stosuje, bo nigdy nie jest ✓. "all" go stosuje — to
   wynik jak każdy inny.
 
@@ -180,18 +180,21 @@ nagłówkiem.
 
 Na wynik:
 
-    **N. [category][H|M|L][✓|✗] <ścieżka od korzenia repo>:linia — krótki tytuł**
+    **N. [category][H|M|L][✓|✗] <ścieżka od korzenia repo>:linia**
+    ========== problem ==========
+    <maks. 2 zdania>
     ========== move ==========
     `obecne` → `proponowane`
-    ========== why ==========
+    ========== why yes ==========
     <jedna linia>
+    ========== why not ==========
+    <tylko wynik ✗: jedna linia>
     ========== pattern ==========
     <deviation, layout, dependency: pliki, które go ustanawiają + liczba>
     ========== scope ==========
     <dotknięte pliki + safe/risky>
 
-Wynik `redesign` ma inne ciało: pole `idea` zamiast `move`, potem `buys` i
-`costs` zamiast `why`. Każde ma własny baner.
+Wynik `redesign` ma pole `idea` zamiast `move`.
 
 Numeruj wyniki w jednej sekwencji, w kolejności plików w zakresie, żeby
 użytkownik mógł wybrać `7,12`.
@@ -208,6 +211,11 @@ Reguły własne pola `move`:
   jednostkę lub pozycję. Przy inline prawa strona to jednostka, która wchłania.
 - Trzymaj pole `move` w jednej linii. Bez bloków diff; przeniesienie w diffie
   czyta się jak szum.
+
+Ostatnia linia raportu stoi pod pytaniem "Which to apply?", po pustej linii.
+To zwykły tekst:
+
+    ========= SHAPE REPORT FINISHED ============================
 
 ## 7. Zastosuj wybrane
 

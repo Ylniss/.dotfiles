@@ -64,8 +64,8 @@ kodu. Poproś o zgodę — zatwierdza ona kod tylko dla zakresu tej fazy.
 
 ### 4. Weryfikuj
 
-- Uruchom build i pełny zestaw testów projektu (komendy z CLAUDE.md projektu lub
-  oczywistej konwencji; zapytaj, jeśli niejasne).
+- Uruchom build i pełny zestaw testów projektu (komendy z CLAUDE.md lub
+  AGENTS.md projektu albo oczywistej konwencji; zapytaj, jeśli niejasne).
 - Sprawdź jawnie kryterium "Done when" fazy.
 - Czerwono → napraw w zakresie. Nie da się w zakresie → zatrzymaj się i zgłoś;
   nie poszerzaj zakresu po cichu.

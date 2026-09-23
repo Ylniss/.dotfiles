@@ -92,6 +92,15 @@ Nigdy nie pisz "(confidence: high)" na końcu linii — tagi to niosą.
 - Drukuj banery i pola jako zwykłe linie markdown. Nigdy nie wkładaj wyniku w
   blok kodu — blok pokazuje backticki jako tekst i zabija kolor.
 
+### Pola problem, why yes, why not
+
+- `problem` stoi zaraz pod nagłówkiem. Opisuje tylko obecny stan: co jest źle.
+  Bez poprawki i bez zysku. Maksymalnie 2 zwięzłe zdania.
+- `why yes` jest w każdym wyniku. Jedna linia: co daje zmiana. Nie powtarza
+  problemu.
+- `why not` jest tylko w wyniku ✗, zaraz pod `why yes`. Jedna linia: konkretny
+  powód, dla którego nie rekomendujesz.
+
 ### Blok diff
 
 Tylko skille, których wynik ma blok diff:

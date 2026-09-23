@@ -145,16 +145,21 @@ Wyniki w jednej numerowanej sekwencji, w kolejności plików w zakresie, żeby
 użytkownik mógł wybrać `7,12`. Przed pierwszym wynikiem podaj w jednej linii
 liczbę wyników i liczbę plików.
 
-Na wynik: linia nagłówka, blok diff, potem baner na każde pole:
+Na wynik: linia nagłówka, pole `problem`, blok diff, potem pozostałe pola.
+Każde pole ma baner:
 
-    **N. [comment|name][H|M|L][✓|✗] krótki tytuł**
+    **N. [comment|name][H|M|L][✓|✗]**
+    ========== problem ==========
+    <maks. 2 zdania>
     ```diff
     @@ <ścieżka od korzenia repo>:linia @@
     - <obecny kod>
     + <proponowany kod>
     ```
-    ========== why ==========
+    ========== why yes ==========
     <jedna linia>
+    ========== why not ==========
+    <tylko wynik ✗: jedna linia>
     ========== scope ==========
     <tylko dla zmian nazw: liczba referencji + safe/risky>
 
@@ -171,6 +176,11 @@ Reguły własne:
 
 Klasy pominięć w zakończeniu, przykłady: "banery sekcji", "aliasy modułów
 bibliotek", "słownictwo domeny: bufnr, lnum".
+
+Ostatnia linia raportu stoi pod pytaniem "Which to apply?", po pustej linii.
+To zwykły tekst:
+
+    ========= CLARIFY REPORT FINISHED ==========================
 
 ## 5. Zastosuj wybrane
 

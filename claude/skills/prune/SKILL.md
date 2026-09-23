@@ -23,8 +23,8 @@ przeniesiona) i **compress** (te same fakty, mniej słów).
 
 ## 1. Ustal zakres
 
-- **Brak argumentu** — `CLAUDE.md` w korzeniu repo plus każdy zagnieżdżony
-  `CLAUDE.md` / `AGENTS.md`.
+- **Brak argumentu** — `CLAUDE.md` / `AGENTS.md` w korzeniu repo plus każdy
+  zagnieżdżony `CLAUDE.md` / `AGENTS.md`.
 - **Ścieżka** — ten plik: plik kontekstu, `SKILL.md` lub plik referencyjny
   skilla.
 

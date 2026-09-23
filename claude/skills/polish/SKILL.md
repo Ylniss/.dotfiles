@@ -56,8 +56,8 @@ Szukaj, w kolejności priorytetu:
 Trzymaj się zmian wewnątrz oglądanych linii.
 
 Stosuj też własne reguły stylu użytkownika jako kryteria przeglądu. Czytaj je z
-globalnego CLAUDE.md, nie z pamięci — są źródłem prawdy i się zmieniają. Nie
-powtarzaj ich tutaj.
+globalnego CLAUDE.md lub AGENTS.md, nie z pamięci — są źródłem prawdy i się
+zmieniają. Nie powtarzaj ich tutaj.
 
 ## 3. Oceń i oflaguj
 
@@ -66,16 +66,21 @@ subiektywny/opcjonalny szlif na końcu.
 
 ## 4. Raport (jeszcze nie koduj)
 
-Na wynik: linia nagłówka, blok diff, potem baner na każde pole:
+Na wynik: linia nagłówka, pole `problem`, blok diff, potem pozostałe pola.
+Każde pole ma baner:
 
-    **N. [category][H|M|L][✓|✗] krótki tytuł**
+    **N. [category][H|M|L][✓|✗]**
+    ========== problem ==========
+    <maks. 2 zdania>
     ```diff
     @@ <ścieżka od korzenia repo>:linia @@
     - <obecny kod>
     + <proponowany kod>
     ```
-    ========== why ==========
+    ========== why yes ==========
     <jedna linia>
+    ========== why not ==========
+    <tylko wynik ✗: jedna linia>
     ========== docs ==========
     <co zwrócił context7 — tylko wyniki modern-pattern>
 
@@ -88,3 +93,8 @@ dwóch pozostałych kategorii pomiń baner `docs`.
 
 Klasy pominięć w zakończeniu, przykłady: "pliki generowane", "wywołania już w
 aktualnym idiomie", "gorące pętle już zmierzone".
+
+Ostatnia linia raportu stoi pod pytaniem "Which to apply?", po pustej linii.
+To zwykły tekst:
+
+    ========= POLISH REPORT FINISHED ===========================
