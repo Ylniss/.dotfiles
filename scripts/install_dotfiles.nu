@@ -62,11 +62,13 @@ let symlinks = [
   { src: 'claude/rules',                  desc: 'claude rules',               dest: $'($home_dir)/.claude/rules' }
   { src: 'claude/hooks',                  desc: 'claude hooks',               dest: $'($home_dir)/.claude/hooks' }
   { src: 'claude/skills',                 desc: 'codex skills',               dest: $'($home_dir)/.agents/skills' }
-  { src: 'codex/dotfiles.config.toml',    desc: 'codex dotfiles profile',     dest: $'($home_dir)/.codex/dotfiles.config.toml' }
+  { src: 'codex/dotfiles.config.toml',    desc: 'codex shared config',        dest: $'($home_dir)/.codex/config.toml' }
   { src: 'claude/AGENTS.md',              desc: 'codex AGENTS.md',            dest: $'($home_dir)/.codex/AGENTS.md' }
 ]
 
 if (is-windows) { windows-require-symlink-capability }
+
+prepare-codex-profile $repo_dir $home_dir
 
 for s in ($symlinks | where { |s|
   let skip_android = ($s.skip_on_android? | default false) and (is-android)
@@ -91,6 +93,43 @@ if (is-windows) {
 }
 
 # -------------- FUNCTIONS --------------
+
+# Codex writes machine state to the selected profile, so keep it local.
+def prepare-codex-profile [repo_dir, home_dir] {
+  let source = $'($repo_dir)/codex/dotfiles.config.toml'
+  let base = $'($home_dir)/.codex/config.toml'
+  let profile = $'($home_dir)/.codex/dotfiles.config.toml'
+  let has_profile = ($profile | path exists -n)
+  let linked_profile = $has_profile and (($profile | path type) == 'symlink')
+  let local_base = ($base | path exists -n) and (($base | path type) != 'symlink')
+
+  if $has_profile and (not $linked_profile) and (not $local_base) {
+    return
+  }
+
+  let base_config = if $local_base { open $base } else { {} }
+  let profile_config = if $has_profile { open $profile } else { {} }
+  let shared_config = (open $source)
+  mut local_config = ($base_config | merge deep $profile_config)
+  for key in ($shared_config | columns) {
+    if $key in ($local_config | columns) {
+      $local_config = ($local_config | reject $key)
+    }
+  }
+
+  let parent = ($profile | path dirname)
+  if not ($parent | path exists) { mkdir $parent }
+  if $linked_profile {
+    if (is-windows) {
+      windows-delete-reparse $profile
+    } else {
+      ^rm -f $profile
+    }
+  }
+  $local_config | to toml | save -f $profile
+  if $local_base { rm $base }
+  print 'Codex local profile is ready'
+}
 
 # Installs yazi plugins via `ya pkg install` (no-op if `ya` is missing)
 def install-yazi-packages [] {

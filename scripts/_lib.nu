@@ -146,7 +146,7 @@ export def create-symbolic-link [target, link_path, description] {
 }
 
 # Deletes a symlink or junction without touching its target
-def windows-delete-reparse [path] {
+export def windows-delete-reparse [path] {
   let del_script = '(Get-Item -Force -LiteralPath $env:DEL_PATH).Delete()'
   with-env { DEL_PATH: ($path | str replace --all '/' '\') } {
     ^powershell -NoProfile -Command $del_script
