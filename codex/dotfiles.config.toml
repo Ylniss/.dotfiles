@@ -6,3 +6,7 @@ approvals_reviewer = "auto_review"
 
 [windows]
 sandbox = "elevated"
+
+[tui]
+status_line = ["model-with-reasoning", "project-name", "git-branch", "context-used", "five-hour-limit", "weekly-limit"]
+status_line_use_colors = true
