@@ -40,7 +40,6 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus",
   "hooks": {
     "Notification": [
       {
@@ -68,15 +67,6 @@
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
-  },
-  "effortLevel": "high",
-  "modelSettings": {
-    "claude-fable-5-1": {
-      "effortLevel": "high"
-    },
-    "claude-opus-5-5": {
-      "effortLevel": "xhigh"
-    }
   },
   "promptSuggestionEnabled": false,
   "autoUpdatesChannel": "latest"

@@ -10,7 +10,7 @@ let repo_dir = (dotfiles-repo-dir)
 let home_dir = if (is-windows) { $env.USERPROFILE } else { $env.HOME }
 let config_dir = if (is-windows) { $env.LOCALAPPDATA } else { $'($env.HOME)/.config' }
 let appdata_dir = if (is-windows) { $env.APPDATA } else { $'($env.HOME)/.config' }
-let yazi_config_dir = if (is-windows) { $'($env.APPDATA)/yazi/config' } else { $'($config_dir)/yazi' }
+let yazi_config_dir = if (is-windows) { $'($appdata_dir)/yazi/config' } else { $'($config_dir)/yazi' }
 let niri_config_dir = $'($config_dir)/niri'
 let applications_dir = $'($home_dir)/.local/share/applications'
 
@@ -55,7 +55,7 @@ let symlinks = [
   { src: 'nushell/scripts',               desc: 'nushell scripts',            dest: $'($appdata_dir)/nushell/scripts' }
   { src: 'nushell/android-vendor-autoload/yazi.nu', desc: 'android yazi vendor-autoload override', dest: $'($home_dir)/.local/share/nushell/vendor/autoload/yazi.nu', android_only: true }
   { src: 'claude/AGENTS.md',              desc: 'claude CLAUDE.md',          dest: $'($home_dir)/.claude/CLAUDE.md' }
-  { src: 'claude/settings.json',          desc: 'claude settings.json',       dest: $'($home_dir)/.claude/settings.json' }
+  { src: 'claude/dotfiles.settings.json', desc: 'claude shared settings',     dest: $'($home_dir)/.claude/dotfiles.settings.json' }
   { src: 'claude/statusline-command.sh',  desc: 'claude statusline-command.sh', dest: $'($home_dir)/.claude/statusline-command.sh' }
   { src: 'claude/skills',                 desc: 'claude skills',              dest: $'($home_dir)/.claude/skills' }
   { src: 'claude/agents',                 desc: 'claude agents',              dest: $'($home_dir)/.claude/agents' }
@@ -69,6 +69,7 @@ let symlinks = [
 if (is-windows) { windows-require-symlink-capability }
 
 prepare-codex-profile $repo_dir $home_dir
+prepare-claude-settings $repo_dir $home_dir
 
 for s in ($symlinks | where { |s|
   let skip_android = ($s.skip_on_android? | default false) and (is-android)
@@ -96,7 +97,7 @@ if (is-windows) {
 
 # Codex writes machine state to the selected profile, so keep it local.
 def prepare-codex-profile [repo_dir, home_dir] {
-  let source = $'($repo_dir)/codex/dotfiles.config.toml'
+  let shared_path = $'($repo_dir)/codex/dotfiles.config.toml'
   let base = $'($home_dir)/.codex/config.toml'
   let profile = $'($home_dir)/.codex/dotfiles.config.toml'
   let has_profile = ($profile | path exists -n)
@@ -109,16 +110,10 @@ def prepare-codex-profile [repo_dir, home_dir] {
 
   let base_config = if $local_base { open $base } else { {} }
   let profile_config = if $has_profile { open $profile } else { {} }
-  let shared_config = (open $source)
-  mut local_config = ($base_config | merge deep $profile_config)
-  for key in ($shared_config | columns) {
-    if $key in ($local_config | columns) {
-      $local_config = ($local_config | reject $key)
-    }
-  }
+  let shared_config = (open $shared_path)
+  let local_config = ($base_config | merge deep $profile_config | reject -o ...($shared_config | columns))
 
-  let parent = ($profile | path dirname)
-  if not ($parent | path exists) { mkdir $parent }
+  mkdir ($profile | path dirname)
   if $linked_profile {
     if (is-windows) {
       windows-delete-reparse $profile
@@ -131,7 +126,28 @@ def prepare-codex-profile [repo_dir, home_dir] {
   print 'Codex local profile is ready'
 }
 
-# Installs yazi plugins via `ya pkg install` (no-op if `ya` is missing)
+# Claude writes /model and /effort to user settings, so keep that file local.
+def prepare-claude-settings [repo_dir, home_dir] {
+  let settings = $'($home_dir)/.claude/settings.json'
+  let linked = ($settings | path exists -n) and (($settings | path type) == 'symlink')
+  if not $linked {
+    return
+  }
+
+  # A dangling link (old repo file already gone) has nothing worth keeping.
+  let current = if ($settings | path exists) { open $settings } else { {} }
+  let shared_keys = (open $'($repo_dir)/claude/dotfiles.settings.json' | columns)
+  let local_settings = ($current | reject -o ...$shared_keys)
+
+  if (is-windows) {
+    windows-delete-reparse $settings
+  } else {
+    ^rm -f $settings
+  }
+  $local_settings | to json --indent 2 | save -f $settings
+  print 'Claude local settings are ready'
+}
+
 def install-yazi-packages [] {
   if (which ya | is-empty) {
     warn 'ya CLI not found on PATH. Skipping yazi plugin install — install yazi, then rerun this script (or run `ya pkg install`).'
@@ -145,15 +161,13 @@ def install-yazi-packages [] {
   }
 }
 
-# Downloads the Nushell sublime-syntax into bat's config dir and rebuilds cache
-# so .nu files get syntax highlighting (used by yazi's piper previewer).
+# yazi's previewer uses bat, which ships without Nushell syntax.
 def install-bat-syntaxes [] {
   if (which bat | is-empty) {
     warn 'bat not found on PATH. Skipping Nushell syntax install.'
     return
   }
-  # `which` can report an entry (stale shim, cross-user binary, App Execution
-  # Alias stub) that then fails to actually spawn — probe before using.
+  # `which` can find a stub that fails to run (e.g. App Execution Alias).
   let probe = try {
     { ok: true, langs: (^bat --list-languages | lines) }
   } catch { |e|
@@ -165,7 +179,7 @@ def install-bat-syntaxes [] {
   }
   if ($probe.langs | any { |l| $l =~ '^Nushell:' }) { return }
   let syntaxes_dir = $'(^bat --config-dir | str trim)/syntaxes'
-  if not ($syntaxes_dir | path exists) { mkdir $syntaxes_dir }
+  mkdir $syntaxes_dir
   let target = $'($syntaxes_dir)/nushell.sublime-syntax'
   print $'Downloading Nushell sublime-syntax to ($target)'
   try {
@@ -177,7 +191,6 @@ def install-bat-syntaxes [] {
   }
 }
 
-# Creates ~/.gitconfig-local with the default user info if it doesn't exist
 def ensure-gitconfig-local [home_dir] {
   let gitconfig_local = $'($home_dir)/.gitconfig-local'
   if ($gitconfig_local | path exists) { return }
@@ -187,9 +200,8 @@ def ensure-gitconfig-local [home_dir] {
 
 # -------------- WINDOWS --------------
 
-# Points Crawl at the .crawlrc in this repo. Windows builds read their options
-# from init.txt in the game directory only, so a user-level CRAWL_RC is what
-# keeps the file here. It also outlives a game update, unlike the game directory.
+# Windows builds read options only from init.txt in the game dir; a user-level
+# CRAWL_RC points them at this repo and survives game updates.
 def set-crawl-rc-env [repo_dir] {
   let rc_path = ($'($repo_dir)/crawl/.crawlrc' | str replace --all '/' '\')
   let get_script = "[Environment]::GetEnvironmentVariable('CRAWL_RC', 'User')"
@@ -205,13 +217,11 @@ def set-crawl-rc-env [repo_dir] {
   print $'(ansi green)Setting CRAWL_RC to(ansi reset) ($rc_path)'
 }
 
-# True if Windows Developer Mode is enabled (allows symlinks without admin)
 def windows-dev-mode-enabled [] {
   let script = 'try { (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name AllowDevelopmentWithoutDevLicense -ErrorAction Stop).AllowDevelopmentWithoutDevLicense } catch { "0" }'
   (^powershell -NoProfile -Command $script | str trim) == "1"
 }
 
-# True if Windows Defender Controlled Folder Access is enabled
 def windows-cfa-enabled [] {
   try {
     (^powershell -NoProfile -Command "(Get-MpPreference).EnableControlledFolderAccess" | str trim) != "0"
@@ -221,19 +231,17 @@ def windows-cfa-enabled [] {
   }
 }
 
-# Errors out unless admin or Developer Mode is enabled
 def windows-require-symlink-capability [] {
   if (is-elevated) or (windows-dev-mode-enabled) { return }
   error make { msg: "Cannot create symbolic links. Enable Developer Mode (Settings > System > For developers) or run this script as Administrator." }
 }
 
-# Adds one executable to the Defender CFA allow-list
 def allow-cfa-app [exe_path, app_name] {
   ^powershell -NoProfile -Command $"Add-MpPreference -ControlledFolderAccessAllowedApplications '($exe_path)'"
   print $'Allowed ($app_name) through Controlled Folder Access'
 }
 
-# Allows yazi/nushell through CFA so they can delete files in protected folders; prints manual instructions if not elevated
+# yazi and nushell need CFA access to delete files in protected folders.
 def allow-cfa-apps-if-needed [] {
   if not (windows-cfa-enabled) { return }
 

@@ -5,6 +5,7 @@ CLAUDE.local.md
 
 # Claude Code skill sync cache (writes into the symlinked ~/.claude/skills)
 claude/skills/synced/
+claude/skills/microsoft*
 
 # Windows
 *.stackdump
