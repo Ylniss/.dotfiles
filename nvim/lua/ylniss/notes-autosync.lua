@@ -3,7 +3,8 @@
 --   * sync 30 s after the last save
 --   * on exit, run a pending sync
 --
--- Failure notifications need one tool per OS:
+-- Failures show in Neovim and as a desktop toast, the only notice for the sync on exit.
+-- Toasts need one tool per OS:
 --   linux:   notify-send            (apt install libnotify-bin)
 --   macos:   osascript              (built-in)
 --   windows: BurntToast             (Install-Module BurntToast)
@@ -65,6 +66,7 @@ function Log($msg) {
 }
 function Fail($msg) {
   Log "FAIL: $msg"
+  [Console]::Error.WriteLine($msg)
   if (Get-Module -ListAvailable BurntToast) {
     New-BurntToastNotification -Text 'notes-autosync', $msg
   }
@@ -75,7 +77,7 @@ function Git($name, $cmdArgs) {
   if ($out) {
     try { [System.IO.File]::AppendAllText($log, ($out -join "`r`n") + "`r`n", $utf8) } catch {}
   }
-  if ($LASTEXITCODE -ne 0) { Fail "$name failed" }
+  if ($LASTEXITCODE -ne 0) { Fail "$name failed: $($out | Select-Object -First 1)" }
 }
 function GitOut($name, $cmdArgs) {
   $out = & git.exe @cmdArgs 2>$null
@@ -90,6 +92,12 @@ try {
 } catch {}
 Log '--- sync start ---'
 try { Set-Location '%s' } catch { Fail "cd failed: $_" }
+# A sync takes seconds, so an older lock was left by a killed git.
+$lock = '.git/index.lock'
+if ((Test-Path $lock) -and (Get-Item $lock).LastWriteTime -lt (Get-Date).AddMinutes(-5)) {
+  Log 'removing stale index.lock'
+  Remove-Item $lock
+}
 Git 'fetch' @('fetch', '--quiet')
 $branch = (GitOut 'rev-parse' @('rev-parse', '--abbrev-ref', 'HEAD')).Trim()
 $upstream = "origin/$branch"
@@ -130,17 +138,25 @@ end
 
 -- vim.system spawns with hide=true (CREATE_NO_WINDOW) so git.exe doesn't flash.
 -- Don't add detach=true — it sets DETACHED_PROCESS which silently breaks PowerShell.
+-- Sync on exit has no stderr reader once Neovim quits; a write to the closed pipe would kill it.
 local function spawn_hidden(cmd, on_exit)
-	vim.system(cmd, { stdout = false, stderr = false }, on_exit and vim.schedule_wrap(on_exit))
+	vim.system(cmd, { stdout = false, stderr = on_exit ~= nil, text = true }, on_exit and vim.schedule_wrap(on_exit))
 end
 
--- Start a sync and wait until it exits. Stop waiting after timeout_ms.
+local function notify_failure(res)
+	if res.code == 0 then
+		return
+	end
+	vim.notify("knowtes: sync failed\n" .. vim.trim(res.stderr), vim.log.levels.ERROR)
+end
+
 -- BufReadPre calls this, so Neovim reads the file after the rebase.
 -- Without this wait, a save can push an old version over the remote.
 local function sync_and_wait(timeout_ms)
 	local done = false
-	spawn_hidden(sync_cmd, function()
+	spawn_hidden(sync_cmd, function(res)
 		done = true
+		notify_failure(res)
 	end)
 	local is_done = function()
 		return done
@@ -168,8 +184,9 @@ local function trigger_sync()
 	end
 	sync_running = true
 	sync_pending = false
-	spawn_hidden(sync_cmd, function()
+	spawn_hidden(sync_cmd, function(res)
 		sync_running = false
+		notify_failure(res)
 		-- Reload any buffer whose disk file was updated by rebase.
 		vim.cmd("silent! checktime")
 		if sync_pending then
