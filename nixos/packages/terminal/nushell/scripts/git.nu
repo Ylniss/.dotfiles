@@ -47,7 +47,7 @@ def gitp --wrapped [branch_name?: string, ...opts] {
   }
 }
 
-alias gitch = git checkout
+alias gitch = git switch
 alias gitb = git branch
 def gitbch [branch: string] {
   git checkout -b $branch
