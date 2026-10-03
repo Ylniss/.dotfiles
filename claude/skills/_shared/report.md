@@ -20,7 +20,10 @@ Argument wyznacza zakres. Rozpoznaj jego rodzaj:
   --exclude-standard`. Jeśli oba są puste, drzewo jest czyste: zaproponuj
   `HEAD~1` (ostatni commit) lub merge-base z gałęzią główną i zapytaj. Nie
   wybieraj sam.
-- **Ref lub zakres git** (`main`, `HEAD~3`, gałąź) — `git diff <arg>`.
+- **Ref** (`main`, `HEAD~3`, gałąź) — `git diff $(git merge-base <arg> HEAD)`:
+  zmiany od punktu odgałęzienia, łącznie z niezacommitowanymi. Czubek gałęzi,
+  która poszła dalej, wciągnąłby do diffa jej nowsze commity, odwrócone.
+- **Zakres git** (`a..b`, `a...b`) — `git diff <arg>`.
 - **Ścieżka** (istniejący katalog lub plik) — cała treść tej ścieżki, nie diff.
   Powiedz to w jednej linii przed startem: zakres to każdy plik tam, nie tylko
   zmienione linie.
