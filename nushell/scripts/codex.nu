@@ -22,7 +22,7 @@ def --wrapped codex [...args] {
   )
 
   if $use_profile {
-    ^codex --profile dotfiles ...$args
+    ^codex --no-daemon --profile dotfiles ...$args
     return
   }
 
