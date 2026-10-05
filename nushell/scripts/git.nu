@@ -203,3 +203,69 @@ def gitpar [] {
     {branch: $label, ahead: $ahead, behind: $behind}
   }
 }
+
+# Fast-forward <branch> to origin/<branch> in every git repo under $env.REPO.
+# Never merges or switches branches, so repos checked out on feature branches stay untouched.
+def "repo pull" [branch: string] {
+  let results = (ls -a $env.REPO
+    | where {|e| $e.type == 'dir' and ($e.name | path join .git | path exists) }
+    | get name
+    | par-each {|dir| repo-pull-one $dir $branch | insert name ($dir | path basename) }
+    | sort-by name)
+  let name_width = ($results.name | str length | math max)
+
+  for r in $results {
+    let style = match $r.status {
+      'updated' => {color: green, icon: '✓'}
+      'up-to-date' => {color: dark_gray, icon: '·'}
+      'ahead' => {color: cyan, icon: '↑'}
+      'missing' => {color: yellow, icon: '⚠'}
+      'failed' => {color: red, icon: '✗'}
+    }
+    print $"(ansi $style.color)($style.icon) ($r.name | fill -w $name_width)  ($r.message)(ansi reset)"
+  }
+}
+
+def repo-pull-one [dir: string, branch: string] {
+  let local_ref = $"refs/heads/($branch)"
+  let remote_ref = $"refs/remotes/origin/($branch)"
+
+  let fetch = (git -C $dir fetch --prune --quiet origin | complete)
+  if $fetch.exit_code != 0 {
+    return {status: 'failed', message: $"fetch failed: ($fetch.stderr | lines | first)"}
+  }
+  if (git -C $dir rev-parse --verify --quiet $remote_ref | complete).exit_code != 0 {
+    return {status: 'missing', message: $"no ($branch) branch"}
+  }
+
+  # null when the local branch does not exist yet — the fast-forward below creates it.
+  let behind = if (git -C $dir rev-parse --verify --quiet $local_ref | complete).exit_code == 0 {
+    let counts = (git -C $dir rev-list --left-right --count $"($local_ref)...($remote_ref)" | split row "\t" | into int)
+    let ahead = $counts.0
+    let behind = $counts.1
+    if $ahead > 0 and $behind > 0 {
+      return {status: 'failed', message: $"diverged: ($ahead) ahead, ($behind) behind"}
+    }
+    if $ahead > 0 {
+      return {status: 'ahead', message: $"ahead by ($ahead), nothing to pull"}
+    }
+    if $behind == 0 {
+      return {status: 'up-to-date', message: 'up to date'}
+    }
+    $behind
+  }
+
+  let on_branch = (git -C $dir branch --show-current) == $branch
+  # `git fetch .` fast-forwards a branch that is not checked out, reusing the fetch above.
+  let ff = if $on_branch {
+    git -C $dir merge --ff-only --quiet $remote_ref | complete
+  } else {
+    git -C $dir fetch --quiet . $"($remote_ref):($local_ref)" | complete
+  }
+  if $ff.exit_code != 0 {
+    return {status: 'failed', message: ($ff.stderr | lines | first)}
+  }
+
+  let message = if $behind == null { $"created local ($branch)" } else { $"fast-forwarded by ($behind)" }
+  {status: 'updated', message: $message}
+}
