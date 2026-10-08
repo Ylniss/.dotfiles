@@ -3,9 +3,8 @@ name: handoff-review
 description: >
   Przegląd handoffu zapisanego po sesji projektowej wobec bieżącej sesji:
   znajduje pominięte decyzje i ślady decyzji, które później nadpisano. Użyj,
-  gdy użytkownik wywołuje "/handoff-review [plik]" lub prosi o sprawdzenie, czy
+  gdy użytkownik wywołuje "/handoff-review" lub prosi o sprawdzenie, czy
   handoff czegoś nie zgubił.
-argument-hint: "[plik handoffu]"
 ---
 
 # Handoff review
@@ -37,9 +36,8 @@ handoff napisała.
 
 ## 2. Wybierz handoff
 
-- **Podano argument** — rozwiąż go jako ścieżkę lub slug.
-- **Brak argumentu** — handoff zapisany w tej sesji. Gdy było ich kilka,
-  zapytaj, który.
+Przeglądany jest zawsze handoff zapisany w tej sesji. Gdy było ich kilka,
+zapytaj, który.
 
 Przeczytaj plik z dysku, w całości. Nie polegaj na tym, co pamiętasz z zapisu:
 plik mógł być potem edytowany.
