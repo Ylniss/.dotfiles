@@ -1,4 +1,4 @@
 {
   "name": "finish",
-  "description": "/finish [branch]: /goal running /shape, /polish and /clarify on subagents and applying their ✓ findings"
+  "description": "/finish [branch]: /goal running the review skills from finish.json on subagents and applying their ✓ findings"
 }

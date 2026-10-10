@@ -118,7 +118,9 @@ znacznik na jej linii w liście **Phases** u góry pliku:
 
 Podbij linię **Last updated** u góry pliku przy każdej zmianie (data + aktualny
 sha `HEAD`). Decyzje podjęte w trakcie fazy idą do **Decisions log**, nie do
-sekcji pre-implementation.
+sekcji pre-implementation. Decyzję podjętą bez użytkownika, którą mógłby
+rozstrzygnąć inaczej, zapisz jako `YYYY-MM-DD — ⚠ decyzja — dlaczego —
+alternatywa: …`.
 
 Zostaw linię **Reviewed** w spokoju. Stempluje ją tylko skill plan-review, więc
 plan edytowany po ostatnim przeglądzie pokazuje się jako nieprzeglądany — i

@@ -1,0 +1,4 @@
+{
+  "skills": ["shape", "polish", "clarify"],
+  "rules": "Bez pytania zastosuj wszystkie wyniki ✓, a ✗ pomiń. Na końcu uruchom build i testy, jeśli repo je ma; co zepsuły zmiany, napraw lub cofnij."
+}

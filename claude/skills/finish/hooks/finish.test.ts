@@ -27,6 +27,14 @@ const fakeGit = (on: On, answers: Record<string, ProcessRunResult>) =>
     return { value }
   })
 
+const RULES = 'Bez pytania zastosuj ✓.'
+
+const fakeFinishJson = (on: On) =>
+  on('fs.read', async (_$, e) => {
+    if (!e.path.endsWith('/finish/finish.json')) throw new Error(`unexpected read ${e.path}`)
+    return { value: JSON.stringify({ skills: ['shape', 'polish', 'clarify'], rules: RULES }) }
+  })
+
 const goalRuns = (on: On) => {
   const args: string[] = []
   on('command.run', { command: 'goal' }, async (_$, e) => {
@@ -39,18 +47,20 @@ const goalRuns = (on: On) => {
 test('starts the goal on the merge-base with the branch', async ($, on) => {
   const clock = mock.clock(on)
   fakeGit(on, { 'merge-base develop': ran(0, `${SHA}\n`), 'diff --quiet': ran(1) })
+  fakeFinishJson(on)
   const goals = goalRuns(on)
 
   const { text } = await finish($, 'develop')
   await clock.settle()
 
   expect(text).toContain(SHA)
-  expect(goals).toEqual([expect.stringContaining(`/clarify z argumentem ${SHA} (merge-base z develop)`)])
+  expect(goals).toEqual([expect.stringContaining(`/polish i /clarify z argumentem ${SHA} (merge-base z develop). ${RULES}`)])
 })
 
 test('starts the goal on the working tree without a branch', async ($, on) => {
   const clock = mock.clock(on)
   fakeGit(on, { 'status --porcelain': ran(0, ' M a.ts\n') })
+  fakeFinishJson(on)
   const goals = goalRuns(on)
 
   await finish($, '')

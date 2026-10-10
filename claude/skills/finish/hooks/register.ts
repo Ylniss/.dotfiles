@@ -1,17 +1,20 @@
 import type { Register } from 'claude-code'
 
-const goal = (scope: string) =>
-  `Uruchom kolejno /shape, /polish i /clarify ${scope}, każdy na stanie po poprzednim. ` +
-  'W każdym podziel analizę na subagentów i scal ich raporty, potem bez pytania zastosuj wszystkie wyniki ✓, a ✗ pomiń. ' +
-  'Na końcu uruchom build i testy, jeśli repo je ma; co zepsuły zmiany, napraw lub cofnij. ' +
-  'Cel spełniony, gdy każdy skill wypisał raport i listę zastosowanych ✓, build i testy przechodzą, ' +
-  'a podsumowanie podaje zmiany per skill i tylko te pominięte ✗, które zasługują na decyzję użytkownika.'
+type FinishConfig = { skills: string[]; rules: string }
+
+const listed = (commands: string[]) => new Intl.ListFormat('pl').format(commands)
+
+const goal = ({ skills, rules }: FinishConfig, scope: string) =>
+  `Uruchom kolejno ${listed(skills.map(s => `/${s}`))} ${scope}. ${rules} ` +
+  'Każdy skill działa na stanie po poprzednim. W każdym skillu podziel analizę na subagentów i scal ich raporty. ' +
+  'Podsumowanie podaje zmiany per skill i tylko te pominięte ✗, które zasługują na decyzję użytkownika. ' +
+  'Cel spełniony, gdy każdy skill wypisał raport i listę zastosowanych ✓, build i testy przechodzą, a podsumowanie jest gotowe.'
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'finish',
-      description: 'Goal: /shape, /polish i /clarify na subagentach, stosuje wyniki ✓',
+      description: 'Goal: skille przeglądu z finish.json na subagentach, stosuje wyniki ✓',
       argumentHint: '[base branch]',
     })
 
@@ -20,12 +23,13 @@ export const register: Register = on => {
 
   on('command.run', { command: 'finish' }, async ($, e) => {
     const git = (...argv: string[]) => $.process.run(['git', ...argv])
-    // Deferred: the host refuses $.command.run from inside a command.run hook, as it would wait on this very hook.
-    const startGoal = (scope: string) => {
+    const startGoal = async (scope: string) => {
+      const finish: FinishConfig = JSON.parse(await $.fs.read(`${$.plugin.root}/finish.json`))
+      // Deferred: the host refuses $.command.run from inside a command.run hook, as it would wait on this very hook.
       $.clock.after(0, () =>
-        $.command.run({ command: 'goal', args: goal(scope) }).catch(err => $.ui.toast(`/finish: ${err}`)),
+        $.command.run({ command: 'goal', args: goal(finish, scope) }).catch(err => $.ui.toast(`/finish: ${err}`)),
       )
-      return { text: `/goal: /shape → /polish → /clarify ${scope}` }
+      return { text: `/goal: ${finish.skills.map(s => `/${s}`).join(' → ')} ${scope}` }
     }
 
     const branch = e.args.trim()
