@@ -1,14 +1,14 @@
 export const meta = {
-  name: 'exec-plan',
-  description: 'Fazy planu: phase → finish → code-review → commit z weryfikacją każdego kroku, potem finish i code-review względem bazy',
+  name: 'exec-plan-run',
+  description: 'Fazy planu: phase → finish → code-review → commit z weryfikacją każdego kroku, potem przy wielu fazach finish i code-review względem bazy',
 }
 
 const { plan, phases, phaseModel, phaseEffort, reviewModel, reviewEffort, base, finish } = args
+let verifiedHead = args.head
 const MAX_ATTEMPTS = 2
 
 const PHASE_AGENT = { model: phaseModel, effort: phaseEffort }
 const REVIEW_AGENT = { model: reviewModel, effort: reviewEffort }
-const SPLIT_AGENT = { model: 'sonnet', effort: 'medium' }
 const LIGHT_AGENT = { model: 'sonnet', effort: 'low' }
 
 const str = { type: 'string' }
@@ -21,7 +21,7 @@ const DECISIONS = {
     required: ['decision', 'why', 'alternative'],
   },
 }
-const TEST_COMMAND = {
+const TEST_COMMAND_PROPERTY = {
   testCommand: { type: 'string', description: 'Komenda build i testów; pusta, gdy repo ich nie ma' },
 }
 const PHASE_RESULT = {
@@ -30,33 +30,9 @@ const PHASE_RESULT = {
     status: { type: 'string', enum: ['done', 'blocked'] },
     blockReason: str,
     decisions: DECISIONS,
-    ...TEST_COMMAND,
+    ...TEST_COMMAND_PROPERTY,
   },
   required: ['status', 'decisions', 'testCommand'],
-}
-const FINISH_RESULT = {
-  type: 'object',
-  properties: {
-    applied: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: { finding: str, file: str, line: { type: 'integer' } },
-        required: ['finding', 'file', 'line'],
-      },
-    },
-    skipped: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: { finding: str, reason: str, worthUserDecision: { type: 'boolean' } },
-        required: ['finding', 'reason', 'worthUserDecision'],
-      },
-    },
-    decisions: DECISIONS,
-    ...TEST_COMMAND,
-  },
-  required: ['applied', 'skipped', 'decisions', 'testCommand'],
 }
 const CODE_REVIEW_RESULT = {
   type: 'object',
@@ -76,24 +52,9 @@ const CODE_REVIEW_RESULT = {
       },
     },
     decisions: DECISIONS,
-    ...TEST_COMMAND,
+    ...TEST_COMMAND_PROPERTY,
   },
   required: ['findings', 'decisions', 'testCommand'],
-}
-const SPLIT_RESULT = {
-  type: 'object',
-  properties: {
-    tasks: {
-      type: 'array',
-      minItems: 2,
-      items: {
-        type: 'object',
-        properties: { focus: str, files: { type: 'array', items: str } },
-        required: ['focus', 'files'],
-      },
-    },
-  },
-  required: ['tasks'],
 }
 const COMMIT_RESULT = {
   type: 'object',
@@ -104,14 +65,15 @@ const CHECK_RESULT = {
   type: 'object',
   properties: {
     gaps: { type: 'array', items: str, description: 'Każdy niespełniony punkt jako osobna pozycja; pusta, gdy wszystko się zgadza' },
+    warnings: { type: 'array', items: str, description: 'Punkty, których nie dało się sprawdzić przez środowisko, z powodem' },
   },
-  required: ['gaps'],
+  required: ['gaps', 'warnings'],
 }
 
-const PHASE_SCOPE = { reviewTarget: '', diff: 'git diff HEAD', desc: 'niezacommitowane zmiany i nowe nieśledzone pliki' }
+const PHASE_SCOPE = { reviewTarget: '', diffCommand: 'git diff HEAD', desc: 'niezacommitowane zmiany i nowe nieśledzone pliki' }
 const BASE_SCOPE = {
   reviewTarget: `wszystkie zmiany na obecnym branchu względem brancha ${base}`,
-  diff: `git diff $(git merge-base ${base} HEAD)`,
+  diffCommand: `git diff $(git merge-base ${base} HEAD)`,
   desc: `zmiany od merge-base z ${base}, łącznie z niezacommitowanymi`,
 }
 
@@ -130,7 +92,7 @@ class Stop extends Error {
 }
 
 async function runAgent(where, step, label, prompt, opts) {
-  const result = await agent(prompt, { ...opts, label: `${where}: ${label}`, phase: where })
+  const result = await agent(prompt, { ...opts, label, phase: where })
   if (!result) throw new Stop(where, step, [`brak wyniku: ${label}`])
   return result
 }
@@ -141,13 +103,16 @@ const fixPrompt = (prompt, retry) =>
   `Wynik poprzedniej próby:\n${JSON.stringify(retry.previous)}\n\n` +
   `Zwróć pełny zaktualizowany wynik: poprzednie pozycje plus poprawki.\n\nPierwotne zadanie kroku:\n${prompt}`
 
+const NO_TESTS = 'Nie uruchamiaj build ani testów, nawet jeśli reguły lub skill tak każą — zrobi to weryfikator. W testCommand podaj tylko komendę.'
+
 const testsCheck = r =>
   r.testCommand
-    ? `Uruchom \`${r.testCommand}\` — build i testy muszą przejść.`
+    ? `Uruchom \`${r.testCommand}\` — build i testy muszą przejść. Przy błędzie podaj nieprzechodzące testy i kluczowy fragment komunikatu.`
     : 'Wykonawca twierdzi, że repo nie ma build ani testów. Sprawdź to w CLAUDE.md, AGENTS.md i konfiguracji repo.'
 
 const checkPrompt = points =>
-  'Weryfikacja faktów. Nie zmieniaj żadnych plików i niczego nie naprawiaj. Każdy niespełniony punkt zgłoś jako osobną pozycję gaps.\n' +
+  'Weryfikacja faktów. Nie zmieniaj żadnych plików i niczego nie naprawiaj. Każdy niespełniony punkt zgłoś jako osobną pozycję gaps. ' +
+  'Punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
   points.map((p, i) => `${i + 1}. ${p}`).join('\n')
 
 async function runVerified(where, step, opts, prompt, schema, pointsFor) {
@@ -156,8 +121,14 @@ async function runVerified(where, step, opts, prompt, schema, pointsFor) {
     const result = await runAgent(where, step, step, retry ? fixPrompt(prompt, retry) : prompt, { ...opts, schema })
     if (result.status === 'blocked') throw new Stop(where, step, [`faza zablokowana: ${result.blockReason}`])
 
-    const check = await runAgent(where, step, `weryfikacja ${step}`, checkPrompt(pointsFor(result)), { ...LIGHT_AGENT, schema: CHECK_RESULT })
-    checklist.push({ where, step, attempt, gaps: check.gaps })
+    const points = pointsFor(result)
+    if (!points.length) {
+      checklist.push({ where, step, attempt, gaps: [], warnings: [] })
+      return result
+    }
+
+    const check = await runAgent(where, step, `weryfikacja ${step}`, checkPrompt(points), { ...LIGHT_AGENT, schema: CHECK_RESULT })
+    checklist.push({ where, step, attempt, gaps: check.gaps, warnings: check.warnings })
     if (!check.gaps.length) return result
     retry = { gaps: check.gaps, previous: result }
   }
@@ -181,54 +152,12 @@ async function runPhase(where, n) {
   keepDecisions(where, 'phase', result)
 }
 
-const splitPrompt = (skill, scope) =>
-  `Zaplanuj podział analizy skilla /${skill} na co najmniej 2 zadania dla równoległych analizatorów. ` +
-  `Przeczytaj ~/.claude/skills/${skill}/SKILL.md i zakres "${scope.desc}" ` +
-  `(pliki z \`${scope.diff} --name-only\` i \`git ls-files --others --exclude-standard\`). ` +
-  'Dziel po plikach, po kategoriach skilla albo po obu, tak by zadania się nie dublowały, a razem pokrywały cały zakres ' +
-  'i wszystkie kategorie skilla. Niczego nie analizuj i nie zmieniaj.'
-
-const analyzePrompt = (skill, scope, task) =>
-  `Uruchom analizę skilla /${skill} dla zakresu "${scope.desc}", ograniczoną do kąta: ${task.focus}\n` +
-  `Pliki:\n${task.files.join('\n')}\n` +
-  'Tylko raport w formacie skilla — niczego nie stosuj i nie pytaj użytkownika. Zwróć pełny tekst raportu.'
-
-const applyPrompt = (skill, scope, reports) =>
-  `Poniżej raporty analizatorów skilla /${skill} dla zakresu "${scope.desc}". Scal je: przenumeruj w jedną listę, ` +
-  'odrzuć duplikaty i przepuść scaloną listę przez sekcję Konflikty z ~/.claude/skills/_shared/report.md. Potem zastosuj. ' +
-  `${finish.rules} Nie pytaj użytkownika. ` +
-  'W applied podaj każdy zastosowany wynik z plikiem i linią zmiany, w skipped każdy pominięty z powodem.\n\n' +
-  reports.map((r, i) => `=== Analizator ${i + 1} ===\n${r}`).join('\n\n')
-
-// Workflow agents cannot spawn subagents, so the script fans each skill's analysis out itself.
-async function runSkill(where, skill, scope) {
-  const split = await runAgent(where, `/${skill}`, `/${skill} podział`, splitPrompt(skill, scope), { ...SPLIT_AGENT, schema: SPLIT_RESULT })
-
-  log(`${where}: /${skill} → ${split.tasks.length} analizatorów`)
-  const reports = await parallel(
-    split.tasks.map((task, i) => () =>
-      runAgent(where, `/${skill}`, `/${skill} analiza ${i + 1}`, analyzePrompt(skill, scope, task), REVIEW_AGENT),
-    ),
-  )
-  if (reports.some(r => !r)) throw new Stop(where, `/${skill}`, ['analizator nie zwrócił raportu'])
-
-  const result = await runVerified(
-    where,
-    `/${skill}`,
-    REVIEW_AGENT,
-    applyPrompt(skill, scope, reports),
-    FINISH_RESULT,
-    r => [
-      `Każda pozycja applied jest widoczna w \`${scope.diff}\` (lub w nieśledzonym pliku) w podanym pliku blisko podanej linii: ${JSON.stringify(r.applied)}`,
-      testsCheck(r),
-    ],
-  )
-  keepDecisions(where, `/${skill}`, result)
-  skipped.push(...result.skipped.filter(s => s.worthUserDecision).map(s => ({ where, skill, ...s })))
-}
-
 async function runFinish(where, scope) {
-  for (const skill of finish.skills) await runSkill(where, skill, scope)
+  const result = await workflow('finish-run', { finish, scope, reviewAgent: REVIEW_AGENT, where })
+  checklist.push(...result.checklist)
+  decisions.push(...result.decisions)
+  skipped.push(...result.skipped)
+  if (result.stop) throw new Stop(result.stop.where, result.stop.step, result.stop.gaps)
 }
 
 async function runCodeReview(where, scope) {
@@ -237,19 +166,26 @@ async function runCodeReview(where, scope) {
     'code-review',
     REVIEW_AGENT,
     `Wywołaj skill code-review z argumentami "${reviewEffort} --fix${scope.reviewTarget ? ` ${scope.reviewTarget}` : ''}" (zakres: ${scope.desc}). ` +
-      'Nie pytaj użytkownika. W findings podaj każde znalezisko: fixed, gdy naprawione, rejected z powodem, gdy nie.',
+      `${NO_TESTS} Nie pytaj użytkownika. W findings podaj każde znalezisko: fixed, gdy naprawione, rejected z powodem, gdy nie.`,
     CODE_REVIEW_RESULT,
-    r => [
-      `Każde znalezisko fixed jest naprawione w \`${scope.diff}\` w podanym pliku blisko podanej linii: ${JSON.stringify(r.findings.filter(f => f.outcome === 'fixed'))}`,
-      testsCheck(r),
-    ],
+    // Nothing fixed means nothing changed, so there is nothing to verify or test.
+    r => {
+      const fixed = r.findings.filter(f => f.outcome === 'fixed')
+      if (!fixed.length) return []
+
+      return [
+        `Każde znalezisko fixed jest naprawione w \`${scope.diffCommand}\` w podanym pliku blisko podanej linii: ${JSON.stringify(fixed)}`,
+        testsCheck(r),
+      ]
+    },
   )
   keepDecisions(where, 'code-review', result)
   rejected.push(...result.findings.filter(f => f.outcome === 'rejected').map(f => ({ where, ...f })))
 }
 
-const runCommit = (where, withPlan) =>
-  runVerified(
+// Pinned to the last verified HEAD so only one fresh commit on top of it passes.
+async function runCommit(where, withPlan) {
+  const result = await runVerified(
     where,
     'commit',
     LIGHT_AGENT,
@@ -259,30 +195,40 @@ const runCommit = (where, withPlan) =>
     COMMIT_RESULT,
     r => [
       '`git status --porcelain` jest pusty.',
-      `HEAD to ${r.sha}.`,
-      ...(r.committed ? [`Wiadomość ostatniego commita to jedna krótka linia: "${r.message}".`] : []),
+      ...(r.committed
+        ? [
+            `HEAD to ${r.sha}, a \`git rev-parse HEAD~1\` to ${verifiedHead}.`,
+            `Wiadomość ostatniego commita to jedna krótka linia: "${r.message}".`,
+          ]
+        : [`HEAD to ${verifiedHead}.`]),
       ...(withPlan ? [`Ostatni commit zawiera zmianę ${plan}.`] : []),
     ],
   )
+  verifiedHead = result.sha
+}
 
 let stop = null
 try {
   for (const { n, name } of phases) {
-    const where = `Faza ${n}: ${name}`
+    const where = `F${n} · ${name}`
     phase(where)
+    log(`Faza ${n}: ${name}`)
     await runPhase(where, n)
     await runFinish(where, PHASE_SCOPE)
     await runCodeReview(where, PHASE_SCOPE)
     await runCommit(where, true)
   }
 
-  const where = `Etap końcowy względem ${base}`
-  phase(where)
-  await runFinish(where, BASE_SCOPE)
-  await runCodeReview(where, BASE_SCOPE)
-  await runCommit(where, false)
+  // A single phase was already reviewed against the same changes.
+  if (phases.length > 1) {
+    const where = `Końcowy (${base})`
+    phase(where)
+    await runFinish(where, BASE_SCOPE)
+    await runCodeReview(where, BASE_SCOPE)
+    await runCommit(where, false)
+  }
 } catch (err) {
   if (!(err instanceof Stop)) throw err
   stop = err.stop
 }
-return { completed: !stop, stop, checklist, decisions, skipped, rejected }
+return { stop, checklist, decisions, skipped, rejected }

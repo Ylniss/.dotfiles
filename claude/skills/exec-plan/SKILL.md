@@ -2,8 +2,8 @@
 name: exec-plan
 description: >
   Wykonuje cały plan z plans/<slug>.md bez nadzoru: pytania na starcie, potem
-  workflow phase → finish → code-review → commit dla każdej fazy i finish z
-  code-review względem bazy na końcu. Użyj, gdy użytkownik wywołuje
+  workflow phase → finish → code-review → commit dla każdej fazy, a przy wielu
+  fazach finish z code-review względem bazy na końcu. Użyj, gdy użytkownik wywołuje
   "/exec-plan".
 argument-hint: "<model-phase> <effort-phase> <model-review> <effort-review> <plan> [baza]"
 ---
@@ -60,10 +60,10 @@ Zatrzymaj się z powodem, gdy:
 Wywołanie tego skilla to zgoda użytkownika na workflow i na jego commity.
 
 - Wczytaj `~/.claude/skills/finish/finish.json`.
-- Uruchom Workflow ze `scriptPath` = `~/.claude/skills/exec-plan/workflow.js`
-  rozwiniętym do ścieżki absolutnej i `args`:
+- Uruchom Workflow z `name` = `exec-plan-run` i `args`:
   - `plan` — ścieżka planu od korzenia repo,
   - `phases` — fazy `[ ]` w kolejności, każda `{ n, name }`,
+  - `head` — sha HEAD po commicie planu z kroku 4,
   - `phaseModel`, `phaseEffort`, `reviewModel`, `reviewEffort`, `base`,
   - `finish` — zawartość `finish.json`.
 - Powiedz w jednej linii, że workflow ruszył i że postęp widać w `/workflows`.
@@ -76,7 +76,10 @@ Z wyniku workflowu:
 - **Stan:** wszystkie fazy gotowe albo zatrzymany — gdzie, na którym kroku, z
   jakimi brakami. Przy stopie dodaj: zmiany tej fazy leżą niezacommitowane;
   po naprawie zacommituj je lub odrzuć i uruchom `/exec-plan` ponownie.
-- **Checklista:** każda faza i krok ze statusem i liczbą prób.
+- **Checklista:** każda faza i krok ze statusem i liczbą prób. Przy jednej
+  fazie zaznacz, że etap końcowy pominięto.
+- **Ostrzeżenia** (`warnings` z `checklist`): czego weryfikator nie mógł
+  sprawdzić przez środowisko i dlaczego. Pomiń, gdy brak.
 - **Decyzje** (`decisions`): decyzja, dlaczego, alternatywa — oznaczone A1,
   A2...
 - **Pominięte ✗ warte decyzji** (`skipped`) — B1, B2...

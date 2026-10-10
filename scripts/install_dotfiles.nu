@@ -61,6 +61,7 @@ let symlinks = [
   { src: 'claude/agents',                 desc: 'claude agents',              dest: $'($home_dir)/.claude/agents' }
   { src: 'claude/rules',                  desc: 'claude rules',               dest: $'($home_dir)/.claude/rules' }
   { src: 'claude/hooks',                  desc: 'claude hooks',               dest: $'($home_dir)/.claude/hooks' }
+  { src: 'claude/workflows',              desc: 'claude workflows',           dest: $'($home_dir)/.claude/workflows' }
   { src: 'claude/skills',                 desc: 'codex skills',               dest: $'($home_dir)/.agents/skills' }
   { src: 'codex/dotfiles.config.toml',    desc: 'codex shared config',        dest: $'($home_dir)/.codex/config.toml' }
   { src: 'claude/AGENTS.md',              desc: 'codex AGENTS.md',            dest: $'($home_dir)/.codex/AGENTS.md' }
