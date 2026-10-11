@@ -47,8 +47,8 @@ M.bindings = {
 		key = "Enter",
 		mods = "SHIFT",
 		action = wezterm.action_callback(function(window, pane)
-			local process = (pane:get_foreground_process_name() or ""):lower()
-			if process:match("codex%.exe$") then
+			local process = (pane:get_foreground_process_name() or ""):lower():gsub("^.*[/\\]", "")
+			if process == "codex.exe" or process == "codex-x86_64-pc-windows-msvc.exe" then
 				window:perform_action(act.SendString("\x1b\r"), pane)
 				return
 			end
