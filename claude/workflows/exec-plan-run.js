@@ -1,6 +1,6 @@
 export const meta = {
   name: 'exec-plan-run',
-  description: 'Fazy planu: phase → finish → code-review → commit z weryfikacją każdego kroku, potem przy wielu fazach finish i code-review względem bazy',
+  description: 'Fazy planu: phase → finish → code-review → commit z weryfikacją każdego kroku, potem przy wielu fazach finish względem bazy i code-review jego zmian',
 }
 
 const { plan, planTracked, phases, phaseModel, phaseEffort, reviewModel, reviewEffort, base, finish } = args
@@ -12,49 +12,23 @@ const REVIEW_AGENT = { model: reviewModel, effort: reviewEffort }
 const LIGHT_AGENT = { model: 'sonnet', effort: 'low' }
 
 const str = { type: 'string' }
-const DECISIONS = {
-  type: 'array',
-  description: 'Decyzje podjęte bez użytkownika, które mógłby rozstrzygnąć inaczej',
-  items: {
-    type: 'object',
-    properties: { decision: str, why: str, alternative: str },
-    required: ['decision', 'why', 'alternative'],
-  },
-}
-const TEST_COMMAND_PROPERTY = {
-  testCommand: { type: 'string', description: 'Komenda build i testów; pusta, gdy repo ich nie ma' },
-}
 const PHASE_RESULT = {
   type: 'object',
   properties: {
     status: { type: 'string', enum: ['done', 'blocked'] },
     blockReason: str,
-    decisions: DECISIONS,
-    ...TEST_COMMAND_PROPERTY,
-  },
-  required: ['status', 'decisions', 'testCommand'],
-}
-const CODE_REVIEW_RESULT = {
-  type: 'object',
-  properties: {
-    findings: {
+    decisions: {
       type: 'array',
+      description: 'Decyzje podjęte bez użytkownika, które mógłby rozstrzygnąć inaczej',
       items: {
         type: 'object',
-        properties: {
-          summary: str,
-          file: str,
-          line: { type: 'integer' },
-          outcome: { type: 'string', enum: ['fixed', 'rejected'] },
-          reason: str,
-        },
-        required: ['summary', 'file', 'line', 'outcome', 'reason'],
+        properties: { decision: str, why: str, alternative: str },
+        required: ['decision', 'why', 'alternative'],
       },
     },
-    decisions: DECISIONS,
-    ...TEST_COMMAND_PROPERTY,
+    testCommand: { type: 'string', description: 'Komenda build i testów; pusta, gdy repo ich nie ma' },
   },
-  required: ['findings', 'decisions', 'testCommand'],
+  required: ['status', 'decisions', 'testCommand'],
 }
 const COMMIT_RESULT = {
   type: 'object',
@@ -70,9 +44,8 @@ const CHECK_RESULT = {
   required: ['gaps', 'warnings'],
 }
 
-const PHASE_SCOPE = { reviewTarget: '', diffCommand: 'git diff HEAD', desc: 'niezacommitowane zmiany i nowe nieśledzone pliki' }
+const PHASE_SCOPE = { diffCommand: 'git diff HEAD', desc: 'niezacommitowane zmiany i nowe nieśledzone pliki' }
 const BASE_SCOPE = {
-  reviewTarget: `wszystkie zmiany na obecnym branchu względem brancha ${base}`,
   diffCommand: `git diff $(git merge-base ${base} HEAD)`,
   desc: `zmiany od merge-base z ${base}, łącznie z niezacommitowanymi`,
 }
@@ -81,8 +54,6 @@ const checklist = []
 const decisions = []
 const skipped = []
 const rejected = []
-
-const keepDecisions = (where, step, result) => decisions.push(...result.decisions.map(d => ({ where, step, ...d })))
 
 class Stop extends Error {
   constructor(where, step, gaps) {
@@ -102,8 +73,6 @@ const fixPrompt = (prompt, retry) =>
   `${retry.gaps.map(g => `- ${g}`).join('\n')}\n\n` +
   `Wynik poprzedniej próby:\n${JSON.stringify(retry.previous)}\n\n` +
   `Zwróć pełny zaktualizowany wynik: poprzednie pozycje plus poprawki.\n\nPierwotne zadanie kroku:\n${prompt}`
-
-const NO_TESTS = 'Nie uruchamiaj build ani testów, nawet jeśli reguły lub skill tak każą — zrobi to weryfikator. W testCommand podaj tylko komendę.'
 
 const testsCheck = r =>
   r.testCommand
@@ -149,7 +118,7 @@ async function runPhase(where, n) {
       testsCheck(r),
     ],
   )
-  keepDecisions(where, 'phase', result)
+  decisions.push(...result.decisions.map(d => ({ where, step: 'phase', ...d })))
 }
 
 async function runFinish(where, scope) {
@@ -160,27 +129,12 @@ async function runFinish(where, scope) {
   if (result.stop) throw new Stop(result.stop.where, result.stop.step, result.stop.gaps)
 }
 
-async function runCodeReview(where, scope) {
-  const result = await runVerified(
-    where,
-    'code-review',
-    REVIEW_AGENT,
-    `Wywołaj skill code-review z argumentami "${reviewEffort} --fix${scope.reviewTarget ? ` ${scope.reviewTarget}` : ''}" (zakres: ${scope.desc}). ` +
-      `${NO_TESTS} Nie pytaj użytkownika. Jeśli skill zwróci wynik bez listy znalezisk (np. komunikat o czekaniu na testy), nie wywołuj go ponownie — przejrzyj ten sam zakres sam. W findings podaj każde znalezisko: fixed, gdy naprawione, rejected z powodem, gdy nie.`,
-    CODE_REVIEW_RESULT,
-    // Nothing fixed means nothing changed, so there is nothing to verify or test.
-    r => {
-      const fixed = r.findings.filter(f => f.outcome === 'fixed')
-      if (!fixed.length) return []
-
-      return [
-        `Każde znalezisko fixed jest naprawione w \`${scope.diffCommand}\` w podanym pliku blisko podanej linii: ${JSON.stringify(fixed)}`,
-        testsCheck(r),
-      ]
-    },
-  )
-  keepDecisions(where, 'code-review', result)
-  rejected.push(...result.findings.filter(f => f.outcome === 'rejected').map(f => ({ where, ...f })))
+async function runCodeReview(where) {
+  const result = await workflow('code-review-run', { scope: PHASE_SCOPE, reviewAgent: REVIEW_AGENT, where })
+  checklist.push(...result.checklist)
+  decisions.push(...result.decisions)
+  rejected.push(...result.rejected)
+  if (result.stop) throw new Stop(result.stop.where, result.stop.step, result.stop.gaps)
 }
 
 // Pinned to the last verified HEAD so only one fresh commit on top of it passes.
@@ -216,7 +170,7 @@ try {
     log(`Faza ${n}: ${name}`)
     await runPhase(where, n)
     await runFinish(where, PHASE_SCOPE)
-    await runCodeReview(where, PHASE_SCOPE)
+    await runCodeReview(where)
     await runCommit(where, planTracked)
   }
 
@@ -225,7 +179,8 @@ try {
     const where = `Końcowy (${base})`
     phase(where)
     await runFinish(where, BASE_SCOPE)
-    await runCodeReview(where, BASE_SCOPE)
+    // Only the final finish's edits are unreviewed.
+    await runCodeReview(where)
     await runCommit(where, false)
   }
 } catch (err) {

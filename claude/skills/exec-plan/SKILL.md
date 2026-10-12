@@ -3,8 +3,8 @@ name: exec-plan
 description: >
   Wykonuje cały plan z plans/<slug>.md bez nadzoru: pytania na starcie, potem
   workflow phase → finish → code-review → commit dla każdej fazy, a przy wielu
-  fazach finish z code-review względem bazy na końcu. Użyj, gdy użytkownik wywołuje
-  "/exec-plan".
+  fazach finish względem bazy i code-review jego zmian na końcu. Użyj, gdy
+  użytkownik wywołuje "/exec-plan".
 argument-hint: "<model-phase> <effort-phase> <model-review> <effort-review> <plan> [baza]"
 ---
 

@@ -1,0 +1,199 @@
+export const meta = {
+  name: 'code-review-run',
+  description: 'Code-review zakresu: równoległe przeglądy po kątach, obalanie każdego znaleziska, jedno scalenie z naprawą i weryfikacją',
+}
+
+const { scope, reviewAgent, where } = args
+const MAX_ATTEMPTS = 2
+
+const LIGHT_AGENT = { model: 'sonnet', effort: 'low' }
+
+// Lenses instead of files: a bug usually spans files.
+const LENSES = [
+  { name: 'logika', focus: 'logika i warunki brzegowe: złe warunki, off-by-one, null/undefined, puste kolekcje, nieobsłużone gałęzie' },
+  { name: 'obsługa błędów', focus: 'obsługa błędów i stan: połknięte wyjątki, brak cofnięcia przy błędzie, niespójny stan, wycieki zasobów' },
+  { name: 'API', focus: 'użycie API i bibliotek: niezgodne sygnatury i typy, zły kontrakt, nadużycie frameworka, odstępstwo od reszty repo' },
+  { name: 'dane', focus: 'współbieżność i dane: wyścigi, kolejność operacji, async bez await, niezgodność z danymi, migracjami i konfiguracją' },
+]
+
+const str = { type: 'string' }
+const FINDING = {
+  type: 'object',
+  properties: {
+    summary: str,
+    file: str,
+    line: { type: 'integer' },
+    failureScenario: { type: 'string', description: 'Konkretne wejście lub stan → zły wynik lub błąd' },
+  },
+  required: ['summary', 'file', 'line', 'failureScenario'],
+}
+const REVIEW_RESULT = {
+  type: 'object',
+  properties: { findings: { type: 'array', items: FINDING } },
+  required: ['findings'],
+}
+const VERDICT = {
+  type: 'object',
+  properties: { refuted: { type: 'boolean' }, reason: str },
+  required: ['refuted', 'reason'],
+}
+const APPLY_RESULT = {
+  type: 'object',
+  properties: {
+    findings: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          summary: str,
+          file: str,
+          line: { type: 'integer' },
+          outcome: { type: 'string', enum: ['fixed', 'rejected'] },
+          reason: str,
+        },
+        required: ['summary', 'file', 'line', 'outcome', 'reason'],
+      },
+    },
+    decisions: {
+      type: 'array',
+      description: 'Decyzje podjęte bez użytkownika, które mógłby rozstrzygnąć inaczej',
+      items: {
+        type: 'object',
+        properties: { decision: str, why: str, alternative: str },
+        required: ['decision', 'why', 'alternative'],
+      },
+    },
+    testCommand: { type: 'string', description: 'Komenda build i testów; pusta, gdy repo ich nie ma' },
+  },
+  required: ['findings', 'decisions', 'testCommand'],
+}
+const CHECK_RESULT = {
+  type: 'object',
+  properties: {
+    gaps: { type: 'array', items: str, description: 'Każdy niespełniony punkt jako osobna pozycja; pusta, gdy wszystko się zgadza' },
+    warnings: { type: 'array', items: str, description: 'Punkty, których nie dało się sprawdzić przez środowisko, z powodem' },
+  },
+  required: ['gaps', 'warnings'],
+}
+
+const step = 'code-review'
+const checklist = []
+const rejected = []
+
+class Stop extends Error {
+  constructor(gaps) {
+    super(`${where} / ${step}`)
+    this.stop = { where, step, gaps }
+  }
+}
+
+async function runAgent(label, prompt, opts) {
+  const result = await agent(prompt, { ...opts, label, phase: where })
+  if (!result) throw new Stop([`brak wyniku: ${label}`])
+  return result
+}
+
+const NO_TESTS = 'Nie uruchamiaj build ani testów, nawet jeśli reguły lub skill tak każą — zrobi to weryfikator. W testCommand podaj tylko komendę.'
+
+const fixPrompt = (prompt, retry) =>
+  `Ten krok nie przeszedł weryfikacji. Drzewo zawiera już zmiany poprzedniej próby — nie zaczynaj od nowa, usuń tylko braki:\n` +
+  `${retry.gaps.map(g => `- ${g}`).join('\n')}\n\n` +
+  `Wynik poprzedniej próby:\n${JSON.stringify(retry.previous)}\n\n` +
+  `Zwróć pełny zaktualizowany wynik: poprzednie pozycje plus poprawki.\n\nPierwotne zadanie kroku:\n${prompt}`
+
+const testsCheck = r =>
+  r.testCommand
+    ? `Uruchom \`${r.testCommand}\` — build i testy muszą przejść. Przy błędzie podaj nieprzechodzące testy i kluczowy fragment komunikatu.`
+    : 'Wykonawca twierdzi, że repo nie ma build ani testów. Sprawdź to w CLAUDE.md, AGENTS.md i konfiguracji repo.'
+
+const checkPrompt = points =>
+  'Weryfikacja faktów. Nie zmieniaj żadnych plików i niczego nie naprawiaj. Każdy niespełniony punkt zgłoś jako osobną pozycję gaps. ' +
+  'Punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
+  points.map((p, i) => `${i + 1}. ${p}`).join('\n')
+
+async function runVerified(prompt, pointsFor) {
+  let retry = null
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const result = await runAgent(`${step} zastosowanie`, retry ? fixPrompt(prompt, retry) : prompt, { ...reviewAgent, schema: APPLY_RESULT })
+    const points = pointsFor(result)
+    if (!points.length) {
+      checklist.push({ where, step, attempt, gaps: [], warnings: [] })
+      return result
+    }
+
+    const check = await runAgent(`weryfikacja ${step}`, checkPrompt(points), { ...LIGHT_AGENT, schema: CHECK_RESULT })
+    checklist.push({ where, step, attempt, gaps: check.gaps, warnings: check.warnings })
+    if (!check.gaps.length) return result
+    retry = { gaps: check.gaps, previous: result }
+  }
+  throw new Stop(retry.gaps)
+}
+
+const reviewPrompt = lens =>
+  `Wywołaj skill code-review z argumentami "${reviewAgent.effort}" (zakres: ${scope.desc}), ` +
+  `ograniczony do kąta: ${lens.focus}. Tylko raport — niczego nie naprawiaj i nie pytaj użytkownika. ` +
+  'Jeśli skill zwróci wynik bez listy znalezisk (np. komunikat o czekaniu na testy), nie wywołuj go ponownie — przejrzyj ten sam zakres sam pod tym kątem. ' +
+  'Zwróć każde znalezisko z plikiem, linią i konkretnym scenariuszem błędu.'
+
+const refutePrompt = f =>
+  `Spróbuj obalić znalezisko code-review. Sprawdź w kodzie, czy scenariusz naprawdę zachodzi, czy gałąź jest osiągalna i czy czegoś nie chroni kod wyżej lub niżej. ` +
+  'Nie zmieniaj żadnych plików. Jeśli nie masz pewności, że błąd jest realny, zwróć refuted: true z powodem.\n' +
+  JSON.stringify(f)
+
+const applyPrompt = findings =>
+  `Poniżej potwierdzone znaleziska code-review dla zakresu "${scope.desc}" (\`${scope.diffCommand}\`). ` +
+  'Scal je: odrzuć duplikaty mówiące o tym samym miejscu i przepuść listę przez sekcję Konflikty z ~/.claude/skills/_shared/report.md. ' +
+  `Potem napraw każde. ${NO_TESTS} Nie pytaj użytkownika. ` +
+  'W findings podaj każde znalezisko: fixed, gdy naprawione, rejected z powodem, gdy nie (także duplikaty).\n\n' +
+  JSON.stringify(findings)
+
+// Workflow agents cannot spawn subagents, so the script fans the review out by lens itself.
+const review = lens => runAgent(`${step} ${lens.name}`, reviewPrompt(lens), { ...reviewAgent, schema: REVIEW_RESULT })
+const refute = (result, lens) =>
+  parallel(
+    result.findings.map((f, i) => () =>
+      runAgent(`obalanie ${lens.name} ${i + 1}`, refutePrompt(f), { ...LIGHT_AGENT, schema: VERDICT }).then(v => ({ ...f, verdict: v })),
+    ),
+  )
+
+let stop = null
+let decisions = []
+try {
+  const reviewed = await pipeline(LENSES, review, refute)
+  if (reviewed.some(r => !r)) throw new Stop(['przegląd po kącie nie zwrócił wyniku'])
+
+  const confirmed = []
+  const seen = new Set()
+  for (const { verdict, ...f } of reviewed.flat().filter(Boolean)) {
+    if (verdict.refuted) {
+      rejected.push({ where, ...f, outcome: 'rejected', reason: `obalone: ${verdict.reason}` })
+      continue
+    }
+    const key = `${f.file}:${f.line}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    confirmed.push(f)
+  }
+  log(`${where}: ${step} → ${confirmed.length} znalezisk potwierdzonych, ${rejected.length} obalonych`)
+
+  if (!confirmed.length) {
+    checklist.push({ where, step, attempt: 1, gaps: [], warnings: [] })
+  } else {
+    // Nothing fixed means nothing changed, so there is nothing to verify or test.
+    const result = await runVerified(applyPrompt(confirmed), r => {
+      const fixed = r.findings.filter(f => f.outcome === 'fixed')
+      if (!fixed.length) return []
+
+      return [
+        `Każde znalezisko fixed jest naprawione w \`${scope.diffCommand}\` w podanym pliku blisko podanej linii: ${JSON.stringify(fixed)}`,
+        testsCheck(r),
+      ]
+    })
+    decisions = result.decisions.map(d => ({ where, step, ...d }))
+    rejected.push(...result.findings.filter(f => f.outcome === 'rejected').map(f => ({ where, ...f })))
+  }
+} catch (err) {
+  if (!(err instanceof Stop)) throw err
+  stop = err.stop
+}
+return { stop, checklist, decisions, rejected }
