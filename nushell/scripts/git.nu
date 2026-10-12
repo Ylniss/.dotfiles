@@ -1,8 +1,7 @@
 alias gi = lazygit
 alias gits = git status
 
-# Stage changes in a path.
-# If you give no path, or the path does not exist, stage the current directory.
+# Stage a path; with no path or a nonexistent one, stage the current directory.
 def gita --wrapped [path?: string, ...opts] {
   let target = if (($path | is-not-empty) and ($path | path exists)) { $path } else { "." }
   git add ...$opts $target
@@ -37,7 +36,7 @@ def gitc --wrapped [...opts, message?: string] {
   }
 }
 
-# Git Push: Pushes to origin, optionally targeting a specific branch.
+# Git Push: with a branch, push it to origin; otherwise plain git push.
 def gitp --wrapped [branch?: string, ...opts] {
   if ($branch | is-not-empty) {
     git push origin $branch ...$opts
@@ -54,7 +53,6 @@ def gitmrg [branch: string] {
   let current_branch = git rev-parse --abbrev-ref HEAD
   git fetch --all
 
-  # Set the upstream to origin/<current branch> if the current branch has none.
   if (git rev-parse --abbrev-ref --symbolic-full-name @{u} | is-empty) {
     git branch $'--set-upstream-to=origin/($current_branch)' $current_branch
   }
@@ -64,10 +62,10 @@ def gitmrg [branch: string] {
 
 # Initialize new git repo
 def giti [
-  repo_name?: string # New repo name, if not specified it will be created in current working dir
+  repo_dir?: string # Directory to init; default is the current directory
   --github (-g) # Create repo also on github
 ] {
-  let dir = ($repo_name | default ".")
+  let dir = ($repo_dir | default ".")
   git init $dir
 
   if $github {
@@ -78,8 +76,7 @@ def giti [
   touch ($dir | path join '.gitignore')
 }
 
-# Git Worktree Add: create a branch in a new worktree at ../<current dir>-<branch>.
-# Then cd into the worktree and open layout-dev in WezTerm. Use --stay to skip both.
+# Git Worktree Add: new branch in a worktree at ../<current dir>-<branch>, then cd there and open layout-dev unless --stay.
 def --env gitwta [branch: string, --stay (-s)] {
   let dir_name = (pwd | path basename)
   let path = $"../($dir_name)-($branch)"
@@ -91,8 +88,7 @@ def --env gitwta [branch: string, --stay (-s)] {
   }
 }
 
-# Git Worktree Finish: push the worktree branch and merge it into the base branch.
-# Then delete the worktree and its local branch. Pass . for the current worktree.
+# Git Worktree Finish: push the branch, merge it into the base branch, delete the worktree and branch. Pass . for the current one.
 def --env gitwtf [path: string] {
   let worktree_path = if $path == "." { pwd } else { $path | path expand }
 
@@ -125,7 +121,6 @@ def --env gitwtf [path: string] {
     return
   }
 
-  # Push worktree branch, merge into base branch, push
   let base_branch = (git -C $base_path rev-parse --abbrev-ref HEAD)
   try {
     git -C $worktree_path push origin $branch
@@ -137,14 +132,14 @@ def --env gitwtf [path: string] {
     return
   }
 
-  # cd out before removal (only for `.`)
+  # Leave the worktree before deleting it.
   if $path == "." {
     cd $base_path
   }
 
   try { git -C $base_path pull }
 
-  # Remove directory (retry once for Windows handle release)
+  # Retry once: Windows may still hold a handle on the directory.
   try { rm -rf $worktree_path } catch {
     sleep 1sec
     try { rm -rf $worktree_path } catch {
@@ -156,18 +151,8 @@ def --env gitwtf [path: string] {
   try { git -C $base_path branch -D $branch }
 }
 
-# Git Parents: Shows the parent branch chain with ahead/behind counts.
-# Walks first-parent history to determine which branch was created from which.
-# Example output:
-#   ╭───┬──────────────────┬───────┬────────╮
-#   │ # │      branch      │ ahead │ behind │
-#   ├───┼──────────────────┼───────┼────────┤
-#   │ 0 │ feature-x        │     3 │      5 │
-#   │ 1 │ ← develop        │    12 │      0 │
-#   │ 2 │   ← main         │       │        │
-#   ╰───┴──────────────────┴───────┴────────╯
-#   ahead  = commits on feature-x not in develop (your work since branching)
-#   behind = commits on develop not in feature-x (new work on develop you haven't pulled)
+# Git Parents: the chain of branches this one was created from, via first-parent history.
+# ahead = commits on a branch not in its parent; behind = commits on the parent not in the branch.
 def gitpar [] {
   let local_branches = (git branch --format='%(refname:short)' | lines)
   mut current = (git rev-parse --abbrev-ref HEAD)
@@ -192,14 +177,13 @@ def gitpar [] {
     $current = $parent
   }
 
-  let ch = $chain
-  0..(($ch | length) - 1) | each {|i|
-    let name = ($ch | get $i)
-    let label = if $i == 0 { $name } else { $"('' | fill -c ' ' -w (($i - 1) * 2))← ($name)" }
-    if $i == (($ch | length) - 1) { return {branch: $label, ahead: null, behind: null} }
-    let parent = ($ch | get ($i + 1))
-    let ahead = (git rev-list --count $"refs/heads/($parent)..refs/heads/($name)" | str trim | into int)
-    let behind = (git rev-list --count $"refs/heads/($name)..refs/heads/($parent)" | str trim | into int)
+  $chain | window 2 --remainder | enumerate | each {|w|
+    let name = $w.item.0
+    let label = if $w.index == 0 { $name } else { $"('' | fill -c ' ' -w (($w.index - 1) * 2))← ($name)" }
+    let parent = ($w.item | get -o 1)
+    if $parent == null { return {branch: $label, ahead: null, behind: null} }
+    let ahead = (git rev-list --count $"refs/heads/($parent)..refs/heads/($name)" | into int)
+    let behind = (git rev-list --count $"refs/heads/($name)..refs/heads/($parent)" | into int)
     {branch: $label, ahead: $ahead, behind: $behind}
   }
 }

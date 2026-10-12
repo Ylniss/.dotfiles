@@ -1,9 +1,4 @@
-# Cross-platform toast. Ignore all errors.
-#   linux:   notify-send            (apt install libnotify-bin)
-#   macos:   osascript              (built-in)
-#   windows: BurntToast             (Install-Module BurntToast)
-#   android: termux-notification    (pkg install termux-api)
-
+# Silent no-op without the toaster: libnotify-bin (linux), BurntToast module (windows), termux-api (android)
 def notify [title: string, message: string] {
   if (is-windows) {
     let t = ($title | str replace --all "'" "''")

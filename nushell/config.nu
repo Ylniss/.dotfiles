@@ -1,5 +1,5 @@
 # Named ANSI colors only — theme follows the active terminal palette.
-let dark_theme = {
+let theme = {
     separator: "dark_gray"
     leading_trailing_space_bg: { attr: n }
     header: { fg: "light_yellow" attr: b }
@@ -57,7 +57,7 @@ $env.config = {
         mode: none
         trim: { methodology: truncating, truncating_suffix: "..." }
     }
-    color_config: $dark_theme
+    color_config: $theme
     completions: {
         external: {
             completer: $carapace_completer
@@ -143,7 +143,6 @@ source nvim.nu
 source yazi.nu
 source wezterm.nu
 source git.nu
-source mobile-ssh.nu
 source ssh.nu
 source weather.nu
 source robes-and-steel.nu

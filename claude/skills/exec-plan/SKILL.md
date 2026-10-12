@@ -53,7 +53,8 @@ Zatrzymaj się z powodem, gdy:
 - Dopisz odpowiedzi do Key decisions (pre-implementation) planu: decyzja,
   dlaczego, co odrzucono. Podbij Last updated.
 - Zacommituj sam plan jedną krótką linią opisującą zmianę, żeby odpowiedzi nie
-  wpadły do commitu fazy 1.
+  wpadły do commitu fazy 1. Plan ignorowany przez git (`git check-ignore`) →
+  nie commituj go i nie dodawaj siłą.
 
 ## 5. Uruchom workflow
 
@@ -64,6 +65,7 @@ Wywołanie tego skilla to zgoda użytkownika na workflow i na jego commity.
   - `plan` — ścieżka planu od korzenia repo,
   - `phases` — fazy `[ ]` w kolejności, każda `{ n, name }`,
   - `head` — sha HEAD po commicie planu z kroku 4,
+  - `planTracked` — false, gdy plan jest ignorowany przez git,
   - `phaseModel`, `phaseEffort`, `reviewModel`, `reviewEffort`, `base`,
   - `finish` — zawartość `finish.json`.
 - Powiedz w jednej linii, że workflow ruszył i że postęp widać w `/workflows`.

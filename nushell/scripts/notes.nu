@@ -1,7 +1,6 @@
 def --env notes [] { cd $env.NOTES }
 
 # Sync notes with remote: commit dirty changes, rebase, push.
-# Toasts via `notify` and exits non-zero on failure.
 def "notes up" [] {
   cd $env.NOTES
 

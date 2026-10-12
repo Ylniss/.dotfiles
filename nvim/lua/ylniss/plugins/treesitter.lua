@@ -23,7 +23,7 @@ local parsers = {
 return {
 	"nvim-treesitter/nvim-treesitter",
 	branch = "main",
-	event = "VeryLazy",
+	lazy = false,
 	build = ":TSUpdate",
 	config = function()
 		local ts = require("nvim-treesitter")
@@ -40,11 +40,5 @@ return {
 				start_treesitter(args.buf)
 			end,
 		})
-
-		for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-			if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype ~= "" then
-				start_treesitter(buf)
-			end
-		end
 	end,
 }

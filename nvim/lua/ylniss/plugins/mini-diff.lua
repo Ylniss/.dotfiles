@@ -35,7 +35,7 @@ return {
 			end,
 			detach = index_source.detach,
 			apply_hunks = function(buf, hunks)
-				-- Patch is built from reference text; applying a HEAD-based patch to index can silently corrupt it
+				-- A patch built against HEAD would silently corrupt the index
 				if overlay_on then
 					vim.notify("Turn off git diff overlay (<leader>gd) to stage hunks", vim.log.levels.WARN)
 					return
@@ -62,8 +62,7 @@ return {
 			},
 		})
 
-		-- Overlay interleaves reference and buffer lines of equal-size change hunks. No option turns this off,
-		-- so patch private `H` to show all reference lines above the hunk, as for unequal sizes.
+		-- No option stops the overlay interleaving reference and buffer lines of equal-size hunks, so patch private `H` to show them above the hunk.
 		-- `toggle_overlay` uses only `H`, so it is upvalue 1
 		local _, H = debug.getupvalue(minidiff.toggle_overlay, 1)
 		assert(H.append_overlay_change, "mini.diff internals changed: update overlay change hunk patch")
@@ -97,8 +96,8 @@ return {
 		vim.keymap.set("n", "<leader>gR", function()
 			minidiff.do_hunks(0, "reset")
 		end, { desc = "git Reset buffer" })
-		-- Start lines of hunk ranges; contiguous hunks form one range like in `MiniDiff.goto_hunk()`
-		local function hunk_starts(buf)
+		-- Contiguous hunks form one range, as in `MiniDiff.goto_hunk()`
+		local function hunk_range_starts(buf)
 			local data = minidiff.get_buf_data(buf)
 			if not data then
 				return {}
@@ -135,7 +134,6 @@ return {
 			vim.cmd("normal! " .. line .. "G^zvzz")
 		end
 
-		-- Enter buffer and jump to its first/last hunk range; false when it has none
 		local function jump_to_buffer_hunk(buf, forward)
 			if not has_git_changes(buf) then
 				return false
@@ -143,9 +141,9 @@ return {
 			vim.api.nvim_set_current_buf(buf)
 			-- Freshly loaded buffer gets its hunks asynchronously
 			vim.wait(1000, function()
-				return #hunk_starts(buf) > 0
+				return #hunk_range_starts(buf) > 0
 			end)
-			local starts = hunk_starts(buf)
+			local starts = hunk_range_starts(buf)
 			if #starts == 0 then
 				return false
 			end
@@ -153,10 +151,9 @@ return {
 			return true
 		end
 
-		-- Go to the next or previous hunk range. If this buffer has no more ranges, continue in the nearest listed buffer with changes.
 		local function jump_hunk(forward)
 			local buf, line = vim.api.nvim_get_current_buf(), vim.fn.line(".")
-			local starts = hunk_starts(buf)
+			local starts = hunk_range_starts(buf)
 			local target
 			if forward then
 				target = vim.iter(starts):find(function(start)

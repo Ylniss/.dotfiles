@@ -1,5 +1,4 @@
-# cd into yazi's exit path. On termux this is overridden by an extern in
-# `/usr/share/nushell/vendor/autoload/yazi.nu`; see `android-vendor-autoload/yazi.nu`.
+# On termux a vendor extern overrides this def; android-vendor-autoload/yazi.nu re-sources it.
 def --env yazi [...args] {
   let cwd_file = (mktemp)
   ^yazi ...$args --cwd-file $cwd_file

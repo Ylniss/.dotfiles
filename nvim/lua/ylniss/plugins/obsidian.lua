@@ -2,7 +2,7 @@
 -- obsidian.nvim
 -- Navigate the Markdown knowledge base (links, backlinks, completion)
 -- ========================================================
-local function notes_by_tags()
+local function search_notes_by_tags()
 	local fzf = require("fzf-lua")
 	local Note = require("obsidian.note")
 	local separator = require("fzf-lua.utils").nbsp
@@ -47,7 +47,7 @@ return {
 	ft = "markdown",
 	cmd = { "Obsidian" },
 	keys = {
-		{ "<leader>sn", notes_by_tags, desc = "search notes by YAML tags" },
+		{ "<leader>sn", search_notes_by_tags, desc = "search notes by YAML tags" },
 	},
 	opts = {
 		legacy_commands = false,

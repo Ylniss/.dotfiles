@@ -1,4 +1,3 @@
-# Change directory to repo, optionally into a subdirectory
 def --env repo [subdir: string = ""] {
   let target = ($env.REPO | path join $subdir)
   cd $target
@@ -6,12 +5,9 @@ def --env repo [subdir: string = ""] {
 
 alias games = cd $env.GAMES
 alias dwn = cd $env.DOWNLOADS
-alias knowtes = cd $env.NOTES
 
-# List files with mode permissions
 def lsmod [path: glob = "."] { ls -al $path | select name type size modified mode }
 
-# Make directory and enter inside
 def --env mkdircd [dir_name: string] {
   mkdir $dir_name
   cd $dir_name
@@ -19,7 +15,6 @@ def --env mkdircd [dir_name: string] {
 
 # -------------- CLIPBOARD --------------
 
-# Pipe input to system clipboard
 def clip [] {
   let input = $in
   if (is-windows) {
@@ -66,8 +61,7 @@ def extract [file: path] {
 
 # -------------- NETWORK --------------
 
-# Show LAN and public IP addresses (LAN = source IP of the default route,
-# so VPN/VM virtual adapters are skipped).
+# LAN IP is the source IP of the default route, so VPN/VM virtual adapters are skipped.
 def lsip [] {
   let public_ip = (http get https://ifconfig.me/ip | str trim)
   let local_ip = if (is-windows) {

@@ -13,8 +13,8 @@ def wthr [city?: string] {
 
   let wttr_info = curl -sS wttr.in
 
-  let current_city = ($city | default ($wttr_info | parse --regex 'Weather report: (?<city>[^,]+)' | get 0.city))
+  let target_city = ($city | default ($wttr_info | parse --regex 'Weather report: (?<city>[^,]+)' | get 0.city))
 
-  $"($current_city)\r\n" | curl -sS telnet://graph.no:79 | lines | drop 2 | colorize-weather | print
+  $"($target_city)\r\n" | curl -sS telnet://graph.no:79 | lines | drop 2 | colorize-weather | print
   $wttr_info | lines | skip 1 | print
 }

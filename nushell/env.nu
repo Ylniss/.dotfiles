@@ -1,3 +1,5 @@
+use std/util "path add"
+
 def is-windows [] { $nu.os-info.family == 'windows' }
 def is-android [] { $nu.os-info.name == 'android' }
 def is-macos   [] { $nu.os-info.name == 'macos' }
@@ -8,10 +10,10 @@ $env.DOWNLOADS = $"($nu.home-dir)/stuff/downloads"
 $env.NOTES = $"($nu.home-dir)/stuff/knowtes"
 
 if (is-windows) {
-  $env.Path = ($env.Path | prepend $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve')
+  path add $'($env.LOCALAPPDATA)\nvim-data\mason\packages\delve'
   $env.Path ++= (['C:\Program Files\Aseprite' 'C:\Program Files\Audacity 4\bin' 'C:\Program Files\Inkscape\bin' 'C:\Program Files\GIMP 3\bin' $'($env.LOCALAPPDATA)\Programs\GIMP 3\bin'] | where { path exists })
 }
-$env.PATH = ($env.PATH | prepend ($nu.home-dir | path join 'go' 'bin'))
+path add ($nu.home-dir | path join 'go' 'bin')
 
 
 $env.RIPGREP_CONFIG_PATH = $'($env.REPO)/.dotfiles/ripgrep/.ripgreprc'
@@ -23,7 +25,6 @@ $env.EDITOR = 'nvim'
 $env.MANPAGER = "sh -c 'col -bx | bat -l man -p'"
 $env.MANROFFOPT = "-c"
 
-# lazygit + fzf base16 themes via tinty
 if not (is-windows) and not (is-android) {
   $env.LG_CONFIG_FILE = $"($env.HOME)/.local/share/tinted-theming/tinty/tinted-lazygit-themes-file.yml"
 

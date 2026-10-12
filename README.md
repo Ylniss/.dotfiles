@@ -29,7 +29,7 @@ winget install junegunn.fzf sharkdp.fd BurntSushi.ripgrep.MSVC dandavison.delta 
 
 | Command | Action |
 |---------|--------|
-| `rns imgprocess <file>` | Process sprite image into silhouette via `process_image.cs` |
+| `rns process-image <file>` | Process sprite image into silhouette via `process_image.cs` |
 
 # Wezterm
 

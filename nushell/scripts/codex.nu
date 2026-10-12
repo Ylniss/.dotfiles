@@ -1,4 +1,4 @@
-const profiled_commands = [
+const PROFILED_COMMANDS = [
   exec
   review
   resume
@@ -17,7 +17,7 @@ def --wrapped codex [...args] {
   let use_profile = (
     ($command == '')
     or ($command | str starts-with '-')
-    or ($command in $profiled_commands)
+    or ($command in $PROFILED_COMMANDS)
     or ($command == 'debug' and $debug_command == 'prompt-input')
   )
 

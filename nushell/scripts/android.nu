@@ -18,7 +18,6 @@ def --env cam [] {
 
 # -------------- APT --------------
 
-# Update apt db and all installed packages
 def 'apt up' [] {
   require-android
   apt update

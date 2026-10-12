@@ -6,9 +6,8 @@ def "docker stop all" [] {
   if ($ids | is-not-empty) { docker stop ...$ids }
 }
 
-# List running containers of a compose project.
-# The last argument is the project name. The other arguments go to 'docker ps'.
-def "docker psc" --wrapped [...args] {
+# Last arg is the compose project name, the rest go to 'docker ps'.
+def "docker ps compose" --wrapped [...args] {
   let filter_arg = $'-f label=com.docker.compose.project=($args | last)'
   docker ps ...($args | drop) $filter_arg | from ssv
 }
@@ -16,7 +15,7 @@ def "docker psc" --wrapped [...args] {
 # -------------- PSQL -------------- 
 
 # Start a postgres container (if needed) and store its connection env for 'docker psql'
-def --env "docker psqls" [
+def --env "docker psql start" [
   container_name: string,
   postgres_user: string,
   postgres_password: string,
@@ -31,7 +30,7 @@ def --env "docker psqls" [
   $env.DOCKER_PSQL_DB_NAME = $db_name
 }
 
-# Execute `psql` commands inside the Docker container. Run 'docker psqls' first.
+# Execute `psql` commands inside the Docker container. Run 'docker psql start' first.
 def "docker psql" [command: string] {
   docker exec -it $env.DOCKER_PSQL_CONTAINER_NAME psql -U $env.DOCKER_PSQL_POSTGRES_USER -d $env.DOCKER_PSQL_DB_NAME -c $command
 }

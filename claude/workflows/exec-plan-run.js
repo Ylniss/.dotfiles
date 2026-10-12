@@ -3,7 +3,7 @@ export const meta = {
   description: 'Fazy planu: phase → finish → code-review → commit z weryfikacją każdego kroku, potem przy wielu fazach finish i code-review względem bazy',
 }
 
-const { plan, phases, phaseModel, phaseEffort, reviewModel, reviewEffort, base, finish } = args
+const { plan, planTracked, phases, phaseModel, phaseEffort, reviewModel, reviewEffort, base, finish } = args
 let verifiedHead = args.head
 const MAX_ATTEMPTS = 2
 
@@ -166,7 +166,7 @@ async function runCodeReview(where, scope) {
     'code-review',
     REVIEW_AGENT,
     `Wywołaj skill code-review z argumentami "${reviewEffort} --fix${scope.reviewTarget ? ` ${scope.reviewTarget}` : ''}" (zakres: ${scope.desc}). ` +
-      `${NO_TESTS} Nie pytaj użytkownika. W findings podaj każde znalezisko: fixed, gdy naprawione, rejected z powodem, gdy nie.`,
+      `${NO_TESTS} Nie pytaj użytkownika. Jeśli skill zwróci wynik bez listy znalezisk (np. komunikat o czekaniu na testy), nie wywołuj go ponownie — przejrzyj ten sam zakres sam. W findings podaj każde znalezisko: fixed, gdy naprawione, rejected z powodem, gdy nie.`,
     CODE_REVIEW_RESULT,
     // Nothing fixed means nothing changed, so there is nothing to verify or test.
     r => {
@@ -191,6 +191,7 @@ async function runCommit(where, withPlan) {
     LIGHT_AGENT,
     'Zacommituj wszystkie zmiany: `git add -A`, potem `git commit` z jedną krótką linią opisującą, co zmieniono w kodzie. ' +
       'Bez nazwy planu, sluga i numeru fazy. Jeśli drzewo jest czyste, nie commituj i zwróć committed: false. ' +
+      'Jeśli ostatnie commity w `git log --oneline -10` mają prefiks ticketu (np. `WELLMIFY-1234 - `), poprzedź wiadomość takim prefiksem z numerem z nazwy bieżącego brancha. ' +
       'Zwróć sha HEAD po kroku i wiadomość.',
     COMMIT_RESULT,
     r => [
@@ -216,7 +217,7 @@ try {
     await runPhase(where, n)
     await runFinish(where, PHASE_SCOPE)
     await runCodeReview(where, PHASE_SCOPE)
-    await runCommit(where, true)
+    await runCommit(where, planTracked)
   }
 
   // A single phase was already reviewed against the same changes.

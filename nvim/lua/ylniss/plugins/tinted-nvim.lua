@@ -29,7 +29,6 @@ return {
 					MiniDiffSignChange = { fg = palette.base0D, bg = "none" },
 					MiniDiffSignDelete = { fg = palette.base08, bg = "none" },
 
-					-- Overlay: old text red, new text green; changed words get a stronger tint.
 					-- Fixed colors: base08/base0B are not red/green in every scheme, and blending with background grays them out.
 					MiniDiffOverDelete = { fg = palette.base08, bg = "#40070c" },
 					MiniDiffOverContext = { link = "MiniDiffOverDelete" },

@@ -17,15 +17,15 @@ vim.keymap.set({ "n", "v" }, "p", "P", { desc = "paste without overwriting clipb
 vim.keymap.set({ "n", "v" }, "P", "p", { desc = "paste with overwriting clipboard" })
 
 -- ================================= Move selected code =================================
-vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
+vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "move selection down" })
+vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "move selection up" })
 
 -- ========================= Unbind space, it is the leader key =========================
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 
 -- ======================== Move by screen line in wrapped text =========================
-vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true, desc = "up by screen line" })
+vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true, desc = "down by screen line" })
 
 -- ================================= Window management =================================
 vim.keymap.set("n", "<A-Left>", "<C-w>H", { desc = "move window left" })
@@ -60,7 +60,6 @@ end, { desc = "yank diagnostic under cursor to clipboard" })
 vim.keymap.set("n", "<leader>g>", "<cmd>!git push<CR>", { desc = "git push" })
 vim.keymap.set("n", "<leader>g<", "<cmd>!git pull<CR>", { desc = "git pull" })
 
--- Add every changed/untracked file (skip deletions) to the buffer list and open the first.
 local function git_status_to_buffers()
 	local git_root = vim.fs.root(0, ".git")
 	if not git_root then
@@ -105,8 +104,7 @@ end
 vim.keymap.set("n", "<leader>gs", git_status_to_buffers, { desc = "add git status files to buffers" })
 
 -- =================================== Commenting ===================================
--- Ctrl+/ arrives as <C-_> in legacy terminals and as <C-/> in terminals
--- with the kitty keyboard protocol (for example, recent WezTerm). Map both.
+-- Ctrl+/ arrives as <C-_> in legacy terminals and as <C-/> with the kitty keyboard protocol.
 for _, lhs in ipairs({ "<C-_>", "<C-/>" }) do
 	vim.keymap.set("n", lhs, "gcc", { remap = true, desc = "toggle line comment" })
 	vim.keymap.set("v", lhs, "gc", { remap = true, desc = "toggle line comment" })

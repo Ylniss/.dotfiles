@@ -8,12 +8,11 @@ return {
 	opts = {
 		spec = {
 			{ "<leader>e", group = "explore" },
-			{ "<leader>g", group = "git" },
-			{ "<leader>gh", group = "git hunks" },
+			{ "<leader>g", group = "git", mode = { "n", "v" } },
+			{ "<leader>gh", group = "git hunks", mode = { "n", "v" } },
 			{ "<leader>s", group = "search" },
 
 			{ "<leader>", group = "VISUAL <leader>", mode = "v" },
-			{ "<leader>h", desc = "git hunk", mode = "v" },
 		},
 	},
 }

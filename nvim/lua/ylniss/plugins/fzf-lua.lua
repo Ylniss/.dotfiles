@@ -7,8 +7,7 @@ return {
 	event = "VeryLazy",
 	config = function()
 		local fzf = require("fzf-lua")
-		-- With file icons, fzf-lua defaults to `--nth -1..` to skip the icon field when matching.
-		-- On Windows, a process with `-1..` in its command line starts 0.2-2 s late, most likely from a Defender scan.
+		-- fzf-lua's default `--nth -1..` (skip the icon field) makes a Windows process start 0.2-2 s late, likely a Defender scan.
 		-- `-1` selects the same field.
 		local nth_skip_icon = { ["--nth"] = "-1" }
 		fzf.setup({
@@ -83,8 +82,7 @@ return {
 				local icon = fzf_utils.ansi_from_hl(style.hl, style.icon)
 				local dim_loc = fzf_utils.ansi_from_hl("Comment", loc)
 
-				-- entry_to_file() reads the location from the first nbsp field that matches :%d+:.
-				-- Field 1 holds the location for preview and actions. `--with-nth` hides field 1.
+				-- entry_to_file() takes the location from the first nbsp field matching `:%d+:`, so it goes first and `--with-nth` hides it.
 				table.insert(
 					entries,
 					table.concat({
