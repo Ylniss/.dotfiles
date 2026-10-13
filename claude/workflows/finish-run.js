@@ -62,8 +62,9 @@ const CHECK_RESULT = {
   properties: {
     gaps: { type: 'array', items: str, description: 'Każdy niespełniony punkt jako osobna pozycja; pusta, gdy wszystko się zgadza' },
     warnings: { type: 'array', items: str, description: 'Punkty, których nie dało się sprawdzić przez środowisko, z powodem' },
+    blocked: { type: 'array', items: str, description: 'Build lub testy, których nie dało się uruchomić przez środowisko, z powodem' },
   },
-  required: ['gaps', 'warnings'],
+  required: ['gaps', 'warnings', 'blocked'],
 }
 
 const checklist = []
@@ -99,7 +100,8 @@ const testsCheck = r =>
 
 const checkPrompt = points =>
   'Weryfikacja faktów. Nie zmieniaj żadnych plików i niczego nie naprawiaj. Każdy niespełniony punkt zgłoś jako osobną pozycję gaps. ' +
-  'Punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
+  'Build albo testy, których nie da się uruchomić z powodu środowiska (np. brak Dockera dla testów integracyjnych), zgłoś w blocked, nie w warnings: bez nich zmian nie uznajemy za sprawdzone. ' +
+  'Inny punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
   points.map((p, i) => `${i + 1}. ${p}`).join('\n')
 
 async function runVerified(step, prompt, pointsFor) {
@@ -114,6 +116,8 @@ async function runVerified(step, prompt, pointsFor) {
 
     const check = await runAgent(step, `weryfikacja ${step}`, checkPrompt(points), { ...LIGHT_AGENT, schema: CHECK_RESULT })
     checklist.push({ where, step, attempt, gaps: check.gaps, warnings: check.warnings })
+    // a retry cannot fix the environment
+    if (check.blocked.length) throw new Stop(step, check.blocked.map(b => `środowisko: ${b}`))
     if (!check.gaps.length) return result
     retry = { gaps: check.gaps, previous: result }
   }
