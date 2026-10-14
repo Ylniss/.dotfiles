@@ -45,7 +45,9 @@ zastrzeżenie tylko dodaje szum.
 Sprzeczne wyniki czytają się jak szum i psują zbiorcze zastosowanie. Sprawdź
 całą listę przed wypisaniem:
 
-- Dwa wyniki edytujące te same linie → zostaw lepszy, odrzuć drugi.
+- Dwa wyniki edytujące te same linie → zostaw lepszy, odrzuć drugi. Wyjątek:
+  wyniki różnych skilli, które się nie wykluczają (np. przepisanie linii i
+  zmiana nazwy w niej) → złóż oba w jeden wynik.
 - Wynik, którego użytkownik nie może zastosować, bo inny usuwa edytowany kod →
   złóż oba w jeden wynik.
 - Dwa wyniki mówiące to samo w dwóch plikach → trzymaj osobno tylko, gdy

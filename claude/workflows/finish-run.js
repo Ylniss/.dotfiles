@@ -1,6 +1,6 @@
 export const meta = {
   name: 'finish-run',
-  description: 'Skille przeglądu z finish.json po kolei: podział, równoległe analizy, zastosowanie ✓ z weryfikacją',
+  description: 'Etapy skilli przeglądu z finish.json po kolei: równoległe analizy skilli etapu, wspólne zastosowanie ✓ z weryfikacją',
 }
 
 const { finish, scope, reviewAgent, where } = args
@@ -17,16 +17,16 @@ const APPLY_RESULT = {
       type: 'array',
       items: {
         type: 'object',
-        properties: { finding: str, file: str, line: { type: 'integer' } },
-        required: ['finding', 'file', 'line'],
+        properties: { skill: str, finding: str, file: str, line: { type: 'integer' } },
+        required: ['skill', 'finding', 'file', 'line'],
       },
     },
     skipped: {
       type: 'array',
       items: {
         type: 'object',
-        properties: { finding: str, reason: str, worthUserDecision: { type: 'boolean' } },
-        required: ['finding', 'reason', 'worthUserDecision'],
+        properties: { skill: str, finding: str, reason: str, worthUserDecision: { type: 'boolean' } },
+        required: ['skill', 'finding', 'reason', 'worthUserDecision'],
       },
     },
     decisions: {
@@ -143,15 +143,15 @@ const analyzePrompt = (skill, task) =>
   `Pliki:\n${task.files.join('\n')}\n` +
   'Tylko raport w formacie skilla — niczego nie stosuj i nie pytaj użytkownika. Zwróć pełny tekst raportu.'
 
-const applyPrompt = (skill, reports) =>
-  `Poniżej raporty analizatorów skilla /${skill} dla zakresu "${scope.desc}". Scal je: przenumeruj w jedną listę, ` +
+const applyPrompt = (step, analyses) =>
+  `Poniżej raporty analizatorów ${step} dla zakresu "${scope.desc}". Scal je: przenumeruj w jedną listę, ` +
   'odrzuć duplikaty i przepuść scaloną listę przez sekcję Konflikty z ~/.claude/skills/_shared/report.md. Potem zastosuj. ' +
   `${finish.rules} ${NO_TESTS} Nie pytaj użytkownika. ` +
-  'W applied podaj każdy zastosowany wynik z plikiem i linią zmiany, w skipped każdy pominięty z powodem.\n\n' +
-  reports.map((r, i) => `=== Analizator ${i + 1} ===\n${r}`).join('\n\n')
+  'W applied podaj każdy zastosowany wynik ze skillem bez /, plikiem i linią zmiany, w skipped każdy pominięty ze skillem bez / i powodem.\n\n' +
+  analyses.flatMap(({ skill, reports }) => reports.map((r, i) => `=== /${skill} · analizator ${i + 1} ===\n${r}`)).join('\n\n')
 
 // Workflow agents cannot spawn subagents, so the script fans each skill's analysis out itself.
-async function runSkill(skill) {
+async function analyze(skill) {
   const step = `/${skill}`
   const split = await runAgent(step, `${step} podział`, splitPrompt(skill), { ...SPLIT_AGENT, schema: SPLIT_RESULT })
 
@@ -160,9 +160,18 @@ async function runSkill(skill) {
     split.tasks.map((task, i) => () => agent(analyzePrompt(skill, task), { ...reviewAgent, label: `${step} analiza ${i + 1}`, phase: where })),
   )
   if (reports.some(r => !r)) throw new Stop(step, ['analizator nie zwrócił raportu'])
+  return { skill, reports }
+}
+
+async function runStage(skills) {
+  const step = skills.map(s => `/${s}`).join(' + ')
+  // parallel() would turn a Stop into null and lose its gaps
+  const settled = await Promise.allSettled(skills.map(analyze))
+  const failed = settled.find(s => s.status === 'rejected')
+  if (failed) throw failed.reason
 
   // Nothing applied means nothing changed, so there is nothing to verify or test.
-  const result = await runVerified(step, applyPrompt(skill, reports), r =>
+  const result = await runVerified(step, applyPrompt(step, settled.map(s => s.value)), r =>
     r.applied.length
       ? [
           `Każda pozycja applied jest widoczna w \`${scope.diffCommand}\` (lub w nieśledzonym pliku) w podanym pliku blisko podanej linii: ${JSON.stringify(r.applied)}`,
@@ -171,13 +180,13 @@ async function runSkill(skill) {
       : [],
   )
   decisions.push(...result.decisions.map(d => ({ where, step, ...d })))
-  applied.push(...result.applied.map(a => ({ skill, ...a })))
-  skipped.push(...result.skipped.filter(s => s.worthUserDecision).map(s => ({ where, skill, ...s })))
+  applied.push(...result.applied)
+  skipped.push(...result.skipped.filter(s => s.worthUserDecision).map(s => ({ where, ...s })))
 }
 
 let stop = null
 try {
-  for (const skill of finish.skills) await runSkill(skill)
+  for (const skills of finish.stages) await runStage(skills)
 } catch (err) {
   if (!(err instanceof Stop)) throw err
   stop = err.stop

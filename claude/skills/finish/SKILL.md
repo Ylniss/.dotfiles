@@ -1,9 +1,9 @@
 ---
 name: finish
 description: >
-  Uruchamia skille przeglądu z finish.json po kolei jako workflow: podział,
-  równoległe analizy, zastosowanie ✓ i weryfikacja każdego skilla. Użyj, gdy
-  użytkownik wywołuje "/finish".
+  Uruchamia etapy skilli przeglądu z finish.json po kolei jako workflow:
+  równoległe analizy skilli etapu, wspólne zastosowanie ✓ i weryfikacja etapu.
+  Użyj, gdy użytkownik wywołuje "/finish".
 argument-hint: "[branch bazowy]"
 ---
 
@@ -38,7 +38,7 @@ argument-hint: "[branch bazowy]"
 
 Z wyniku workflowu:
 
-- **Stan:** wszystkie skille gotowe albo zatrzymany — na którym skillu, z
+- **Stan:** wszystkie etapy gotowe albo zatrzymany — na którym etapie, z
   jakimi brakami. Przy stopie dodaj: zmiany leżą niezacommitowane do
   przejrzenia.
 - **Ostrzeżenia** (`warnings` z `checklist`): czego weryfikator nie mógł
