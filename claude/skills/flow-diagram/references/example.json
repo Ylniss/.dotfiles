@@ -1,0 +1,346 @@
+{
+  "title": "Zdjęcia usług + szkice obrazów — przepływy (WELLMIFY-8624)",
+  "intro": "Backend: wszystko z gałęzi `wellmify-8624` (plan `plans/service-offer-images-api.md`). Front (apki SP i CLI, web) narysowany wg rozwiązania `plans/service-offer-images.md` — tam jeszcze niezaimplementowany. Uproszczone: pokazane kroki i decyzje, nie każda metoda.",
+  "legend": {
+    "colors": [
+      { "label": "Front (apki, web)", "color": "blue" },
+      { "label": "API · Files", "color": "violet" },
+      { "label": "API · ServiceProviders", "color": "green" },
+      { "label": "API · Studios / Chats", "color": "amber" },
+      { "label": "Azure Blob Storage", "color": "cyan" },
+      { "label": "Postgres", "color": "slate" },
+      { "label": "Eventy / SignalR / Mixpanel", "color": "pink" }
+    ],
+    "arrows": {
+      "http": "żądanie HTTP z aplikacji",
+      "call": "wywołanie wewnątrz API (ModuleClient / metoda)",
+      "ret": "odpowiedź",
+      "event": "event (`IMessageBroker`, po commicie)",
+      "err": "błąd / odrzucenie"
+    }
+  },
+  "sections": [
+    {
+      "type": "steps",
+      "title": "0 · Idea w 5 krokach",
+      "subtitle": "Wcześniej: apka wysyłała zdjęcie jako base64 w JSON. Teraz: apka wrzuca plik prosto do prywatnego obszaru szkiców w Azure, a w zwykłym żądaniu podaje tylko ścieżkę szkicu. API sprawdza szkic i dopiero wtedy publikuje go do publicznego kontenera.",
+      "steps": [
+        { "title": "1. Apka prosi o URL", "body": "`POST files/image-draft-upload-urls`\n→ podpisane URL-e (SAS, 15 min, tylko Create)", "color": "blue" },
+        { "title": "2. Apka wrzuca plik", "body": "`PUT` prosto do `bbox-private`\n(`image_drafts/{userId}/…`)\n— z pominięciem API", "color": "cyan" },
+        { "title": "3. Zwykłe żądanie", "body": "np. `POST sp/studios`, `PUT sp/service-offers`\nniesie `*_draft_path` zamiast base64", "color": "blue" },
+        { "title": "4. API publikuje", "body": "Files: czyj szkic? ≤ 20 MB? JPEG/PNG/WebP?\n→ kopia do `bbox-public` + wiersz `OwnedFile`", "color": "violet" },
+        { "title": "5. Klienci czytają", "body": "API zwraca publiczną ścieżkę;\nobraz pobierany wprost z `bbox-public`", "color": "green" }
+      ],
+      "note": "Szkic, którego nikt nie opublikował (porzucony formularz, błąd w apce), znika sam: reguła lifecycle na koncie storage kasuje `bbox-private/image_drafts/` po 1 dniu (`scripts/image-drafts-lifecycle-policy.json`, aplikuje ops). Szkice galerii usługi zostają prywatne aż do zapisu usługi."
+    },
+    {
+      "type": "table",
+      "title": "Mapa przypadków — który endpoint, który diagram",
+      "subtitle": "Wszystkie endpointy v3_17, które przyjmowały base64, przyjmują teraz ścieżkę szkicu. v3_16 nadal przyjmuje base64 (diagram 5).",
+      "columns": [
+        { "name": "Endpoint (v3_17)", "weight": 30 },
+        { "name": "Kto woła", "weight": 17 },
+        { "name": "Pole ze zdjęciem", "weight": 22 },
+        { "name": "Jak publikowane", "weight": 23 },
+        { "name": "Diagram", "weight": 8 }
+      ],
+      "rows": [
+        ["`POST files/image-draft-upload-urls`", "apka SP, apka CLI", "`{ count }` (1–100)", "nic — tylko podpisuje URL-e", "1"],
+        ["`POST files`", "SP: avatar, portfolio, certyfikat · CLI: avatar", "`{ type, draft_path }`", "**A** — od razu blob + wiersz `OwnedFile`", "2, 3"],
+        ["`POST sp/setup/required/step-3`", "SP, onboarding", "`profile_picture_draft_path`", "**A** — przez `files/publish-sp-avatar-draft`", "3"],
+        ["`POST sp/contacts`", "SP, import kontaktów", "`contacts[].cli_avatar_draft_path`", "**A** — przez `files/publish-contact-avatar-draft`", "3"],
+        ["`POST sp/studios` · `PUT sp/studios/{id}/main-image`", "SP, studio", "`main_image_draft_path`", "**B** — blob teraz, wiersz po commicie studia", "4"],
+        ["`POST` / `PUT sp/broadcast-channels`", "SP, kanał nadawczy", "`image_draft_path`", "**B** — blob teraz, wiersz po commicie kanału", "4"],
+        ["`PUT sp/service-offers` · `POST sp/service-offers` · `POST sp/setup/required/step-7`", "SP, formularz usługi", "`images: [{ path, description, position }]`", "**C** — galeria, wszystko albo nic", "6, 7"],
+        ["`DELETE sp/service-offers`", "SP", "—", "usunięcie wierszy i blobów po commicie", "8"],
+        ["`GET service-offers` · `GET sp/services/with-service-offers/{id}` · `GET web/service-providers/…`", "CLI · SP · web", "zwracają `images`", "odczyt z ServiceProviders", "9"],
+        ["`PATCH sp/profiles`", "SP", "już **nie** przyjmuje `profile_picture_path`", "avatar tylko przez `POST files`", "3"]
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "1 · Upload szkicu — wspólny pierwszy krok każdego zdjęcia z aplikacji",
+      "subtitle": "Tak samo dla avatarów, portfolio, certyfikatów, zdjęcia studia, kontaktów, kanału i galerii usługi. Apka SP robi to w paczkach po max 100 URL-i.",
+      "participants": [
+        { "id": "app", "label": "Apka mobilna (SP lub CLI)", "color": "blue" },
+        { "id": "files", "label": "API · Files", "color": "violet" },
+        { "id": "priv", "label": "Azure Blob `bbox-private` (szkice)", "color": "cyan" },
+        { "id": "api", "label": "API · endpoint biznesowy (studio, usługa, avatar…)", "color": "green" }
+      ],
+      "steps": [
+        { "from": "app", "to": "files", "text": "`POST files/image-draft-upload-urls { count: N }`", "kind": "http" },
+        { "act": "files", "text": "Podpisuje lokalnie N URL-i SAS kluczem konta — nic nie zapisuje:\n• uprawnienie tylko **Create** (nie nadpisze istniejącego bloba)\n• ważne **15 min**\n• ścieżka `image_drafts/{userId}/{nowy guid}`\n• `count` spoza 1–100 → 400", "max_width": 470 },
+        { "from": "files", "to": "app", "text": "`[{ draft_path, upload_url }] × N`", "kind": "ret" },
+        { "from": "app", "to": "priv", "text": "`PUT {upload_url}` · nagłówek `x-ms-blob-type: BlockBlob`\nsurowy plik strumieniem z dysku — bez API, bez base64", "kind": "http" },
+        { "from": "priv", "to": "app", "text": "201 Created", "kind": "ret" },
+        { "from": "app", "to": "api", "text": "zwykłe żądanie, ale zamiast base64 niesie `…_draft_path`", "kind": "http" },
+        { "act": "api", "text": "publikuje szkic → diagram 2" },
+        { "note": ["priv"], "text": "Szkic nieużyty w ciągu doby → usuwa go reguła lifecycle. Szkice nigdy nie są serwowane ani listowane.", "pad": 230 }
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "2 · Publikacja szkicu w Files — wspólna walidacja i 3 warianty",
+      "subtitle": "Wywołujący to `FilesController` (POST files) albo inny moduł przez `ModuleClient` (`files/publish-…-draft`). Walidacja jest jedna dla wszystkich wariantów.",
+      "participants": [
+        { "id": "caller", "label": "Wywołujący (kontroler lub moduł)", "color": "green" },
+        { "id": "files", "label": "Files `FilesService`", "color": "violet" },
+        { "id": "priv", "label": "Azure Blob `bbox-private`", "color": "cyan" },
+        { "id": "pub", "label": "Azure Blob `bbox-public`", "color": "cyan" },
+        { "id": "db", "label": "Postgres `files.OwnedFiles`", "color": "slate" }
+      ],
+      "steps": [
+        { "from": "caller", "to": "files", "text": "publish(uploaderId, type, `draft_path`)" },
+        { "from": "files", "to": "priv", "text": "pobierz szkic" },
+        { "frame": "alt", "cond": "ścieżka nie jest `bbox-private/image_drafts/{uploaderId}/{guid}`" },
+        { "from": "files", "to": "caller", "text": "404 — cudzy szkic albo sztuczki z `../`", "kind": "err" },
+        { "else": "szkic większy niż 20 MB" },
+        { "from": "files", "to": "caller", "text": "400 `ImageDraftTooLarge`", "kind": "err" },
+        { "else": "nagłówek pliku to nie JPEG / PNG / WebP (sprawdzany obraz, nie rozszerzenie)" },
+        { "from": "files", "to": "caller", "text": "400 `InvalidImageDraftFormat`", "kind": "err" },
+        { "end": true },
+        { "act": "files", "text": "OK → rozszerzenie pliku = wykryty format" },
+        { "frame": "alt", "cond": "wariant A — `PublishImageDraftAsync`: avatary, portfolio, certyfikaty, kontakty" },
+        { "from": "files", "to": "pub", "text": "upload bloba (avatary zmniejszone)" },
+        { "from": "files", "to": "db", "text": "INSERT wiersz `OwnedFile` + zapis" },
+        { "act": "files", "text": "SP avatar: dodatkowo obraz OG i event `ServiceProviderAvatarUploaded` (→ ServiceProviders ustawia ścieżkę avatara)", "max_width": 520 },
+        { "else": "wariant B — `PublishImageDraftBlobAsync`: zdjęcie studia, zdjęcie kanału" },
+        { "from": "files", "to": "pub", "text": "upload bloba — **bez** wiersza `OwnedFile`" },
+        { "act": "files", "text": "wiersz doda handler eventu po commicie właściciela (diagram 4)", "max_width": 420 },
+        { "else": "wariant C — `PublishServiceOfferImageDraftsAsync`: galeria usługi, wiele naraz" },
+        { "act": "files", "text": "najpierw pobiera i sprawdza **wszystkie** szkice — jeden zły = nic nie publikuje", "max_width": 440 },
+        { "from": "files", "to": "pub", "text": "upload każdego bloba" },
+        { "from": "files", "to": "db", "text": "INSERT wiersze `OwnedFile` + jeden zapis" },
+        { "act": "files", "text": "błąd po drodze → kasuje już wrzucone bloby i rzuca dalej (wszystko albo nic)" },
+        { "end": true },
+        { "from": "files", "to": "caller", "text": "publiczna ścieżka (w C: lista ścieżek w kolejności szkiców)", "kind": "ret" }
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "3 · Wariant A — POST files, avatar w onboardingu (step-3), import kontaktów",
+      "subtitle": "Plik dostaje wiersz `OwnedFile` od razu przy publikacji. Przed każdym z tych żądań apka robi upload szkicu (diagram 1).",
+      "participants": [
+        { "id": "app", "label": "Apka (SP / CLI)", "color": "blue" },
+        { "id": "controller", "label": "Files `FilesController`", "color": "violet" },
+        { "id": "sp", "label": "ServiceProviders", "color": "green" },
+        { "id": "files", "label": "Files `FilesService`", "color": "violet" },
+        { "id": "store", "label": "`bbox-public` + `OwnedFiles`", "color": "cyan" }
+      ],
+      "steps": [
+        { "frame": "POST files", "cond": "avatar SP / CLI, portfolio, certyfikat" },
+        { "from": "app", "to": "controller", "text": "`POST files { type, draft_path }`", "kind": "http" },
+        { "act": "controller", "text": "czy ten typ wolno tej roli?\nCLI: `ClientAvatar`\nSP: `ServiceProviderAvatar`, `ServiceProviderGalleryImage`, `ServiceProviderCertificate`\ninny typ → 400 `OwnedFileTypeNotPublishable`" },
+        { "from": "controller", "to": "files", "text": "`PublishImageDraftAsync`" },
+        { "from": "files", "to": "store", "text": "walidacja + blob + wiersz (diagram 2, A)" },
+        { "from": "files", "to": "controller", "text": "ścieżka", "kind": "ret" },
+        { "from": "controller", "to": "app", "text": "`{ path }`", "kind": "ret" },
+        { "act": "app", "text": "portfolio / certyfikaty: ścieżka idzie potem w `PUT files` (opisy, kolejność) — jak dotąd", "max_width": 380 },
+        { "end": true },
+        { "frame": "step-3", "cond": "onboarding — zdjęcie profilowe (opcjonalne)" },
+        { "from": "app", "to": "sp", "text": "`POST sp/setup/required/step-3 { profile_picture_draft_path? }`", "kind": "http" },
+        { "from": "sp", "to": "files", "text": "`files/publish-sp-avatar-draft`" },
+        { "from": "files", "to": "store", "text": "diagram 2, A (+ obraz OG)" },
+        { "from": "files", "to": "sp", "text": "ścieżka avatara", "kind": "ret" },
+        { "act": "sp", "text": "zalicza krok onboardingu, commit" },
+        { "end": true },
+        { "frame": "kontakty", "cond": "import kontaktów z telefonu" },
+        { "from": "app", "to": "sp", "text": "`POST sp/contacts { contacts[].cli_avatar_draft_path? }`", "kind": "http" },
+        { "from": "sp", "to": "files", "text": "dla każdego kontaktu ze zdjęciem: `files/publish-contact-avatar-draft`" },
+        { "from": "files", "to": "store", "text": "diagram 2, A" },
+        { "act": "sp", "text": "`Contact.AvatarImgUrl` = ścieżka, commit" },
+        { "end": true },
+        { "note": ["app", "sp"], "text": "`PATCH sp/profiles` nie przyjmuje już `profile_picture_path` — avatar zmienia się tylko przez `POST files`." }
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "4 · Wariant B — zdjęcie studia i zdjęcie kanału: blob teraz, wiersz po commicie",
+      "subtitle": "Kolejność jest celowa: stary blob znika dopiero, gdy właściciel (studio / kanał) zapisał nową ścieżkę. Na rysunku studio; kanał — ramka na dole.",
+      "participants": [
+        { "id": "app", "label": "Apka SP", "color": "blue" },
+        { "id": "studios", "label": "Studios (kanał: Chats)", "color": "amber" },
+        { "id": "files", "label": "Files", "color": "violet" },
+        { "id": "pub", "label": "Azure Blob `bbox-public`", "color": "cyan" },
+        { "id": "db", "label": "Postgres `files.OwnedFiles`", "color": "slate" }
+      ],
+      "steps": [
+        { "from": "app", "to": "studios", "text": "`POST sp/studios { main_image_draft_path, … }`\nlub `PUT sp/studios/{id}/main-image { main_image_draft_path }`", "kind": "http" },
+        { "from": "studios", "to": "files", "text": "`files/publish-studio-main-image-draft`" },
+        { "from": "files", "to": "pub", "text": "walidacja + upload **nowego** bloba (wariant B, bez wiersza)" },
+        { "from": "files", "to": "studios", "text": "nowa ścieżka", "kind": "ret" },
+        { "act": "studios", "text": "zapisuje `Studio.MainImagePath` + deep link z nowym zdjęciem\n`StudioMainImageChanged` → kopia studia w ServiceProviders (ta sama transakcja)\n**COMMIT**", "max_width": 520 },
+        { "frame": "alt", "cond": "commit się nie udał" },
+        { "act": "studios", "text": "zostaje osierocony nowy blob — nigdy studio wskazujące na usunięty plik", "max_width": 470 },
+        { "else": "commit OK" },
+        { "from": "studios", "to": "files", "text": "`StudioMainImageSaved(studioId, path)`", "kind": "event" },
+        { "from": "files", "to": "db", "text": "brak wiersza → INSERT · jest → podmień ścieżkę · **zapis**" },
+        { "from": "files", "to": "pub", "text": "dopiero teraz usuń **stary** blob" },
+        { "act": "studios", "text": "zmiana zdjęcia: SignalR do członków studia + odświeżenie deep linku" },
+        { "end": true },
+        { "from": "studios", "to": "app", "text": "`{ studio_id, link }` / `{ main_image_path }`", "kind": "ret" },
+        { "frame": "kanał", "cond": "zdjęcie kanału nadawczego — ten sam schemat w Chats" },
+        { "from": "app", "to": "studios", "text": "`POST` / `PUT sp/broadcast-channels { image_draft_path }` → Chats", "kind": "http" },
+        { "from": "studios", "to": "files", "text": "`files/publish-broadcast-channel-image-draft`" },
+        { "act": "studios", "text": "zapis kanału, **COMMIT**" },
+        { "from": "studios", "to": "files", "text": "`BroadcastChannelImageChanged(channelId, path)`", "kind": "event" },
+        { "from": "files", "to": "pub", "text": "dodaj / podmień wiersz, potem usuń stary blob" },
+        { "end": true },
+        { "note": ["studios", "files"], "text": "Dlaczego: wcześniej stary blob i wiersz znikały **przed** commitem studia — nieudany commit zostawiał studio z obrazkiem, którego już nie ma." }
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "5 · Kompatybilność wstecz — stara apka (v3_16) z base64",
+      "subtitle": "Tylko v3_16 (v3_14 i v3_15 usunięto w release 3.16). v3_17 przyjmuje wyłącznie ścieżki szkiców — bez \"przyjmij oba\". Wydanie API zsynchronizowane z apkami SP i CLI.",
+      "participants": [
+        { "id": "old", "label": "Stara apka `x-api-version: 3.16`", "color": "blue" },
+        { "id": "v3_16", "label": "Kontroler v3_16 / serwis step-3", "color": "green" },
+        { "id": "priv", "label": "Azure Blob `bbox-private`", "color": "cyan" },
+        { "id": "handler", "label": "Ten sam handler co v3_17", "color": "green" }
+      ],
+      "steps": [
+        { "from": "old", "to": "v3_16", "text": "base64 w JSON:\n`main_image_base64` (studio) · `cli_avatar_base64` (kontakty) · `profile_picture_base64_content` (step-3)", "kind": "http" },
+        { "from": "v3_16", "to": "priv", "text": "`UploadImageDraft(userId, bajty)` — serwer sam tworzy szkic" },
+        { "from": "priv", "to": "v3_16", "text": "`draft_path`", "kind": "ret" },
+        { "from": "v3_16", "to": "handler", "text": "komenda z `…_draft_path`" },
+        { "act": "handler", "text": "dalej dokładnie jak v3_17 (ta sama walidacja formatu i rozmiaru)", "max_width": 330 },
+        { "note": ["old", "v3_16"], "text": "`POST files` w v3_16 działa po staremu: base64 → `UploadAsync`. Broadcast channels istnieją tylko w v3_17." }
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "6 · Galeria usługi — formularz w apce SP (front, wg rozwiązania)",
+      "subtitle": "Jeden formularz `ServiceOfferDetails` dla ustawień, kroku 8 onboardingu i przejęcia konta shadow. Zdjęcia wgrywają się od razu jako szkice, ale publikuje je dopiero zapis usługi.",
+      "participants": [
+        { "id": "user", "label": "Specjalista (SP)", "color": "blue" },
+        { "id": "form", "label": "Formularz usługi (apka SP)", "color": "blue" },
+        { "id": "files", "label": "API · Files", "color": "violet" },
+        { "id": "priv", "label": "Azure Blob `bbox-private`", "color": "cyan" },
+        { "id": "sp", "label": "API · ServiceProviders", "color": "green" }
+      ],
+      "steps": [
+        { "from": "form", "to": "sp", "text": "edycja: `GET sp/services/with-service-offers/{serviceId}`", "kind": "http" },
+        { "from": "sp", "to": "form", "text": "`images [{ path, description, position }]` → w formularzu jako `uploaded`", "kind": "ret" },
+        { "from": "user", "to": "form", "text": "dodaje zdjęcie (galeria / aparat, kadr kwadratowy)" },
+        { "act": "form", "text": "już 10 → toast z limitem\nnowa pozycja `status: uploading`, miniatura z lokalnego `file://`" },
+        { "from": "form", "to": "files", "text": "`POST files/image-draft-upload-urls { count: 1 }`", "kind": "http" },
+        { "from": "form", "to": "priv", "text": "`PUT upload_url` (plik)", "kind": "http" },
+        { "act": "form", "text": "sukces → `status: uploaded`, `path` = draft_path\nbłąd → `status: failed`" },
+        { "from": "user", "to": "form", "text": "kolejność · opis (≤ 200 zn.) · usuwanie" },
+        { "act": "form", "text": "to tylko stan formularza — na serwerze nic się nie zmienia aż do Zapisz\nZapisz zablokowany, dopóki coś jest `uploading` / `failed`", "max_width": 480 },
+        { "from": "user", "to": "form", "text": "Zapisz" },
+        { "from": "form", "to": "sp", "text": "`PUT sp/service-offers` (ustawienia) · `POST sp/service-offers` (własna usługa) · `POST sp/setup/required/step-7` (onboarding)\n`images: [{ path, description, position }]` — nowe zdjęcie: draft_path, zachowane: jego publiczna ścieżka, `position` = kolejność na liście", "kind": "http" },
+        { "act": "sp", "text": "→ diagram 7" },
+        { "note": ["form", "priv"], "text": "Porzucony formularz = szkice nigdy nieopublikowane → lifecycle usuwa je po dobie. Na serwerze nie ma żadnego stanu \"w trakcie edycji\"." }
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "7 · Galeria usługi — zapis oferty (backend)",
+      "subtitle": "Na przykładzie `PUT sp/service-offers`. `POST sp/service-offers` i step-7 idą tą samą ścieżką (różnice w notatce). Galeria to tabela `ServiceOfferImages` w schemacie ServiceProviders; pliki należą do Files.",
+      "participants": [
+        { "id": "app", "label": "Apka SP", "color": "blue" },
+        { "id": "handler", "label": "Handler (Upsert / AddCustom / step-7)", "color": "green" },
+        { "id": "assigner", "label": "`ServiceOfferImagesAssigner`", "color": "green" },
+        { "id": "files", "label": "Files", "color": "violet" },
+        { "id": "db", "label": "Postgres `service_providers`", "color": "slate" },
+        { "id": "bus", "label": "Po zapisie: Files, inne moduły, SignalR, Mixpanel", "color": "pink" }
+      ],
+      "steps": [
+        { "from": "app", "to": "handler", "text": "`PUT sp/service-offers [{ …oferta, images? }]`", "kind": "http" },
+        { "act": "handler", "text": "ładuje SP i jego oferty z `Images`\n`ServiceOfferUpserter.Apply`: tworzy / aktualizuje oferty, paruje (oferta, images)\n`images` pominięte → galeria bez zmian · `images: []` → wyczyść galerię", "max_width": 520 },
+        { "from": "handler", "to": "assigner", "text": "`ApplyAsync(spId, obecne oferty, pary)`" },
+        { "act": "assigner", "text": "walidacja — naruszenie = 400, nic nie zapisane ani opublikowane:\n• max **10** zdjęć · pozycje dokładnie 0..n-1 · ścieżka raz w żądaniu\n• ścieżka nie należy do innej, nieusuwanej oferty · opis ≤ 200 zn.\nszkice = ścieżki, których nie ma w żadnej galerii tego SP", "max_width": 500 },
+        { "frame": "opt", "cond": "są szkice" },
+        { "act": "assigner", "text": "konto shadow → 400 `ServiceOfferImagesNotAvailableForShadowAccount`" },
+        { "from": "assigner", "to": "files", "text": "`files/publish-service-offer-image-drafts(spId, draftPaths)`" },
+        { "act": "files", "text": "wariant C (diagram 2):\nwszystko albo nic, bloby + wiersze `OwnedFile` już zapisane", "max_width": 340 },
+        { "from": "files", "to": "assigner", "text": "publiczne ścieżki", "kind": "ret" },
+        { "end": true },
+        { "act": "assigner", "text": "nakłada na `offer.Images`: dodaje nowe wiersze, zmienia opis / pozycję, brakujące usuwa", "max_width": 460 },
+        { "from": "assigner", "to": "handler", "text": "`PublishedPaths`, `RemovedPaths`", "kind": "ret" },
+        { "from": "handler", "to": "db", "text": "SaveChanges" },
+        { "frame": "alt", "cond": "zapis się nie udał" },
+        { "from": "handler", "to": "bus", "text": "`ServiceOfferImagesRemoved(PublishedPaths)` — Files sprząta świeżo opublikowane", "kind": "event" },
+        { "from": "handler", "to": "app", "text": "błąd", "kind": "err" },
+        { "else": "zapis OK" },
+        { "from": "handler", "to": "bus", "text": "`CustomServicesChanged` (zmiana nazwy własnej usługi) · SignalR do członków studia", "kind": "event" },
+        { "from": "handler", "to": "bus", "text": "`ServiceOfferImagesRemoved(RemovedPaths)` → Files: usuwa wiersze `OwnedFile` (tylko tego SP) i bloby; błąd bloba → tylko warning", "kind": "event" },
+        { "from": "handler", "to": "bus", "text": "Mixpanel (diagram 10) — na samym końcu", "kind": "event" },
+        { "from": "handler", "to": "app", "text": "200", "kind": "ret" },
+        { "end": true },
+        { "note": ["app", "assigner"], "text": "`POST sp/service-offers`: to samo dla jednej nowej własnej usługi (z `images`).\n`step-7`: podmienia cały zestaw ofert — zdjęcie z usuwanej oferty może przejść do nowej (ta sama ścieżka). Zapis i `ServiceOfferImagesRemoved` dzieją się przed commitem onboardingu, więc nieudany step-7 da się powtórzyć." }
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "8 · Usunięcie usługi — zdjęcia znikają razem z nią",
+      "participants": [
+        { "id": "app", "label": "Apka SP", "color": "blue" },
+        { "id": "handler", "label": "ServiceProviders (handler usuwania)", "color": "green" },
+        { "id": "db", "label": "Postgres `service_providers`", "color": "slate" },
+        { "id": "files", "label": "Files", "color": "violet" },
+        { "id": "store", "label": "`OwnedFiles` + `bbox-public`", "color": "cyan" },
+        { "id": "mixpanel", "label": "Mixpanel", "color": "pink" }
+      ],
+      "steps": [
+        { "from": "app", "to": "handler", "text": "`DELETE sp/service-offers [{ service_offer_id }]`", "kind": "http" },
+        { "act": "handler", "text": "ładuje oferty z `Images`, zapamiętuje ścieżki zdjęć\n(i snapshot oferty do Mixpanel)" },
+        { "from": "handler", "to": "db", "text": "usuń oferty (kaskada usuwa `ServiceOfferImages`) + nieużywane własne usługi, **zapis**" },
+        { "act": "handler", "text": "`CustomServicesChanged`, SignalR do członków studia" },
+        { "from": "handler", "to": "files", "text": "`ServiceOfferImagesRemoved(spId, ścieżki)`", "kind": "event" },
+        { "from": "files", "to": "store", "text": "usuń wiersze `OwnedFile` (filtr po właścicielu), zapis, potem bloby" },
+        { "act": "files", "text": "błąd usuwania bloba → log warning; usunięcie usługi i tak się udaje" },
+        { "from": "handler", "to": "mixpanel", "text": "`SpServiceRemoved` (`NumberOfPhotos`)", "kind": "event" },
+        { "from": "handler", "to": "app", "text": "200", "kind": "ret" }
+      ]
+    },
+    {
+      "type": "sequence",
+      "title": "9 · Odczyty — gdzie klienci widzą zdjęcia",
+      "subtitle": "Wszystkie odczyty idą do ServiceProviders (galeria jest w jego schemacie) — bez wołania Files. `images` zawsze jest tablicą (pustą, gdy brak zdjęć), posortowaną po `position`.",
+      "participants": [
+        { "id": "cli", "label": "Apka CLI", "color": "blue" },
+        { "id": "spapp", "label": "Apka SP", "color": "blue" },
+        { "id": "web", "label": "Web (Angular, SSR)", "color": "blue" },
+        { "id": "sp", "label": "API · ServiceProviders (baza read-only)", "color": "green" },
+        { "id": "pub", "label": "Azure Blob `bbox-public`", "color": "cyan" }
+      ],
+      "steps": [
+        { "from": "cli", "to": "sp", "text": "profil SP: `GET service-offers?serviceProviderId=…`", "kind": "http" },
+        { "from": "sp", "to": "cli", "text": "drzewo ofert z `images [{ path, description, position }]`\nrodzic wariantów bierze pierwszą niepustą galerię dziecka", "kind": "ret" },
+        { "act": "cli", "text": "`ServiceCard`: okładka = `images[0]` lub placeholder\n`ServiceDetailSheet`: pasek miniatur + pełny ekran" },
+        { "from": "spapp", "to": "sp", "text": "edycja usługi: `GET sp/services/with-service-offers/{serviceId}`", "kind": "http" },
+        { "from": "sp", "to": "spapp", "text": "`images` → formularz (diagram 6)", "kind": "ret" },
+        { "from": "web", "to": "sp", "text": "`GET web/service-providers/{city}/{alias}` lub `/{id}`", "kind": "http" },
+        { "from": "sp", "to": "web", "text": "`images [{ url, description, position }]` (rodzic i liść)", "kind": "ret" },
+        { "act": "web", "text": "karta: okładka · modal: galeria · lightbox z opisami · JSON-LD `image`" },
+        { "from": "cli", "to": "pub", "text": "`GET` obrazka po URL — prosto ze storage, bez API", "kind": "http" },
+        { "from": "web", "to": "pub", "text": "`GET` obrazka po URL", "kind": "http" },
+        { "note": ["sp"], "text": "Filtr frazą w `GET service-offers` przelicza rodzica (cena, czas, opis, galeria) tylko z dzieci, które przeszły filtr.", "pad": 260 }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "10 · Mixpanel — liczba zdjęć w eventach usług",
+      "subtitle": "Eventy Added / Updated / Removed miały handlery, ale nikt ich nie publikował — ta gałąź wysyła je pierwszy raz. Lecą po commicie, na końcu handlera.",
+      "columns": [
+        { "name": "Kiedy", "weight": 40 },
+        { "name": "Event", "weight": 30 },
+        { "name": "Właściwość ze zdjęciami", "weight": 30 }
+      ],
+      "rows": [
+        ["`PUT sp/service-offers` — nowa oferta w payloadzie", "`SpServiceAddedMixpanelEvent`", "`NumberOfPhotos`"],
+        ["`PUT sp/service-offers` — istniejąca oferta, która **faktycznie** się zmieniła (pola, nazwa, zdjęcia, kolejność, opisy — wg change trackera EF)", "`SpServiceUpdatedMixpanelEvent`", "`PreviousNumberOfPhotos`, `NewNumberOfPhotos`"],
+        ["`POST sp/service-offers` (własna usługa)", "`SpServiceAddedMixpanelEvent`", "`NumberOfPhotos`"],
+        ["`DELETE sp/service-offers`", "`SpServiceRemovedMixpanelEvent`", "`NumberOfPhotos`"],
+        ["`POST sp/setup/required/step-7` kończący onboarding", "`SpRequiredOnboardingServiceDetailsProgressedMixpanelEvent` (7.3)", "`NumberOfPhotos`"]
+      ],
+      "notes": [
+        "step-7 **nie** wysyła Added / Updated / Removed: podmienia wszystkie oferty przy każdym wywołaniu, więc liczyłby te same usługi wiele razy.",
+        "`Number of Offered Services` jest ustawiane na aktualną liczbę ofert SP (set, nie +1/−1) — inkrementacja startowałaby od 0, bo te eventy nigdy wcześniej nie leciały."
+      ]
+    }
+  ]
+}

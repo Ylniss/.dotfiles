@@ -11,3 +11,9 @@ sandbox = "elevated"
 status_line = ["model-with-reasoning", "project-name", "git-branch", "context-used", "five-hour-limit", "weekly-limit"]
 status_line_use_colors = true
 screen_reader_detection_done = true
+
+[projects.'c:\users\zupqa\stuff\repo\wide-soundstage']
+trust_level = "trusted"
+
+[projects.'c:\users\janol\appdata\local\temp\claude\c--users-zupqa-stuff-repo-wide-soundstage\57eb1c72-d726-47de-aa61-b4a81ec4231a\scratchpad\session_env']
+trust_level = "trusted"
