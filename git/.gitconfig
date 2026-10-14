@@ -36,3 +36,5 @@
 	sort = -version:refname
 [column]
 	ui = auto
+[safe]
+	directory = C:/Users/zupqa/Stuff/Repo/wide-soundstage
