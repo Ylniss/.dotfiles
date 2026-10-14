@@ -132,8 +132,17 @@ async function runPhase(where, n) {
   decisions.push(...result.decisions.map(d => ({ where, step: 'phase', ...d })))
 }
 
+// A sub-workflow loads by name at call time, so a mid-run edit can break it; a Stop keeps the result.
+async function runWorkflow(where, step, name, workflowArgs) {
+  try {
+    return await workflow(name, workflowArgs)
+  } catch (err) {
+    throw new Stop(where, step, [`błąd ${name}: ${err}`])
+  }
+}
+
 async function runFinish(where, scope) {
-  const result = await workflow('finish-run', { finish, scope, reviewAgent: REVIEW_AGENT, where })
+  const result = await runWorkflow(where, 'finish', 'finish-run', { finish, scope, reviewAgent: REVIEW_AGENT, where })
   checklist.push(...result.checklist)
   decisions.push(...result.decisions)
   skipped.push(...result.skipped)
@@ -141,7 +150,7 @@ async function runFinish(where, scope) {
 }
 
 async function runCodeReview(where) {
-  const result = await workflow('code-review-run', { scope: PHASE_SCOPE, reviewAgent: REVIEW_AGENT, where })
+  const result = await runWorkflow(where, 'code-review', 'code-review-run', { scope: PHASE_SCOPE, reviewAgent: REVIEW_AGENT, where })
   checklist.push(...result.checklist)
   decisions.push(...result.decisions)
   rejected.push(...result.rejected)
