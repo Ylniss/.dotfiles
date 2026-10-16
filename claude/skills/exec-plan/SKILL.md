@@ -21,6 +21,9 @@ agentem i staje, zamiast iść dalej z luką.
   finish i code-review.
 - Plan: ścieżka (także z `@`) lub slug pod `<git-root>/plans/`.
 - Baza: domyślnie `develop`.
+- Wznowienie (opcjonalne, także opisane słowami): faza i krok `phase`,
+  `finish`, `code-review` lub `commit`, od którego ją zacząć, gdy poprzedni run
+  stanął po wcześniejszych krokach.
 
 Brak wymaganego argumentu lub nieznana wartość → wypisz składnię z
 argument-hint i zakończ.
@@ -30,9 +33,13 @@ argument-hint i zakończ.
 Zatrzymaj się z powodem, gdy:
 
 - bieżący branch to baza,
-- drzewo robocze nie jest czyste,
+- drzewo robocze nie jest czyste — chyba że wznowienie zaczyna od kroku po
+  `phase`; wtedy drzewo to zmiany wznawianej fazy,
 - baza nie istnieje,
-- w planie nie została żadna faza `[ ]`.
+- w planie nie została żadna faza `[ ]` ani faza wznawiana.
+
+Wznowienie od kroku po `phase` → oznacz fazę `[x]` w planie, jeśli jeszcze nie
+jest, jak zrobiłby to krok phase.
 
 ## 3. Pytania
 
@@ -63,7 +70,8 @@ Wywołanie tego skilla to zgoda użytkownika na workflow i na jego commity.
 - Wczytaj `~/.claude/skills/finish/finish.json`.
 - Uruchom Workflow z `name` = `exec-plan-run` i `args`:
   - `plan` — ścieżka planu od korzenia repo,
-  - `phases` — fazy `[ ]` w kolejności, każda `{ n, name }`,
+  - `phases` — faza wznawiana i fazy `[ ]` w kolejności, każda `{ n, name }`;
+    wznawiana dostaje też `from` z krokiem startowym,
   - `head` — sha HEAD po commicie planu z kroku 4,
   - `planTracked` — false, gdy plan jest ignorowany przez git,
   - `phaseModel`, `phaseEffort`, `reviewModel`, `reviewEffort`, `base`,

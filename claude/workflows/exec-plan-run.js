@@ -90,6 +90,7 @@ const testsCheck = r =>
 const checkPrompt = points =>
   'Weryfikacja faktów. Nie zmieniaj żadnych plików i niczego nie naprawiaj. Każdy niespełniony punkt zgłoś jako osobną pozycję gaps. ' +
   'Build albo testy, których nie da się uruchomić z powodu środowiska (np. brak Dockera dla testów integracyjnych), zgłoś w blocked, nie w warnings: bez nich zmian nie uznajemy za sprawdzone. ' +
+  'Testy, których nie uruchomiono, bo build pada przez kod, to gap, nie blocked. Demona Dockera sprawdzaj przez `docker info --format "{{.ServerVersion}}"`: wersja znaczy, że działa (początek pełnego `docker info` to tylko sekcja Client). ' +
   'Inny punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
   points.map((p, i) => `${i + 1}. ${p}`).join('\n')
 
@@ -107,8 +108,8 @@ async function runVerified(where, step, opts, prompt, schema, pointsFor) {
 
     const check = await runAgent(where, step, `weryfikacja ${step}`, checkPrompt(points), { ...LIGHT_AGENT, schema: CHECK_RESULT })
     checklist.push({ where, step, attempt, gaps: check.gaps, warnings: check.warnings })
-    // a retry cannot fix the environment
-    if (check.blocked.length) throw new Stop(where, step, check.blocked.map(b => `środowisko: ${b}`))
+    // a retry cannot fix the environment, but a gap such as a build broken by the code can be what blocked the tests
+    if (check.blocked.length && !check.gaps.length) throw new Stop(where, step, check.blocked.map(b => `środowisko: ${b}`))
     if (!check.gaps.length) return result
     retry = { gaps: check.gaps, previous: result }
   }
@@ -182,15 +183,19 @@ async function runCommit(where, withPlan) {
   verifiedHead = result.sha
 }
 
+const STEPS = ['phase', 'finish', 'code-review', 'commit']
+
 let stop = null
 try {
-  for (const { n, name } of phases) {
+  // `from` resumes a phase whose earlier steps finished in a previous run.
+  for (const { n, name, from = 'phase' } of phases) {
     const where = `F${n} · ${name}`
     phase(where)
-    log(`Faza ${n}: ${name}`)
-    await runPhase(where, n)
-    await runFinish(where, PHASE_SCOPE)
-    await runCodeReview(where)
+    log(`Faza ${n}: ${name}${from === 'phase' ? '' : ` (od ${from})`}`)
+    const start = STEPS.indexOf(from)
+    if (start <= 0) await runPhase(where, n)
+    if (start <= 1) await runFinish(where, PHASE_SCOPE)
+    if (start <= 2) await runCodeReview(where)
     await runCommit(where, planTracked)
   }
 

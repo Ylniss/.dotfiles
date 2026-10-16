@@ -117,6 +117,7 @@ const testsCheck = r =>
 const checkPrompt = points =>
   'Weryfikacja faktów. Nie zmieniaj żadnych plików i niczego nie naprawiaj. Każdy niespełniony punkt zgłoś jako osobną pozycję gaps. ' +
   'Build albo testy, których nie da się uruchomić z powodu środowiska (np. brak Dockera dla testów integracyjnych), zgłoś w blocked, nie w warnings: bez nich zmian nie uznajemy za sprawdzone. ' +
+  'Testy, których nie uruchomiono, bo build pada przez kod, to gap, nie blocked. Demona Dockera sprawdzaj przez `docker info --format "{{.ServerVersion}}"`: wersja znaczy, że działa (początek pełnego `docker info` to tylko sekcja Client). ' +
   'Inny punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
   points.map((p, i) => `${i + 1}. ${p}`).join('\n')
 
@@ -132,8 +133,8 @@ async function runVerified(prompt, pointsFor) {
 
     const check = await runAgent(`weryfikacja ${step}`, checkPrompt(points), { ...LIGHT_AGENT, schema: CHECK_RESULT })
     checklist.push({ where, step, attempt, gaps: check.gaps, warnings: check.warnings })
-    // a retry cannot fix the environment
-    if (check.blocked.length) throw new Stop(check.blocked.map(b => `środowisko: ${b}`))
+    // a retry cannot fix the environment, but a gap such as a build broken by the code can be what blocked the tests
+    if (check.blocked.length && !check.gaps.length) throw new Stop(check.blocked.map(b => `środowisko: ${b}`))
     if (!check.gaps.length) return result
     retry = { gaps: check.gaps, previous: result }
   }
