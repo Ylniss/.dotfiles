@@ -298,6 +298,8 @@ Config (settings, skills, agents, rules, hooks) is symlinked by `install_dotfile
 claude mcp add --scope user --transport http context7 https://mcp.context7.com/mcp --header "CONTEXT7_API_KEY: <key>"
 ```
 
+`claude2` runs a second subscription from `~/.claude-2`; the same skills, agents, rules and workflows are symlinked there too.
+
 # Docker
 
 Build the dotfiles image (Arch base + nushell, neovim, yazi, lazygit, Mason LSPs preinstalled):
