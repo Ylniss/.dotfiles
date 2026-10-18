@@ -112,10 +112,10 @@ const checkPrompt = points =>
   'Inny punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
   points.map((p, i) => `${i + 1}. ${p}`).join('\n')
 
-async function runVerified(step, prompt, pointsFor) {
+async function runVerified(step, applyAgent, prompt, pointsFor) {
   let retry = null
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const result = await runAgent(step, step, retry ? fixPrompt(prompt, retry) : prompt, { ...reviewAgent, schema: APPLY_RESULT })
+    const result = await runAgent(step, step, retry ? fixPrompt(prompt, retry) : prompt, { ...applyAgent, schema: APPLY_RESULT })
     const points = pointsFor(result)
     if (!points.length) {
       checklist.push({ where, step, attempt, gaps: [], warnings: [] })
@@ -164,15 +164,16 @@ async function analyze(skill) {
   return { skill, reports }
 }
 
-async function runStage(skills) {
+async function runStage({ skills, applyModel }) {
   const step = skills.map(s => `/${s}`).join(' + ')
   // parallel() would turn a Stop into null and lose its gaps
   const settled = await Promise.allSettled(skills.map(analyze))
   const failed = settled.find(s => s.status === 'rejected')
   if (failed) throw failed.reason
 
+  const applyAgent = applyModel ? { ...reviewAgent, model: applyModel } : reviewAgent
   // Nothing applied means nothing changed, so there is nothing to verify or test.
-  const result = await runVerified(step, applyPrompt(step, settled.map(s => s.value)), r =>
+  const result = await runVerified(step, applyAgent, applyPrompt(step, settled.map(s => s.value)), r =>
     r.applied.length
       ? [
           `Każda pozycja applied jest widoczna w \`${scope.diffCommand}\` (lub w nieśledzonym pliku) w podanym pliku blisko podanej linii: ${JSON.stringify(r.applied)}`,
@@ -187,7 +188,7 @@ async function runStage(skills) {
 
 let stop = null
 try {
-  for (const skills of finish.stages) await runStage(skills)
+  for (const stage of finish.stages) await runStage(stage)
 } catch (err) {
   if (!(err instanceof Stop)) throw err
   stop = err.stop

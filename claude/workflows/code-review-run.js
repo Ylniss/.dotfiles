@@ -1,20 +1,12 @@
 export const meta = {
   name: 'code-review-run',
-  description: 'Code-review zakresu: równoległe przeglądy po kątach, obalanie każdego znaleziska, jedno scalenie z naprawą i weryfikacją',
+  description: 'Code-review zakresu: jeden przegląd, potem obalanie i naprawa znalezisk z weryfikacją',
 }
 
 const { scope, reviewAgent, where } = args
 const MAX_ATTEMPTS = 2
 
 const LIGHT_AGENT = { model: 'sonnet', effort: 'low' }
-
-// Lenses instead of files: a bug usually spans files.
-const LENSES = [
-  { name: 'logika', focus: 'logika i warunki brzegowe: złe warunki, off-by-one, null/undefined, puste kolekcje, nieobsłużone gałęzie' },
-  { name: 'obsługa błędów', focus: 'obsługa błędów i stan: połknięte wyjątki, brak cofnięcia przy błędzie, niespójny stan, wycieki zasobów' },
-  { name: 'API', focus: 'użycie API i bibliotek: niezgodne sygnatury i typy, zły kontrakt, nadużycie frameworka, odstępstwo od reszty repo' },
-  { name: 'dane', focus: 'współbieżność i dane: wyścigi, kolejność operacji, async bez await, niezgodność z danymi, migracjami i konfiguracją' },
-]
 
 const str = { type: 'string' }
 const FINDING = {
@@ -31,11 +23,6 @@ const REVIEW_RESULT = {
   type: 'object',
   properties: { findings: { type: 'array', items: FINDING } },
   required: ['findings'],
-}
-const VERDICT = {
-  type: 'object',
-  properties: { refuted: { type: 'boolean' }, reason: str },
-  required: ['refuted', 'reason'],
 }
 const APPLY_RESULT = {
   type: 'object',
@@ -141,58 +128,30 @@ async function runVerified(prompt, pointsFor) {
   throw new Stop(retry.gaps)
 }
 
-const reviewPrompt = lens =>
-  `Wywołaj skill code-review z argumentami "${reviewAgent.effort}" (zakres: ${scope.desc}), ` +
-  `ograniczony do kąta: ${lens.focus}. Tylko raport — niczego nie naprawiaj i nie pytaj użytkownika. ` +
-  'Jeśli skill zwróci wynik bez listy znalezisk (np. komunikat o czekaniu na testy), nie wywołuj go ponownie — przejrzyj ten sam zakres sam pod tym kątem. ' +
+const reviewPrompt =
+  `Wywołaj skill code-review z argumentami "${reviewAgent.effort}" (zakres: ${scope.desc}, \`${scope.diffCommand}\`). ` +
+  'Tylko raport — niczego nie naprawiaj i nie pytaj użytkownika. ' +
+  'Jeśli skill zwróci wynik bez listy znalezisk (np. komunikat o czekaniu na testy), nie wywołuj go ponownie — przejrzyj ten sam zakres sam. ' +
   'Zwróć każde znalezisko z plikiem, linią i konkretnym scenariuszem błędu.'
 
-const refutePrompt = f =>
-  `Spróbuj obalić znalezisko code-review. Sprawdź w kodzie, czy scenariusz naprawdę zachodzi, czy gałąź jest osiągalna i czy czegoś nie chroni kod wyżej lub niżej. ` +
-  'Nie zmieniaj żadnych plików. Jeśli nie masz pewności, że błąd jest realny, zwróć refuted: true z powodem.\n' +
-  JSON.stringify(f)
-
 const applyPrompt = findings =>
-  `Poniżej potwierdzone znaleziska code-review dla zakresu "${scope.desc}" (\`${scope.diffCommand}\`). ` +
-  'Scal je: odrzuć duplikaty mówiące o tym samym miejscu i przepuść listę przez sekcję Konflikty z ~/.claude/skills/_shared/report.md. ' +
-  `Potem napraw każde. ${NO_TESTS} Nie pytaj użytkownika. ` +
-  'W findings podaj każde znalezisko: fixed, gdy naprawione, rejected z powodem, gdy nie (także duplikaty).\n\n' +
+  `Poniżej znaleziska code-review dla zakresu "${scope.desc}" (\`${scope.diffCommand}\`). ` +
+  'Najpierw spróbuj obalić każde: sprawdź w kodzie, czy scenariusz naprawdę zachodzi, czy gałąź jest osiągalna i czy czegoś nie chroni kod wyżej lub niżej. ' +
+  `Obalone i takie, których realności nie jesteś pewien, odrzuć, resztę napraw. ${NO_TESTS} Nie pytaj użytkownika. ` +
+  'W findings podaj każde znalezisko: fixed, gdy naprawione, rejected z powodem, gdy nie.\n\n' +
   JSON.stringify(findings)
-
-// Workflow agents cannot spawn subagents, so the script fans the review out by lens itself.
-const review = lens => runAgent(`${step} ${lens.name}`, reviewPrompt(lens), { ...reviewAgent, schema: REVIEW_RESULT })
-const refute = (result, lens) =>
-  parallel(
-    result.findings.map((f, i) => () =>
-      runAgent(`obalanie ${lens.name} ${i + 1}`, refutePrompt(f), { ...LIGHT_AGENT, schema: VERDICT }).then(v => ({ ...f, verdict: v })),
-    ),
-  )
 
 let stop = null
 let decisions = []
 try {
-  const reviewed = await pipeline(LENSES, review, refute)
-  if (reviewed.some(r => !r)) throw new Stop(['przegląd po kącie nie zwrócił wyniku'])
+  const review = await runAgent(step, reviewPrompt, { ...reviewAgent, schema: REVIEW_RESULT })
+  log(`${where}: ${step} → ${review.findings.length} znalezisk`)
 
-  const confirmed = []
-  const seen = new Set()
-  for (const { verdict, ...f } of reviewed.flat().filter(Boolean)) {
-    if (verdict.refuted) {
-      rejected.push({ where, ...f, outcome: 'rejected', reason: `obalone: ${verdict.reason}` })
-      continue
-    }
-    const key = `${f.file}:${f.line}`
-    if (seen.has(key)) continue
-    seen.add(key)
-    confirmed.push(f)
-  }
-  log(`${where}: ${step} → ${confirmed.length} znalezisk potwierdzonych, ${rejected.length} obalonych`)
-
-  if (!confirmed.length) {
+  if (!review.findings.length) {
     checklist.push({ where, step, attempt: 1, gaps: [], warnings: [] })
   } else {
     // Nothing fixed means nothing changed, so there is nothing to verify or test.
-    const result = await runVerified(applyPrompt(confirmed), r => {
+    const result = await runVerified(applyPrompt(review.findings), r => {
       const fixed = r.findings.filter(f => f.outcome === 'fixed')
       if (!fixed.length) return []
 

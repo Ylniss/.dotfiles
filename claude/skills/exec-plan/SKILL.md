@@ -2,9 +2,9 @@
 name: exec-plan
 description: >
   Wykonuje cały plan z plans/<slug>.md bez nadzoru: pytania na starcie, potem
-  workflow phase → finish → code-review → commit dla każdej fazy, a przy wielu
-  fazach finish względem bazy i code-review jego zmian na końcu. Użyj, gdy
-  użytkownik wywołuje "/exec-plan".
+  workflow phase → finish etapów eachPhase → commit dla każdej fazy, a na
+  końcu finish, code-review i commit względem bazy. Użyj, gdy użytkownik
+  wywołuje "/exec-plan".
 argument-hint: "<model-phase> <effort-phase> <model-review> <effort-review> <plan> [baza]"
 ---
 
@@ -18,12 +18,13 @@ agentem i staje, zamiast iść dalej z luką.
 
 - Modele: `haiku`, `sonnet`, `opus`, `fable`. Efforty: `low`, `medium`, `high`,
   `xhigh`, `max`. Para phase obsługuje skill phase; para review obsługuje
-  finish i code-review.
+  finish i code-review, poza modelem z `applyModel` etapu w `finish.json`.
 - Plan: ścieżka (także z `@`) lub slug pod `<git-root>/plans/`.
 - Baza: domyślnie `develop`.
-- Wznowienie (opcjonalne, także opisane słowami): faza i krok `phase`,
-  `finish`, `code-review` lub `commit`, od którego ją zacząć, gdy poprzedni run
-  stanął po wcześniejszych krokach.
+- Wznowienie (opcjonalne, także opisane słowami), gdy poprzedni run stanął po
+  wcześniejszych krokach: faza i krok `phase`, `finish` lub `commit`, od
+  którego ją zacząć, albo etap końcowy i krok `finish`, `code-review` lub
+  `commit`.
 
 Brak wymaganego argumentu lub nieznana wartość → wypisz składnię z
 argument-hint i zakończ.
@@ -34,9 +35,10 @@ Zatrzymaj się z powodem, gdy:
 
 - bieżący branch to baza,
 - drzewo robocze nie jest czyste — chyba że wznowienie zaczyna od kroku po
-  `phase`; wtedy drzewo to zmiany wznawianej fazy,
+  `phase` lub od etapu końcowego; wtedy drzewo to zmiany wznawianego kroku,
 - baza nie istnieje,
-- w planie nie została żadna faza `[ ]` ani faza wznawiana.
+- w planie nie została żadna faza `[ ]`, faza wznawiana ani wznawiany etap
+  końcowy.
 
 Wznowienie od kroku po `phase` → oznacz fazę `[x]` w planie, jeśli jeszcze nie
 jest, jak zrobiłby to krok phase.
@@ -71,7 +73,11 @@ Wywołanie tego skilla to zgoda użytkownika na workflow i na jego commity.
 - Uruchom Workflow z `name` = `exec-plan-run` i `args`:
   - `plan` — ścieżka planu od korzenia repo,
   - `phases` — faza wznawiana i fazy `[ ]` w kolejności, każda `{ n, name }`;
-    wznawiana dostaje też `from` z krokiem startowym,
+    wznawiana dostaje też `from` z krokiem startowym; pusta przy wznowieniu
+    etapu końcowego,
+  - `multiPhase` — czy plan ma więcej niż jedną fazę,
+  - `finalFrom` — krok startowy wznawianego etapu końcowego; pomiń bez
+    takiego wznowienia,
   - `head` — sha HEAD po commicie planu z kroku 4,
   - `planTracked` — false, gdy plan jest ignorowany przez git,
   - `phaseModel`, `phaseEffort`, `reviewModel`, `reviewEffort`, `base`,
@@ -84,10 +90,11 @@ Wywołanie tego skilla to zgoda użytkownika na workflow i na jego commity.
 Z wyniku workflowu:
 
 - **Stan:** wszystkie fazy gotowe albo zatrzymany — gdzie, na którym kroku, z
-  jakimi brakami. Przy stopie dodaj: zmiany tej fazy leżą niezacommitowane;
-  po naprawie zacommituj je lub odrzuć i uruchom `/exec-plan` ponownie.
-- **Checklista:** każda faza i krok ze statusem i liczbą prób. Przy jednej
-  fazie zaznacz, że etap końcowy pominięto.
+  jakimi brakami. Przy stopie dodaj: zmiany tego kroku leżą niezacommitowane;
+  po naprawie wznów `/exec-plan` od tego kroku albo zacommituj je lub odrzuć
+  i uruchom go ponownie.
+- **Checklista:** każda faza i krok ze statusem i liczbą prób. Przy planie z
+  jedną fazą zaznacz, że końcowy finish pominął etapy `eachPhase`.
 - **Ostrzeżenia** (`warnings` z `checklist`): czego weryfikator nie mógł
   sprawdzić przez środowisko i dlaczego. Pomiń, gdy brak.
 - **Decyzje** (`decisions`): decyzja, dlaczego, alternatywa — oznaczone A1,

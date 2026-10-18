@@ -1,4 +1,7 @@
 {
-  "stages": [["shape"], ["polish", "clarify"]],
+  "stages": [
+    { "skills": ["shape"], "eachPhase": true },
+    { "skills": ["polish", "clarify"], "applyModel": "sonnet" }
+  ],
   "rules": "Zastosuj wszystkie wyniki ✓, a ✗ pomiń."
 }

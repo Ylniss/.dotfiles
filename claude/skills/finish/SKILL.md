@@ -29,7 +29,8 @@ argument-hint: "[branch bazowy]"
 - Uruchom Workflow z `name` = `finish-run` i `args`:
   - `finish` — zawartość `finish.json`,
   - `scope` — `{ diffCommand, desc }` z kroku 1,
-  - `reviewAgent` — `{}`, agenci dziedziczą model i effort sesji,
+  - `reviewAgent` — `{}`, agenci dziedziczą model i effort sesji; etap z
+    `applyModel` stosuje wyniki tym modelem,
   - `where` — `finish`.
 - Powiedz w jednej linii, że workflow ruszył i że postęp widać w `/workflows`.
   Czekaj na powiadomienie o końcu — nie odpytuj.
