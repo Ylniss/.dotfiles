@@ -1,15 +1,16 @@
 export const meta = {
   name: 'exec-plan-run',
-  description: 'Fazy planu: phase → finish → code-review → commit z weryfikacją każdego kroku, potem przy wielu fazach finish względem bazy i code-review jego zmian',
+  description: 'Fazy planu: phase → finish etapów eachPhase → commit z weryfikacją każdego kroku, potem finish, code-review i commit względem bazy',
 }
 
-const { plan, planTracked, phases, phaseModel, phaseEffort, reviewModel, reviewEffort, base, finish } = args
+const { plan, planTracked, phases, multiPhase, finalFrom = 'finish', phaseModel, phaseEffort, reviewModel, reviewEffort, base, finish } = args
 let verifiedHead = args.head
 const MAX_ATTEMPTS = 2
 
 const PHASE_AGENT = { model: phaseModel, effort: phaseEffort }
 const REVIEW_AGENT = { model: reviewModel, effort: reviewEffort }
 const LIGHT_AGENT = { model: 'sonnet', effort: 'low' }
+const COMMIT_AGENT = { model: 'haiku', effort: 'low' }
 
 const str = { type: 'string' }
 const PHASE_RESULT = {
@@ -50,6 +51,10 @@ const BASE_SCOPE = {
   diffCommand: `git diff $(git merge-base ${base} HEAD)`,
   desc: `zmiany od merge-base z ${base}, łącznie z niezacommitowanymi`,
 }
+
+const PHASE_FINISH = { ...finish, stages: finish.stages.filter(s => s.eachPhase) }
+// A single phase already went through its eachPhase stages on the same changes.
+const FINAL_FINISH = multiPhase ? finish : { ...finish, stages: finish.stages.filter(s => !s.eachPhase) }
 
 const checklist = []
 const decisions = []
@@ -94,7 +99,7 @@ const checkPrompt = points =>
   'Inny punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
   points.map((p, i) => `${i + 1}. ${p}`).join('\n')
 
-async function runVerified(where, step, opts, prompt, schema, pointsFor) {
+async function runVerified(where, step, opts, checker, prompt, schema, pointsFor) {
   let retry = null
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const result = await runAgent(where, step, step, retry ? fixPrompt(prompt, retry) : prompt, { ...opts, schema })
@@ -106,7 +111,7 @@ async function runVerified(where, step, opts, prompt, schema, pointsFor) {
       return result
     }
 
-    const check = await runAgent(where, step, `weryfikacja ${step}`, checkPrompt(points), { ...LIGHT_AGENT, schema: CHECK_RESULT })
+    const check = await runAgent(where, step, `weryfikacja ${step}`, checkPrompt(points), { ...checker, schema: CHECK_RESULT })
     checklist.push({ where, step, attempt, gaps: check.gaps, warnings: check.warnings })
     // a retry cannot fix the environment, but a gap such as a build broken by the code can be what blocked the tests
     if (check.blocked.length && !check.gaps.length) throw new Stop(where, step, check.blocked.map(b => `środowisko: ${b}`))
@@ -121,6 +126,7 @@ async function runPhase(where, n) {
     where,
     'phase',
     PHASE_AGENT,
+    LIGHT_AGENT,
     `Wywołaj skill phase z argumentami "${plan} ${n} auto". ` +
       'W decisions zwróć każdy wpis ⚠ dopisany w tej fazie do Decisions log planu.',
     PHASE_RESULT,
@@ -142,8 +148,8 @@ async function runWorkflow(where, step, name, workflowArgs) {
   }
 }
 
-async function runFinish(where, scope) {
-  const result = await runWorkflow(where, 'finish', 'finish-run', { finish, scope, reviewAgent: REVIEW_AGENT, where })
+async function runFinish(where, config, scope) {
+  const result = await runWorkflow(where, 'finish', 'finish-run', { finish: config, scope, reviewAgent: REVIEW_AGENT, where })
   checklist.push(...result.checklist)
   decisions.push(...result.decisions)
   skipped.push(...result.skipped)
@@ -151,7 +157,7 @@ async function runFinish(where, scope) {
 }
 
 async function runCodeReview(where) {
-  const result = await runWorkflow(where, 'code-review', 'code-review-run', { scope: PHASE_SCOPE, reviewAgent: REVIEW_AGENT, where })
+  const result = await runWorkflow(where, 'code-review', 'code-review-run', { scope: BASE_SCOPE, reviewAgent: REVIEW_AGENT, where })
   checklist.push(...result.checklist)
   decisions.push(...result.decisions)
   rejected.push(...result.rejected)
@@ -163,7 +169,8 @@ async function runCommit(where, withPlan) {
   const result = await runVerified(
     where,
     'commit',
-    LIGHT_AGENT,
+    COMMIT_AGENT,
+    COMMIT_AGENT,
     'Zacommituj wszystkie zmiany: `git add -A`, potem `git commit` z jedną krótką linią opisującą, co zmieniono w kodzie. ' +
       'Bez nazwy planu, sluga i numeru fazy. Jeśli drzewo jest czyste, nie commituj i zwróć committed: false. ' +
       'Jeśli ostatnie commity w `git log --oneline -10` mają prefiks ticketu (np. `WELLMIFY-1234 - `), poprzedź wiadomość takim prefiksem z numerem z nazwy bieżącego brancha. ' +
@@ -183,31 +190,28 @@ async function runCommit(where, withPlan) {
   verifiedHead = result.sha
 }
 
-const STEPS = ['phase', 'finish', 'code-review', 'commit']
+const PHASE_STEPS = ['phase', 'finish', 'commit']
+const FINAL_STEPS = ['finish', 'code-review', 'commit']
 
 let stop = null
 try {
-  // `from` resumes a phase whose earlier steps finished in a previous run.
+  // `from` and `finalFrom` resume where a previous run stopped.
   for (const { n, name, from = 'phase' } of phases) {
     const where = `F${n} · ${name}`
     phase(where)
     log(`Faza ${n}: ${name}${from === 'phase' ? '' : ` (od ${from})`}`)
-    const start = STEPS.indexOf(from)
+    const start = PHASE_STEPS.indexOf(from)
     if (start <= 0) await runPhase(where, n)
-    if (start <= 1) await runFinish(where, PHASE_SCOPE)
-    if (start <= 2) await runCodeReview(where)
+    if (start <= 1) await runFinish(where, PHASE_FINISH, PHASE_SCOPE)
     await runCommit(where, planTracked)
   }
 
-  // A single phase was already reviewed against the same changes.
-  if (phases.length > 1) {
-    const where = `Końcowy (${base})`
-    phase(where)
-    await runFinish(where, BASE_SCOPE)
-    // Only the final finish's edits are unreviewed.
-    await runCodeReview(where)
-    await runCommit(where, false)
-  }
+  const where = `Końcowy (${base})`
+  phase(where)
+  const start = FINAL_STEPS.indexOf(finalFrom)
+  if (start <= 0) await runFinish(where, FINAL_FINISH, BASE_SCOPE)
+  if (start <= 1) await runCodeReview(where)
+  await runCommit(where, false)
 } catch (err) {
   if (!(err instanceof Stop)) throw err
   stop = err.stop

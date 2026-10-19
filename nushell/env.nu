@@ -25,6 +25,9 @@ $env.EDITOR = 'nvim'
 $env.MANPAGER = "sh -c 'col -bx | bat -l man -p'"
 $env.MANROFFOPT = "-c"
 
+# Claude Code's fullscreen renderer draws on the alternate screen, which has no scrollback for WezTerm's Ctrl+E/Ctrl+Y.
+$env.CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = '1'
+
 if not (is-windows) and not (is-android) {
   $env.LG_CONFIG_FILE = $"($env.HOME)/.local/share/tinted-theming/tinty/tinted-lazygit-themes-file.yml"
 

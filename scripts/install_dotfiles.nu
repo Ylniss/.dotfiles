@@ -62,6 +62,12 @@ let symlinks = [
   { src: 'claude/rules',                  desc: 'claude rules',               dest: $'($home_dir)/.claude/rules' }
   { src: 'claude/hooks',                  desc: 'claude hooks',               dest: $'($home_dir)/.claude/hooks' }
   { src: 'claude/workflows',              desc: 'claude workflows',           dest: $'($home_dir)/.claude/workflows' }
+  # claude2 reads these from its own config dir; settings, hooks and statusline reach it via --settings.
+  { src: 'claude/AGENTS.md',              desc: 'claude2 CLAUDE.md',          dest: $'($home_dir)/.claude-2/CLAUDE.md' }
+  { src: 'claude/skills',                 desc: 'claude2 skills',             dest: $'($home_dir)/.claude-2/skills' }
+  { src: 'claude/agents',                 desc: 'claude2 agents',             dest: $'($home_dir)/.claude-2/agents' }
+  { src: 'claude/rules',                  desc: 'claude2 rules',              dest: $'($home_dir)/.claude-2/rules' }
+  { src: 'claude/workflows',              desc: 'claude2 workflows',          dest: $'($home_dir)/.claude-2/workflows' }
   { src: 'claude/skills',                 desc: 'codex skills',               dest: $'($home_dir)/.agents/skills' }
   { src: 'codex/dotfiles.config.toml',    desc: 'codex shared config',        dest: $'($home_dir)/.codex/config.toml' }
   { src: 'claude/AGENTS.md',              desc: 'codex AGENTS.md',            dest: $'($home_dir)/.codex/AGENTS.md' }
