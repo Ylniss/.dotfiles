@@ -20,7 +20,10 @@ agentem i staje, zamiast iść dalej z luką.
   `xhigh`, `max`. Para phase obsługuje skill phase; para review obsługuje
   finish i code-review.
 - Plan: ścieżka (także z `@`) lub slug pod `<git-root>/plans/`.
-- Baza: domyślnie `develop`.
+- Baza: domyślnie gałąź, od której wyszedł bieżący branch. Spośród `develop`,
+  `master` i `release/*` (lokalnych, a gdy ich brak — `origin/`) wybierz tę z
+  najmniejszym `git rev-list --count <kandydat>..HEAD`. Remis → zapytaj w
+  kroku 3.
 - Wznowienie (opcjonalne, także opisane słowami): faza i krok `phase`,
   `finish`, `code-review` lub `commit`, od którego ją zacząć, gdy poprzedni run
   stanął po wcześniejszych krokach.
