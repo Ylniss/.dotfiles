@@ -3,6 +3,8 @@
 	eol = lf
 	# Git for Windows defaults to false and checks symlinks out as text files; needs Developer Mode.
 	symlinks = true
+	# Git for Windows caps paths at 260 chars without it; worktrees in sibling dirs push long .NET paths over.
+	longpaths = true
 	attributesFile = ~/.gitattributes-global
 	pager = delta
 [include]

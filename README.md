@@ -22,7 +22,7 @@ winget install junegunn.fzf sharkdp.fd BurntSushi.ripgrep.MSVC dandavison.delta 
 | `gitl` | git log as table |
 | `gitl -g` | git log as graph |
 | `giti [name] [-g]` | init repo, `-g` creates on GitHub |
-| `gitwta <branch>` | add worktree, cd into it, open layout-dev |
+| `gitwta <branch>` | add worktree (existing local/remote branch or new one), cd into it, open layout-dev |
 | `gitwtf <path>` | push branch, merge into base, remove worktree |
 
 # Robes & Steel (Nushell)

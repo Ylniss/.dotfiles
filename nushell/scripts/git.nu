@@ -76,11 +76,17 @@ def giti [
   touch ($dir | path join '.gitignore')
 }
 
-# Git Worktree Add: new branch in a worktree at ../<current dir>-<branch>, then cd there and open layout-dev unless --stay.
+# Git Worktree Add: worktree at ../<current dir>-<branch>, then cd there and open layout-dev unless --stay.
+# Checks out the branch if it exists locally or on a remote, otherwise creates it.
 def --env gitwta [branch: string, --stay (-s)] {
   let dir_name = (pwd | path basename)
   let path = $"../($dir_name)-($branch)"
-  git worktree add $path -b $branch
+  let branch_exists = (git for-each-ref '--format=%(refname)' $"refs/heads/($branch)" $"refs/remotes/*/($branch)" | is-not-empty)
+  if $branch_exists {
+    git worktree add $path $branch
+  } else {
+    git worktree add $path -b $branch
+  }
   if $stay { return }
   cd $path
   if 'WEZTERM_PANE' in $env {
