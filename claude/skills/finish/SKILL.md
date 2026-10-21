@@ -2,7 +2,8 @@
 name: finish
 description: >
   Uruchamia etapy skilli przeglądu z finish.json po kolei jako workflow:
-  równoległe analizy skilli etapu, wspólne zastosowanie ✓ i weryfikacja etapu.
+  równoległe analizy skilli etapu, scalenie, równoległe zastosowanie ✓ po
+  rozłącznych plikach i weryfikacja etapu.
   Użyj, gdy użytkownik wywołuje "/finish".
 argument-hint: "[branch bazowy]"
 ---

@@ -13,22 +13,14 @@
       "Bash(git commit:*)",
       "Bash(git mv:*)",
       "Bash(find:*)",
-      "Bash(grep:*)",
-      "Bash(cat:*)",
-      "Bash(ls:*)",
-      "Bash(head:*)",
-      "Bash(tail:*)",
-      "Bash(wc:*)",
       "Bash(sort:*)",
-      "Bash(echo:*)",
-      "Bash(pwd:*)",
-      "Bash(which:*)",
       "Bash(xargs grep:*)",
       "Bash(dotnet build:*)",
       "Bash(dotnet test:*)",
       "Bash(dotnet format:*)",
       "WebSearch",
-      "WebFetch"
+      "WebFetch",
+      "Workflow"
     ],
     "deny": [
       "Bash(git push:*)",
@@ -43,7 +35,6 @@
   "hooks": {
     "Notification": [
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",
@@ -54,7 +45,6 @@
     ],
     "Stop": [
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",

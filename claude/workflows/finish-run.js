@@ -1,15 +1,49 @@
 export const meta = {
   name: 'finish-run',
-  description: 'Etapy skilli przeglądu z finish.json po kolei: równoległe analizy skilli etapu, wspólne zastosowanie ✓ z weryfikacją',
+  description: 'Etapy skilli przeglądu z finish.json po kolei: równoległe analizy skilli etapu, scalenie i równoległe zastosowanie ✓ po rozłącznych plikach z weryfikacją',
 }
 
 const { finish, scope, reviewAgent, where } = args
 const MAX_ATTEMPTS = 2
+const FINDINGS_PER_APPLIER = 6
 
 const SPLIT_AGENT = { model: 'sonnet', effort: 'medium' }
 const LIGHT_AGENT = { model: 'sonnet', effort: 'low' }
 
 const str = { type: 'string' }
+const SKIPPED = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: { skill: str, finding: str, reason: str, worthUserDecision: { type: 'boolean' } },
+    required: ['skill', 'finding', 'reason', 'worthUserDecision'],
+  },
+}
+const DECISIONS = {
+  type: 'array',
+  description: 'Decyzje podjęte bez użytkownika, które mógłby rozstrzygnąć inaczej',
+  items: {
+    type: 'object',
+    properties: { decision: str, why: str, alternative: str },
+    required: ['decision', 'why', 'alternative'],
+  },
+}
+const MERGE_RESULT = {
+  type: 'object',
+  properties: {
+    findings: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: { skill: str, text: str, files: { type: 'array', minItems: 1, items: str } },
+        required: ['skill', 'text', 'files'],
+      },
+    },
+    skipped: SKIPPED,
+    decisions: DECISIONS,
+  },
+  required: ['findings', 'skipped', 'decisions'],
+}
 const APPLY_RESULT = {
   type: 'object',
   properties: {
@@ -21,26 +55,23 @@ const APPLY_RESULT = {
         required: ['skill', 'finding', 'file', 'line'],
       },
     },
-    skipped: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: { skill: str, finding: str, reason: str, worthUserDecision: { type: 'boolean' } },
-        required: ['skill', 'finding', 'reason', 'worthUserDecision'],
-      },
-    },
-    decisions: {
-      type: 'array',
-      description: 'Decyzje podjęte bez użytkownika, które mógłby rozstrzygnąć inaczej',
-      items: {
-        type: 'object',
-        properties: { decision: str, why: str, alternative: str },
-        required: ['decision', 'why', 'alternative'],
-      },
-    },
+    skipped: SKIPPED,
+    decisions: DECISIONS,
     testCommand: { type: 'string', description: 'Komenda build i testów; pusta, gdy repo ich nie ma' },
   },
   required: ['applied', 'skipped', 'decisions', 'testCommand'],
+}
+const PARALLEL_APPLY_RESULT = {
+  type: 'object',
+  properties: {
+    ...APPLY_RESULT.properties,
+    outside: {
+      type: 'array',
+      items: { type: 'integer', minimum: 1 },
+      description: 'Numery wyników, które wymagają zmiany pliku spoza listy',
+    },
+  },
+  required: [...APPLY_RESULT.required, 'outside'],
 }
 const SPLIT_RESULT = {
   type: 'object',
@@ -87,10 +118,10 @@ async function runAgent(step, label, prompt, opts) {
 
 const NO_TESTS = 'Nie uruchamiaj build ani testów, nawet jeśli reguły lub skill tak każą — zrobi to weryfikator. W testCommand podaj tylko komendę.'
 
-const fixPrompt = (prompt, retry) =>
+const fixPrompt = (prompt, gaps, previous) =>
   `Ten krok nie przeszedł weryfikacji. Drzewo zawiera już zmiany poprzedniej próby — nie zaczynaj od nowa, usuń tylko braki:\n` +
-  `${retry.gaps.map(g => `- ${g}`).join('\n')}\n\n` +
-  `Wynik poprzedniej próby:\n${JSON.stringify(retry.previous)}\n\n` +
+  `${gaps.map(g => `- ${g}`).join('\n')}\n\n` +
+  `Wynik poprzedniej próby:\n${JSON.stringify(previous)}\n\n` +
   `Zwróć pełny zaktualizowany wynik: poprzednie pozycje plus poprawki.\n\nPierwotne zadanie kroku:\n${prompt}`
 
 const LOCKED_OUTPUT =
@@ -112,10 +143,9 @@ const checkPrompt = points =>
   'Inny punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
   points.map((p, i) => `${i + 1}. ${p}`).join('\n')
 
-async function runVerified(step, applyAgent, prompt, pointsFor) {
-  let retry = null
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const result = await runAgent(step, step, retry ? fixPrompt(prompt, retry) : prompt, { ...applyAgent, schema: APPLY_RESULT })
+async function verifyAndFix(step, applyAgent, firstResult, prompt, pointsFor) {
+  let result = firstResult
+  for (let attempt = 1; ; attempt++) {
     const points = pointsFor(result)
     if (!points.length) {
       checklist.push({ where, step, attempt, gaps: [], warnings: [] })
@@ -127,9 +157,9 @@ async function runVerified(step, applyAgent, prompt, pointsFor) {
     // a retry cannot fix the environment, but a gap such as a build broken by the code can be what blocked the tests
     if (check.blocked.length && !check.gaps.length) throw new Stop(step, check.blocked.map(b => `środowisko: ${b}`))
     if (!check.gaps.length) return result
-    retry = { gaps: check.gaps, previous: result }
+    if (attempt === MAX_ATTEMPTS) throw new Stop(step, check.gaps)
+    result = await runAgent(step, `${step} poprawka`, fixPrompt(prompt, check.gaps, result), { ...applyAgent, schema: APPLY_RESULT })
   }
-  throw new Stop(step, retry.gaps)
 }
 
 const splitPrompt = skill =>
@@ -144,12 +174,76 @@ const analyzePrompt = (skill, task) =>
   `Pliki:\n${task.files.join('\n')}\n` +
   'Tylko raport w formacie skilla — niczego nie stosuj i nie pytaj użytkownika. Zwróć pełny tekst raportu.'
 
-const applyPrompt = (step, analyses) =>
-  `Poniżej raporty analizatorów ${step} dla zakresu "${scope.desc}". Scal je: przenumeruj w jedną listę, ` +
-  'odrzuć duplikaty i przepuść scaloną listę przez sekcję Konflikty z ~/.claude/skills/_shared/report.md. Potem zastosuj. ' +
-  `${finish.rules} ${NO_TESTS} Nie pytaj użytkownika. ` +
-  'W applied podaj każdy zastosowany wynik ze skillem bez /, plikiem i linią zmiany, w skipped każdy pominięty ze skillem bez / i powodem.\n\n' +
+const mergePrompt = (step, analyses) =>
+  `Poniżej raporty analizatorów ${step} dla zakresu "${scope.desc}". Scal je: odrzuć duplikaty i przepuść scaloną listę ` +
+  `przez sekcję Konflikty z ~/.claude/skills/_shared/report.md. Potem wybierz wyniki do zastosowania według reguły: ${finish.rules} ` +
+  'Niczego nie zmieniaj i nie pytaj użytkownika. ' +
+  'W findings podaj każdy wybrany wynik ze skillem bez /, pełną treścią z raportu (nagłówek, pola, blok diff) ' +
+  'i wszystkimi plikami, które zmienia, ze ścieżkami od korzenia repo. Zmiana nazwy lub przeniesienie kodu zmienia też pliki z użyciami — ' +
+  'znajdź je w repo, bo po plikach wyniki trafiają do równoległych agentów stosujących. ' +
+  'W skipped podaj każdy niewybrany wynik ze skillem bez / i powodem.\n\n' +
   analyses.flatMap(({ skill, reports }) => reports.map((r, i) => `=== /${skill} · analizator ${i + 1} ===\n${r}`)).join('\n\n')
+
+const applyPrompt = (findings, files) =>
+  `Zastosuj poniższe wyniki przeglądu dla zakresu "${scope.desc}". ${NO_TESTS} Nie pytaj użytkownika. ` +
+  (files
+    ? `Zmieniaj tylko pliki: ${files.join(', ')} — inne pliki zmieniają w tym czasie równolegli agenci. ` +
+      'Wynik, który wymaga zmiany innego pliku, zostaw w całości niezastosowany i podaj tylko jego numer w outside, bez wpisu w skipped. '
+    : '') +
+  'W applied podaj każdy zastosowany wynik ze skillem bez /, plikiem i linią zmiany, w skipped każdy pominięty ze skillem bez / i powodem.\n\n' +
+  findings.map((f, i) => `=== ${i + 1} · /${f.skill} ===\n${f.text}`).join('\n\n')
+
+// Lowercasing may wrongly join two files; that only costs parallelism.
+const fileKey = path => path.replace(/\\/g, '/').replace(/^\.\//, '').toLowerCase()
+
+// Parallel appliers must not edit the same file, so findings sharing a file stay in one task.
+function splitByFiles(findings) {
+  let groups = []
+  for (const finding of findings) {
+    const keys = finding.files.map(fileKey)
+    const touching = groups.filter(g => keys.some(k => g.keys.has(k)))
+    groups = groups.filter(g => !touching.includes(g))
+    groups.push({
+      keys: new Set([...keys, ...touching.flatMap(g => [...g.keys])]),
+      findings: [...touching.flatMap(g => g.findings), finding],
+    })
+  }
+
+  const tasks = Array.from({ length: Math.min(groups.length, Math.ceil(findings.length / FINDINGS_PER_APPLIER)) }, () => [])
+  for (const group of groups.sort((a, b) => b.findings.length - a.findings.length)) {
+    tasks.reduce((min, t) => (t.length < min.length ? t : min)).push(...group.findings)
+  }
+  return tasks
+}
+
+async function applyFindings(step, applyAgent, findings) {
+  const tasks = splitByFiles(findings)
+  log(`${where}: ${step} → agenci stosujący: ${tasks.length}`)
+  // A lone applier collides with no one, so the file limit would only push findings out to a second agent.
+  if (tasks.length === 1) return runAgent(step, `${step} zastosowanie`, applyPrompt(findings), { ...applyAgent, schema: APPLY_RESULT })
+
+  const results = await parallel(
+    tasks.map((task, i) => () =>
+      agent(applyPrompt(task, [...new Set(task.flatMap(f => f.files))]), {
+        ...applyAgent,
+        schema: PARALLEL_APPLY_RESULT,
+        label: `${step} zastosowanie ${i + 1}`,
+        phase: where,
+      }),
+    ),
+  )
+  if (results.some(r => !r)) throw new Stop(step, ['agent stosujący nie zwrócił wyniku'])
+
+  const outside = results.flatMap((r, i) => r.outside.map(n => tasks[i][n - 1]))
+  if (outside.length) results.push(await runAgent(step, `${step} poza grupami`, applyPrompt(outside), { ...applyAgent, schema: APPLY_RESULT }))
+
+  return {
+    applied: results.flatMap(r => r.applied),
+    skipped: results.flatMap(r => r.skipped),
+    decisions: results.flatMap(r => r.decisions),
+    testCommand: results.map(r => r.testCommand).find(Boolean) ?? '',
+  }
+}
 
 // Workflow agents cannot spawn subagents, so the script fans each skill's analysis out itself.
 async function analyze(skill) {
@@ -172,8 +266,9 @@ async function runStage({ skills, applyModel }) {
   if (failed) throw failed.reason
 
   const applyAgent = applyModel ? { ...reviewAgent, model: applyModel } : reviewAgent
-  // Nothing applied means nothing changed, so there is nothing to verify or test.
-  const result = await runVerified(step, applyAgent, applyPrompt(step, settled.map(s => s.value)), r =>
+  const merged = await runAgent(step, `${step} scalenie`, mergePrompt(step, settled.map(s => s.value)), { ...applyAgent, schema: MERGE_RESULT })
+  const firstResult = await applyFindings(step, applyAgent, merged.findings)
+  const result = await verifyAndFix(step, applyAgent, firstResult, applyPrompt(merged.findings), r =>
     r.applied.length
       ? [
           `Każda pozycja applied jest widoczna w \`${scope.diffCommand}\` (lub w nieśledzonym pliku) w podanym pliku blisko podanej linii: ${JSON.stringify(r.applied)}`,
@@ -181,9 +276,9 @@ async function runStage({ skills, applyModel }) {
         ]
       : [],
   )
-  decisions.push(...result.decisions.map(d => ({ where, step, ...d })))
+  decisions.push(...[...merged.decisions, ...result.decisions].map(d => ({ where, step, ...d })))
   applied.push(...result.applied)
-  skipped.push(...result.skipped.filter(s => s.worthUserDecision).map(s => ({ where, ...s })))
+  skipped.push(...[...merged.skipped, ...result.skipped].filter(s => s.worthUserDecision).map(s => ({ where, ...s })))
 }
 
 let stop = null
