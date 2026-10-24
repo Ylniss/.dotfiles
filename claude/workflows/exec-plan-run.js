@@ -1,11 +1,11 @@
 export const meta = {
   name: 'exec-plan-run',
-  description: 'Fazy planu: phase → finish etapów eachPhase → commit z weryfikacją każdego kroku, potem finish, code-review i commit względem bazy',
+  description: 'Fazy planu: phase → finish etapów eachPhase → commit z weryfikacją i naprawą każdego kroku, potem finish, code-review i commit względem bazy',
 }
 
 const { plan, planTracked, phases, multiPhase, finalFrom = 'finish', phaseModel, phaseEffort, reviewModel, reviewEffort, base, finish } = args
 let verifiedHead = args.head
-const MAX_ATTEMPTS = 2
+const MAX_REPAIRS = 3
 
 const PHASE_AGENT = { model: phaseModel, effort: phaseEffort }
 const REVIEW_AGENT = { model: reviewModel, effort: reviewEffort }
@@ -45,6 +45,22 @@ const CHECK_RESULT = {
   },
   required: ['gaps', 'warnings', 'blocked'],
 }
+const REPAIR_REPORT = {
+  type: 'object',
+  properties: {
+    cause: { type: 'string', description: 'Przyczyna każdej pozycji, ustalona przed zmianami' },
+    fixed: { type: 'array', items: str, description: 'Co naprawa zmieniła: pliki, zamknięte procesy, ustawienia' },
+    falseAlarms: { type: 'array', items: str, description: 'Pozycje, które są fałszywym alarmem weryfikatora, każda z dowodem' },
+    unresolved: { type: 'array', items: str, description: 'Czego nie dało się naprawić i dlaczego' },
+  },
+  required: ['cause', 'fixed', 'falseAlarms', 'unresolved'],
+}
+
+const withRepair = schema => ({
+  ...schema,
+  properties: { ...schema.properties, repair: REPAIR_REPORT },
+  required: [...schema.required, 'repair'],
+})
 
 const PHASE_SCOPE = { diffCommand: 'git diff HEAD', desc: 'niezacommitowane zmiany i nowe nieśledzone pliki' }
 const BASE_SCOPE = {
@@ -60,6 +76,7 @@ const checklist = []
 const decisions = []
 const skipped = []
 const rejected = []
+const repairs = []
 
 class Stop extends Error {
   constructor(where, step, gaps) {
@@ -74,59 +91,80 @@ async function runAgent(where, step, label, prompt, opts) {
   return result
 }
 
-const fixPrompt = (prompt, retry) =>
-  `Ten krok nie przeszedł weryfikacji. Drzewo zawiera już zmiany poprzedniej próby — nie zaczynaj od nowa, usuń tylko braki:\n` +
-  `${retry.gaps.map(g => `- ${g}`).join('\n')}\n\n` +
-  `Wynik poprzedniej próby:\n${JSON.stringify(retry.previous)}\n\n` +
-  `Zwróć pełny zaktualizowany wynik: poprzednie pozycje plus poprawki.\n\nPierwotne zadanie kroku:\n${prompt}`
+const LOCKING_PROCESS =
+  'Gdy build pada, bo plik wyjściowy trzyma działający proces (komunikat podaje nazwę i PID), sprawdź, czym ten proces jest. ' +
+  'Program uruchomiony tylko do sprawdzenia, np. gra lub aplikacja z tego repo, zamknij i powtórz komendę: narzędziem serwera MCP, który go uruchomił (np. `close`), ' +
+  'a gdy takiego nie ma, zamknij sam proces. Zamknięcie procesu nie jest zmianą plików. ' +
+  'Procesu, z którego korzysta sesja Claude Code, nie zamykaj: serwer MCP (także zbudowany z tego repo, patrz .mcp.json), IDE, serwer języka.'
 
 const LOCKED_OUTPUT =
-  'Gdy build pada, bo plik wyjściowy trzyma działający proces (komunikat podaje nazwę i PID), sprawdź, czym ten proces jest. ' +
-  'Program uruchomiony tylko do ręcznego sprawdzenia, np. gra lub aplikacja z tego repo, zamknij i powtórz komendę; zamknięcie procesu nie jest zmianą plików. ' +
-  'Procesu, z którego korzysta sesja Claude Code, nie zamykaj: serwer MCP (także zbudowany z tego repo, patrz .mcp.json), IDE, serwer języka. ' +
-  'Wtedy zbuduj i przetestuj bez zablokowanego projektu, a pominięty projekt zgłoś w warnings. ' +
+  `${LOCKING_PROCESS} Wtedy zbuduj i przetestuj bez zablokowanego projektu, a pominięty projekt zgłoś w warnings. ` +
   'Do blocked trafia to tylko, gdy zablokowany projekt sam zawiera zmiany albo bez niego nie da się zbudować reszty.'
+
+const repairPrompt = (task, previous, check) =>
+  'Weryfikacja kroku nie przeszła. Jesteś agentem naprawczym. Drzewo zawiera już zmiany kroku, więc nie zaczynaj od nowa.\n' +
+  'Przy każdej pozycji najpierw ustal przyczynę: kod, środowisko czy fałszywy alarm weryfikatora. Potem usuń przyczynę. ' +
+  'Nie wyłączaj, nie pomijaj i nie osłabiaj testów ani nie zmieniaj zakresu kroku. ' +
+  'Build i testy uruchamiaj, żeby zbadać problem i sprawdzić naprawę, także gdy zadanie kroku tego zabrania. ' +
+  `Fałszywy alarm zostaw bez zmian i podaj dowód w repair.falseAlarms. ${LOCKING_PROCESS}\n\n` +
+  `Braki:\n${check.gaps.map(g => `- ${g}`).join('\n') || '- brak'}\n` +
+  `Blokady środowiska:\n${check.blocked.map(b => `- ${b}`).join('\n') || '- brak'}\n\n` +
+  `Wynik kroku:\n${JSON.stringify(previous)}\n\n` +
+  'Zwróć pełny zaktualizowany wynik kroku (poprzednie pozycje plus zmiany z naprawy) i raport naprawy w repair.\n\n' +
+  `Zadanie kroku:\n${task}`
 
 const testsCheck = r =>
   r.testCommand
     ? `Uruchom \`${r.testCommand}\` — build i testy muszą przejść. Przy błędzie podaj nieprzechodzące testy i kluczowy fragment komunikatu. ${LOCKED_OUTPUT}`
     : 'Wykonawca twierdzi, że repo nie ma build ani testów. Sprawdź to w CLAUDE.md, AGENTS.md i konfiguracji repo.'
 
-const checkPrompt = points =>
+const checkPrompt = (points, repair) =>
   'Weryfikacja faktów. Nie zmieniaj żadnych plików i niczego nie naprawiaj. Każdy niespełniony punkt zgłoś jako osobną pozycję gaps. ' +
   'Build albo testy, których nie da się uruchomić z powodu środowiska (np. brak Dockera dla testów integracyjnych), zgłoś w blocked, nie w warnings: bez nich zmian nie uznajemy za sprawdzone. ' +
   'Testy, których nie uruchomiono, bo build pada przez kod, to gap, nie blocked. Demona Dockera sprawdzaj przez `docker info --format "{{.ServerVersion}}"`: wersja znaczy, że działa (początek pełnego `docker info` to tylko sekcja Client). ' +
   'Inny punkt, którego nie da się sprawdzić z powodu środowiska (brak narzędzia, usługi lub demona), zgłoś w warnings, nie w gaps.\n' +
+  (repair
+    ? `Przed tą weryfikacją agent naprawczy zgłosił: ${JSON.stringify(repair)}. Pozycję z falseAlarms uznaj za spełnioną tylko wtedy, gdy sam potwierdzisz jej dowód.\n`
+    : '') +
   points.map((p, i) => `${i + 1}. ${p}`).join('\n')
 
-async function runVerified(where, step, opts, checker, prompt, schema, pointsFor) {
-  let retry = null
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const result = await runAgent(where, step, step, retry ? fixPrompt(prompt, retry) : prompt, { ...opts, schema })
-    if (result.status === 'blocked') throw new Stop(where, step, [`faza zablokowana: ${result.blockReason}`])
+async function runVerified(where, step, { executor, checker, repairer }, prompt, schema, pointsFor) {
+  let result = await runAgent(where, step, step, prompt, { ...executor, schema })
+  if (result.status === 'blocked') throw new Stop(where, step, [`faza zablokowana: ${result.blockReason}`])
 
+  let repair = null
+  for (let round = 1; ; round++) {
     const points = pointsFor(result)
     if (!points.length) {
-      checklist.push({ where, step, attempt, gaps: [], warnings: [] })
+      checklist.push({ where, step, round, gaps: [], warnings: [] })
       return result
     }
 
-    const check = await runAgent(where, step, `weryfikacja ${step}`, checkPrompt(points), { ...checker, schema: CHECK_RESULT })
-    checklist.push({ where, step, attempt, gaps: check.gaps, warnings: check.warnings })
-    // a retry cannot fix the environment, but a gap such as a build broken by the code can be what blocked the tests
-    if (check.blocked.length && !check.gaps.length) throw new Stop(where, step, check.blocked.map(b => `środowisko: ${b}`))
-    if (!check.gaps.length) return result
-    retry = { gaps: check.gaps, previous: result }
+    const check = await runAgent(where, step, `weryfikacja ${step}`, checkPrompt(points, repair), { ...checker, schema: CHECK_RESULT })
+    checklist.push({ where, step, round, gaps: check.gaps, warnings: check.warnings })
+    if (!check.gaps.length && !check.blocked.length) return result
+
+    const failures = [...check.gaps, ...check.blocked.map(b => `środowisko: ${b}`)]
+    if (round > MAX_REPAIRS) throw new Stop(where, step, failures)
+
+    log(`${where}: ${step} → naprawa ${round}`)
+    const { repair: report, ...repaired } = await runAgent(where, step, `naprawa ${step}`, repairPrompt(prompt, result, check), {
+      ...repairer,
+      schema: withRepair(schema),
+    })
+    result = repaired
+    repair = report
+    repairs.push({ where, step, round, ...report })
+    // Nothing changed, so the next verification would fail the same way.
+    if (!report.fixed.length && !report.falseAlarms.length) throw new Stop(where, step, [...failures, ...report.unresolved])
   }
-  throw new Stop(where, step, retry.gaps)
 }
 
 async function runPhase(where, n) {
   const result = await runVerified(
     where,
     'phase',
-    PHASE_AGENT,
-    LIGHT_AGENT,
+    { executor: PHASE_AGENT, checker: LIGHT_AGENT, repairer: PHASE_AGENT },
     `Wywołaj skill phase z argumentami "${plan} ${n} auto". ` +
       'W decisions zwróć każdy wpis ⚠ dopisany w tej fazie do Decisions log planu.',
     PHASE_RESULT,
@@ -153,6 +191,7 @@ async function runFinish(where, config, scope) {
   checklist.push(...result.checklist)
   decisions.push(...result.decisions)
   skipped.push(...result.skipped)
+  repairs.push(...result.repairs)
   if (result.stop) throw new Stop(result.stop.where, result.stop.step, result.stop.gaps)
 }
 
@@ -161,6 +200,7 @@ async function runCodeReview(where) {
   checklist.push(...result.checklist)
   decisions.push(...result.decisions)
   rejected.push(...result.rejected)
+  repairs.push(...result.repairs)
   if (result.stop) throw new Stop(result.stop.where, result.stop.step, result.stop.gaps)
 }
 
@@ -169,8 +209,7 @@ async function runCommit(where, withPlan) {
   const result = await runVerified(
     where,
     'commit',
-    COMMIT_AGENT,
-    COMMIT_AGENT,
+    { executor: COMMIT_AGENT, checker: COMMIT_AGENT, repairer: REVIEW_AGENT },
     'Zacommituj wszystkie zmiany: `git add -A`, potem `git commit` z jedną krótką linią opisującą, co zmieniono w kodzie. ' +
       'Bez nazwy planu, sluga i numeru fazy. Jeśli drzewo jest czyste, nie commituj i zwróć committed: false. ' +
       'Jeśli ostatnie commity w `git log --oneline -10` mają prefiks ticketu (np. `WELLMIFY-1234 - `), poprzedź wiadomość takim prefiksem z numerem z nazwy bieżącego brancha. ' +
@@ -216,4 +255,4 @@ try {
   if (!(err instanceof Stop)) throw err
   stop = err.stop
 }
-return { stop, checklist, decisions, skipped, rejected }
+return { stop, checklist, decisions, skipped, rejected, repairs }

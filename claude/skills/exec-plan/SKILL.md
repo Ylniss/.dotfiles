@@ -12,7 +12,9 @@ argument-hint: "<model-phase> <effort-phase> <model-review> <effort-review> <pla
 
 Jedyny moment rozmowy z użytkownikiem to pytania na starcie i raport na końcu.
 Wszystko pomiędzy robi workflow, który weryfikuje każdy krok niezależnym
-agentem i staje, zamiast iść dalej z luką.
+agentem. Brak albo blokadę środowiska bada i naprawia agent naprawczy, po czym
+weryfikacja rusza od nowa. Workflow staje, gdy trzy naprawy nie wystarczą albo
+naprawa niczego nie zmieni.
 
 ## 1. Argumenty
 
@@ -96,8 +98,11 @@ Z wyniku workflowu:
   jakimi brakami. Przy stopie dodaj: zmiany tego kroku leżą niezacommitowane;
   po naprawie wznów `/exec-plan` od tego kroku albo zacommituj je lub odrzuć
   i uruchom go ponownie.
-- **Checklista:** każda faza i krok ze statusem i liczbą prób. Przy planie z
-  jedną fazą zaznacz, że końcowy finish pominął etapy `eachPhase`.
+- **Checklista:** każda faza i krok ze statusem i liczbą rund weryfikacji.
+  Przy planie z jedną fazą zaznacz, że końcowy finish pominął etapy
+  `eachPhase`.
+- **Naprawy** (`repairs`): gdzie, krok, runda, przyczyna, co zmieniono,
+  fałszywe alarmy i czego nie naprawiono — D1, D2... Pomiń, gdy brak.
 - **Ostrzeżenia** (`warnings` z `checklist`): czego weryfikator nie mógł
   sprawdzić przez środowisko i dlaczego. Pomiń, gdy brak.
 - **Decyzje** (`decisions`): decyzja, dlaczego, alternatywa — oznaczone A1,

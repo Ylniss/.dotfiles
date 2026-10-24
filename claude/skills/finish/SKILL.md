@@ -3,7 +3,7 @@ name: finish
 description: >
   Uruchamia etapy skilli przeglądu z finish.json po kolei jako workflow:
   równoległe analizy skilli etapu, scalenie, równoległe zastosowanie ✓ po
-  rozłącznych plikach i weryfikacja etapu.
+  rozłącznych plikach i weryfikacja etapu z naprawą.
   Użyj, gdy użytkownik wywołuje "/finish".
 argument-hint: "[branch bazowy]"
 ---
@@ -45,6 +45,8 @@ Z wyniku workflowu:
   przejrzenia.
 - **Ostrzeżenia** (`warnings` z `checklist`): czego weryfikator nie mógł
   sprawdzić przez środowisko i dlaczego. Pomiń, gdy brak.
+- **Naprawy** (`repairs`): etap, runda, przyczyna, co zmieniono, fałszywe
+  alarmy i czego nie naprawiono — C1, C2... Pomiń, gdy brak.
 - **Zastosowane** (`applied`): per skill, z plikiem i linią.
 - **Decyzje** (`decisions`): decyzja, dlaczego, alternatywa — oznaczone A1,
   A2...
