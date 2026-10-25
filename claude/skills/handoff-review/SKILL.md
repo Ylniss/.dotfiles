@@ -16,8 +16,8 @@ Porównaj zapisany handoff z sesją, która go wytworzyła. Dwa cele, równie wa
 
 Późniejsza decyzja zawsze nadpisuje wcześniejszą. Nigdy odwrotnie.
 
-Pewne poprawki stosuj od razu i zgłoś, co zmieniono. O niepewne zapytaj i nie
-edytuj przed odpowiedzią. Skill edytuje handoff i pliki notatek zapisane razem
+Najpierw raport, potem od razu, bez pytania, zastosuj pewne poprawki. O niepewne
+zapytaj na końcu i nie edytuj ich przed odpowiedzią. Skill edytuje handoff i pliki notatek zapisane razem
 z nim, i nic więcej — nigdy kodu.
 
 Przed raportem wczytaj `~/.claude/skills/_shared/report.md`. Obowiązują z niego
@@ -135,9 +135,30 @@ się do zgłoszenia — odrzuć go.
 - Jeśli handoff zgadza się z sesją, powiedz to i zatrzymaj się. Nie wymyślaj
   wyniku, żeby mieć co zgłosić.
 
-## 7. Zastosuj pewne — wplataj, nigdy nie dopisuj
+## 7. Raport
 
-Zastosuj każdy wynik `✓` przed raportem. Wyników `✗` nie dotykaj.
+Dwie numerowane listy w jednej sekwencji numerów: najpierw `✓`, potem `✗`.
+
+    **N. [category][H|M|L][✓|✗] <sekcja handoffu> — krótki tytuł**
+    ========== problem ==========
+    <co handoff mówił lub czego nie mówił, maks. 2 zdania>
+    ========== evidence ==========
+    <ostatnia wypowiedź w temacie: etykieta lub cytat; dla stale i leftover
+    także wcześniejsza wersja, którą handoff niósł>
+    ========== fix ==========
+    <dla ✓: co zmienię i w których plikach, jedna linia; dla ✗: pytanie do
+    użytkownika z rekomendacją>
+
+Wskazuj sekcję handoffu, nie numer linii.
+
+Po ostatnim wyniku wypisz w jednej linii na klasę, które decyzje nadpisane
+sprawdzono i potwierdzono, że handoff niesie ich wersję końcową. To dowodzi, że
+pułapka z kroku 5 była sprawdzona.
+
+## 8. Zastosuj pewne — wplataj, nigdy nie dopisuj
+
+Zaraz po raporcie, bez pytania, zastosuj każdy wynik `✓`. Wyników `✗` nie
+dotykaj.
 
 - Popraw zdanie w miejscu, w jego sekcji. Bez sekcji "Poprawki" i bez adnotacji
   "(zmienione po przeglądzie)".
@@ -150,32 +171,19 @@ Zastosuj każdy wynik `✓` przed raportem. Wyników `✗` nie dotykaj.
 Po edycji przeczytaj handoff jeszcze raz w całości i sprawdź, czy poprawki nie
 stworzyły nowej sprzeczności.
 
-## 8. Raport
+## 9. Podsumowanie i decyzje
 
-Dwie numerowane listy w jednej sekwencji numerów: najpierw zastosowane, potem
-pytania.
+Potwierdź w jednej linii, które wyniki zastosowano. Osobno zgłoś każdy `✓`,
+którego nie dało się zastosować tak, jak opisuje raport, z powodem.
 
-    **N. [category][H|M|L][✓|✗] <sekcja handoffu> — krótki tytuł**
-    ========== problem ==========
-    <co handoff mówił lub czego nie mówił, maks. 2 zdania>
-    ========== evidence ==========
-    <ostatnia wypowiedź w temacie: etykieta lub cytat; dla stale i leftover
-    także wcześniejsza wersja, którą handoff niósł>
-    ========== fix ==========
-    <dla ✓: co zmieniono i w których plikach, jedna linia; dla ✗: pytanie do
-    użytkownika z rekomendacją>
+Potem lista decyzji: każdy wynik `✗`, jedna linia — numer z raportu, krótki
+tytuł, pytanie z rekomendacją. Bez powtarzania pól raportu. Zakończ prośbą o
+odpowiedzi po numerach. Brak `✗` — zakończ na potwierdzeniu.
 
-Wskazuj sekcję handoffu, nie numer linii.
+Gdy użytkownik uzna zastosowaną poprawkę za błędną, cofnij ją w miejscu.
 
-Po ostatnim wyniku wypisz w jednej linii na klasę, które decyzje nadpisane
-sprawdzono i potwierdzono, że handoff niesie ich wersję końcową. To dowodzi, że
-pułapka z kroku 5 była sprawdzona.
+## 10. Po odpowiedziach
 
-Gdy są pytania, zakończ prośbą o odpowiedzi po numerach. Gdy użytkownik uzna
-zastosowaną poprawkę za błędną, cofnij ją w miejscu.
-
-## 9. Po odpowiedziach
-
-Odpowiedź użytkownika to nowa, najpóźniejsza decyzja: wpleć ją regułami kroku 7
+Odpowiedź użytkownika to nowa, najpóźniejsza decyzja: wpleć ją regułami kroku 8
 i sprawdź, czy nie unieważnia czegoś, co handoff już niesie. Zgłoś, co
 zmieniono. Bez commita.

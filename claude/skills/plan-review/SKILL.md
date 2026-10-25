@@ -10,15 +10,15 @@ argument-hint: "[plan]"
 # Plan review
 
 Przejrzyj plan napisany przez skill plan, zanim /phase włoży w niego pracę.
-Tylko raport, dopóki użytkownik nie wybierze; potem edytuj plik planu. Ten skill
-edytuje plik planu i nic więcej — nigdy nie dotyka kodu.
+Najpierw raport, potem od razu, bez pytania, zastosuj każdy wynik `✓`; wyniki
+`✗` czekają na decyzję użytkownika. Ten skill edytuje plik planu i nic więcej —
+nigdy nie dotyka kodu.
 
 Najlepiej uruchomić w świeżym kontekście — po `/clear` lub kompaktowaniu. Sesja,
 która napisała plan, ma skłonność go zatwierdzać. To rada, nie bramka.
 
 Przed raportem wczytaj `~/.claude/skills/_shared/report.md`. Obowiązują z niego
-tylko sekcje Tagi nagłówka, Format ciała i Słowa wyboru. Reszta dotyczy kodu,
-nie planu.
+tylko sekcje Tagi nagłówka i Format ciała. Reszta dotyczy kodu, nie planu.
 
 ## 1. Wybierz plan
 
@@ -93,16 +93,18 @@ to, co zapisany plan czyni widocznym.
 - Szereguj wg wpływu: najpierw to, co zmarnowałoby najwięcej pracy.
 - Nadaj każdemu wynikowi pewność: H, M lub L. Dla `claim` H znaczy, że dowód
   rozstrzyga.
-- Nadaj flagę rekomendacji. `✓`, gdy zastosowanie nie budzi wątpliwości — zysk
-  realny, ryzyko dla planu niskie. `✗` dla gustu, dla celowego wyboru, który
-  plan już uzasadnia, lub dla czegokolwiek opartego na założeniu, którego nie
+- Nadaj flagę rekomendacji. `✓` znaczy "stosuję od razu": pewność H, zysk
+  realny, ryzyko dla planu niskie. `✗` znaczy "pytam": każda `alternative`,
+  każdy wynik z pewnością M lub L i wszystko oparte na założeniu, którego nie
   dało się zweryfikować.
+- `✗` zgłaszaj tylko, gdy jest wart decyzji użytkownika. Czysty gust i powtórka
+  wyboru, który plan już uzasadnia, nie trafiają do raportu.
 - Jeśli nie ma nic wartego zmiany, powiedz to, ostempluj przegląd (krok 9) i
   zatrzymaj się. Nie wymyślaj wyniku, żeby mieć co zgłosić.
 
-## 7. Raport (jeszcze nie edytuj)
+## 7. Raport
 
-Numerowana lista, żeby użytkownik mógł wybrać:
+Numerowana lista, żeby użytkownik mógł wskazać wynik numerem:
 
     **N. [category][H|M|L][✓|✗] <sekcja planu lub faza> — krótki tytuł**
     ========== why ==========
@@ -122,12 +124,10 @@ przeczytano lub zgrepowano, i co wróciło. Dla innych kategorii pomiń jego ban
 
 Bez bloków diff. Proza planu źle czyta się jako diff; pole `fix` niesie zmianę.
 
-Zakończ: "Which to apply? (e.g. 1,3,5 / all / recommended / none)"
-
 ## 8. Zastosuj — wplataj, nigdy nie dopisuj
 
-Zastosuj tylko wyniki wybrane przez użytkownika, wg słów wyboru z pliku
-wspólnego.
+Zaraz po raporcie, bez pytania, zastosuj każdy wynik `✓`. Wyników `✗` nie
+dotykaj przed odpowiedzią użytkownika (krok 10).
 
 Plan ma wyjść tak, jakby od początku był tak napisany:
 
@@ -139,8 +139,9 @@ Plan ma wyjść tak, jakby od początku był tak napisany:
   nie oznaczony "dropped".
 - Żadnego śladu przeglądu w treści planu: bez "(fixed in review)", bez sekcji
   "Review findings", bez datowanej adnotacji przy poprawce.
-- Wyjątek: alternatywa odrzucona przez użytkownika trafia do **Key decisions**
-  jako odrzucona opcja z powodem. Ta sekcja istnieje dokładnie po to.
+- Wyjątek: alternatywa pominięta w odpowiedzi użytkownika (wybrał inne numery
+  lub `none`) trafia do **Key decisions** jako odrzucona opcja z powodem. Ta
+  sekcja istnieje dokładnie po to.
 - **Decisions log** jest append-only i należy do implementacji. Wyniki przeglądu
   nigdy tam nie idą.
 - Każdą nietkniętą sekcję zostaw bajt w bajt. Nie zawijaj, nie zmieniaj wcięć
@@ -155,5 +156,17 @@ Zawsze, nawet gdy nic nie znaleziono i nic nie zastosowano:
   starszy niż ta konwencja.
 - Podbij `_Last updated:_` tylko, jeśli treść pliku się zmieniła.
 
-Potem zgłoś: które wyniki zastosowano, które pominięto i co plik planu teraz
-mówi. Bez commita — reguły skilla plan obowiązują.
+## 10. Podsumowanie i decyzje
+
+Potwierdź w jednej linii, które wyniki zastosowano. Osobno zgłoś każdy `✓`,
+którego nie dało się zastosować tak, jak opisuje raport, z powodem.
+
+Potem lista decyzji: każdy wynik `✗`, jedna linia — numer z raportu, krótki
+tytuł, pytanie z rekomendacją. Bez powtarzania pól raportu. Zakończ: "Which to
+apply? (e.g. 2,4 / all / none)" — `all` to każdy wynik z tej listy. Brak `✗` —
+zakończ na potwierdzeniu.
+
+Po odpowiedzi wpleć wybrane wyniki regułami kroku 8, sprawdź, czy nie psują
+czegoś już zastosowanego, i podbij `_Last updated:_`, jeśli treść się zmieniła.
+
+Bez commita — reguły skilla plan obowiązują.
