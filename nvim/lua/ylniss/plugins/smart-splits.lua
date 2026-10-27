@@ -4,6 +4,8 @@
 -- ========================================================
 return {
 	"mrjones2014/smart-splits.nvim",
+	-- v3 needs the unstable backend-wezterm plugin to set IS_NVIM
+	tag = "v2.1.1-final",
 	event = "VeryLazy",
 	config = function()
 		local ss = require("smart-splits")

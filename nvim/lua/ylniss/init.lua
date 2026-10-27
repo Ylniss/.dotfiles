@@ -17,7 +17,7 @@ if not vim.uv.fs_stat(lazy_path) then
 	end
 end
 vim.opt.rtp:prepend(lazy_path)
-require("lazy").setup({ import = "ylniss.plugins" })
+require("lazy").setup({ import = "ylniss.plugins" }, { rocks = { enabled = false } })
 
 require("ylniss.remap")
 require("ylniss.indent")
