@@ -10,9 +10,10 @@ argument-hint: "[plan]"
 # Plan review
 
 Przejrzyj plan napisany przez skill plan, zanim /phase włoży w niego pracę.
-Najpierw raport, potem od razu, bez pytania, zastosuj każdy wynik `✓`; wyniki
-`✗` czekają na decyzję użytkownika. Ten skill edytuje plik planu i nic więcej —
-nigdy nie dotyka kodu.
+Najpierw raport, potem od razu, bez pytania, zastosuj każdy wynik z
+rekomendacją (`✓`), także taki, który zmienia decyzję projektową planu. Na
+decyzję użytkownika czekają tylko wyniki bez rekomendacji (`✗`). Ten skill
+edytuje plik planu i nic więcej — nigdy nie dotyka kodu.
 
 Najlepiej uruchomić w świeżym kontekście — po `/clear` lub kompaktowaniu. Sesja,
 która napisała plan, ma skłonność go zatwierdzać. To rada, nie bramka.
@@ -93,12 +94,16 @@ to, co zapisany plan czyni widocznym.
 - Szereguj wg wpływu: najpierw to, co zmarnowałoby najwięcej pracy.
 - Nadaj każdemu wynikowi pewność: H, M lub L. Dla `claim` H znaczy, że dowód
   rozstrzyga.
-- Nadaj flagę rekomendacji. `✓` znaczy "stosuję od razu": pewność H, zysk
-  realny, ryzyko dla planu niskie. `✗` znaczy "pytam": każda `alternative`,
-  każdy wynik z pewnością M lub L i wszystko oparte na założeniu, którego nie
-  dało się zweryfikować.
-- `✗` zgłaszaj tylko, gdy jest wart decyzji użytkownika. Czysty gust i powtórka
-  wyboru, który plan już uzasadnia, nie trafiają do raportu.
+- Nadaj flagę rekomendacji. `✓` znaczy "stosuję od razu": masz rekomendację —
+  poprawkę faktu albo jedną z opcji, którą wybierasz, przy dowolnej pewności i
+  także wtedy, gdy zmienia decyzję projektową planu. `✗` znaczy "pytam": nie
+  masz rekomendacji, bo wybór zależy od zamiaru użytkownika, którego plan nie
+  wypowiada, albo od założenia, którego nie dało się zweryfikować.
+- Wynik z opcjami nazywa w polu `fix` opcję, którą wprowadzasz, i odrzucane.
+  Alternatywa, której nie rekomendujesz, to też `✓`: trafia do **Key
+  decisions** jako odrzucona opcja z powodem.
+- Czysty gust i powtórka wyboru, który plan już uzasadnia, nie trafiają do
+  raportu.
 - Jeśli nie ma nic wartego zmiany, powiedz to, ostempluj przegląd (krok 9) i
   zatrzymaj się. Nie wymyślaj wyniku, żeby mieć co zgłosić.
 
@@ -139,9 +144,10 @@ Plan ma wyjść tak, jakby od początku był tak napisany:
   nie oznaczony "dropped".
 - Żadnego śladu przeglądu w treści planu: bez "(fixed in review)", bez sekcji
   "Review findings", bez datowanej adnotacji przy poprawce.
-- Wyjątek: alternatywa pominięta w odpowiedzi użytkownika (wybrał inne numery
-  lub `none`) trafia do **Key decisions** jako odrzucona opcja z powodem. Ta
-  sekcja istnieje dokładnie po to.
+- Wyjątek: odrzucona opcja wyniku — nierekomendowana opcja `✓`, alternatywa,
+  której nie rekomendujesz, lub opcja `✗`, której użytkownik nie wybrał — trafia
+  do **Key decisions** jako "Rejected: …" z powodem, przy decyzji, której
+  dotyczy. Ta sekcja istnieje dokładnie po to.
 - **Decisions log** jest append-only i należy do implementacji. Wyniki przeglądu
   nigdy tam nie idą.
 - Każdą nietkniętą sekcję zostaw bajt w bajt. Nie zawijaj, nie zmieniaj wcięć
@@ -158,15 +164,23 @@ Zawsze, nawet gdy nic nie znaleziono i nic nie zastosowano:
 
 ## 10. Podsumowanie i decyzje
 
-Potwierdź w jednej linii, które wyniki zastosowano. Osobno zgłoś każdy `✓`,
-którego nie dało się zastosować tak, jak opisuje raport, z powodem.
+Zastosowane wyniki wypisz w dwóch grupach:
 
-Potem lista decyzji: każdy wynik `✗`, jedna linia — numer z raportu, krótki
-tytuł, pytanie z rekomendacją. Bez powtarzania pól raportu. Zakończ: "Which to
-apply? (e.g. 2,4 / all / none)" — `all` to każdy wynik z tej listy. Brak `✗` —
-zakończ na potwierdzeniu.
+- **Poprawki faktów** — jedna linia z numerami.
+- **Decyzje podjęte za użytkownika** — każdy `✓`, który zmienia lub dopowiada
+  decyzję projektową, jedna linia: numer i wprowadzona opcja.
 
-Po odpowiedzi wpleć wybrane wyniki regułami kroku 8, sprawdź, czy nie psują
-czegoś już zastosowanego, i podbij `_Last updated:_`, jeśli treść się zmieniła.
+Osobno zgłoś każdy `✓`, którego nie dało się zastosować tak, jak opisuje
+raport, z powodem.
+
+Potem lista pytań: każdy wynik `✗`, jedna linia — numer z raportu, krótki
+tytuł, pytanie i opcje. Bez powtarzania pól raportu. Zakończ: "Which to apply,
+or which decision to reverse? (e.g. 2,4 / none)". Brak `✗` — zakończ: "Reverse
+any decision? (e.g. 2,4 / none)".
+
+Po odpowiedzi wpleć wybrane wyniki regułami kroku 8. Cofnięta decyzja wraca do
+brzmienia sprzed przeglądu, a jej dopisana odrzucona opcja znika z **Key
+decisions**. Sprawdź, czy nic nie psuje już zastosowanego, i podbij `_Last
+updated:_`, jeśli treść się zmieniła.
 
 Bez commita — reguły skilla plan obowiązują.
