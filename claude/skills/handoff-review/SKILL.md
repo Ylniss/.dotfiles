@@ -16,9 +16,10 @@ Porównaj zapisany handoff z sesją, która go wytworzyła. Dwa cele, równie wa
 
 Późniejsza decyzja zawsze nadpisuje wcześniejszą. Nigdy odwrotnie.
 
-Najpierw raport, potem od razu, bez pytania, zastosuj pewne poprawki. O niepewne
-zapytaj na końcu i nie edytuj ich przed odpowiedzią. Skill edytuje handoff i pliki notatek zapisane razem
-z nim, i nic więcej — nigdy kodu.
+Najpierw raport, potem od razu, bez pytania, zastosuj każdy wynik: pewny wg
+poprawki, niepewny wg rekomendacji. Niepewne zgłoś na końcu do potwierdzenia.
+Skill edytuje handoff i pliki notatek zapisane razem z nim, i nic więcej —
+nigdy kodu.
 
 Przed raportem wczytaj `~/.claude/skills/_shared/report.md`. Obowiązują z niego
 tylko sekcje Tagi nagłówka i Format ciała.
@@ -116,7 +117,7 @@ zmieniła. Zanim zgłosisz jakikolwiek wynik:
   wersja pośrednia.
 - Gdy dwie wypowiedzi się kłócą i nie da się ustalić, która jest późniejsza
   albo czy późniejsza naprawdę dotyczy tego samego, nie rozstrzygaj. Zgłoś jako
-  `open` i zapytaj.
+  `open` bez rekomendacji i zapytaj.
 
 Wynik bez pola `evidence` wskazującego ostatnią wypowiedź w temacie nie nadaje
 się do zgłoszenia — odrzuć go.
@@ -128,10 +129,11 @@ się do zgłoszenia — odrzuć go.
 - Szereguj wg szkody: najpierw to, co kazałoby zbudować coś innego, niż
   ustalono.
 - Pewność H tylko, gdy ostatnie słowo w temacie jest jednoznaczne.
-- `✓` znaczy "stosuję od razu": `missing`, `stale`, `leftover` i `conflict` z
+- `✓` znaczy "pewna poprawka": `missing`, `stale`, `leftover` i `conflict` z
   pewnością H.
-- `✗` znaczy "pytam": każdy wynik `invented`, `consequence` i `open`, oraz każdy
-  wynik z pewnością M lub L. To decyzje użytkownika, nie poprawki.
+- `✗` znaczy "decyzja wg rekomendacji": każdy wynik `invented`, `consequence` i
+  `open`, oraz każdy wynik z pewnością M lub L. To decyzje użytkownika:
+  stosujesz rekomendację od razu, a on może ją zmienić.
 - Jeśli handoff zgadza się z sesją, powiedz to i zatrzymaj się. Nie wymyślaj
   wyniku, żeby mieć co zgłosić.
 
@@ -147,7 +149,7 @@ Dwie numerowane listy w jednej sekwencji numerów: najpierw `✓`, potem `✗`.
     także wcześniejsza wersja, którą handoff niósł>
     ========== fix ==========
     <dla ✓: co zmienię i w których plikach, jedna linia; dla ✗: pytanie do
-    użytkownika z rekomendacją>
+    użytkownika i rekomendacja, którą zastosuję>
 
 Wskazuj sekcję handoffu, nie numer linii.
 
@@ -155,10 +157,10 @@ Po ostatnim wyniku wypisz w jednej linii na klasę, które decyzje nadpisane
 sprawdzono i potwierdzono, że handoff niesie ich wersję końcową. To dowodzi, że
 pułapka z kroku 5 była sprawdzona.
 
-## 8. Zastosuj pewne — wplataj, nigdy nie dopisuj
+## 8. Zastosuj wszystko — wplataj, nigdy nie dopisuj
 
-Zaraz po raporcie, bez pytania, zastosuj każdy wynik `✓`. Wyników `✗` nie
-dotykaj.
+Zaraz po raporcie, bez pytania, zastosuj każdy wynik: `✓` wg poprawki, `✗` wg
+rekomendacji. Nie stosuj tylko wyniku bez rekomendacji (krok 5).
 
 - Popraw zdanie w miejscu, w jego sekcji. Bez sekcji "Poprawki" i bez adnotacji
   "(zmienione po przeglądzie)".
@@ -173,14 +175,16 @@ stworzyły nowej sprzeczności.
 
 ## 9. Podsumowanie i decyzje
 
-Potwierdź w jednej linii, które wyniki zastosowano. Osobno zgłoś każdy `✓`,
+Potwierdź w jednej linii, które wyniki zastosowano. Osobno zgłoś każdy wynik,
 którego nie dało się zastosować tak, jak opisuje raport, z powodem.
 
 Potem lista decyzji: każdy wynik `✗`, jedna linia — numer z raportu, krótki
-tytuł, pytanie z rekomendacją. Bez powtarzania pól raportu. Zakończ prośbą o
-odpowiedzi po numerach. Brak `✗` — zakończ na potwierdzeniu.
+tytuł, zastosowana rekomendacja; wynik bez rekomendacji z samym pytaniem. Bez
+powtarzania pól raportu. Zakończ prośbą o zmiany po numerach. Brak `✗` —
+zakończ na potwierdzeniu.
 
-Gdy użytkownik uzna zastosowaną poprawkę za błędną, cofnij ją w miejscu.
+Gdy użytkownik uzna zastosowaną poprawkę lub rekomendację za błędną, cofnij ją
+w miejscu.
 
 ## 10. Po odpowiedziach
 
