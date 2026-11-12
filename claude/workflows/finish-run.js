@@ -202,10 +202,14 @@ async function verifyAndRepair(step, firstResult, prompt, pointsFor) {
   }
 }
 
+// A path scope reviews whole files, so its file list cannot come from the diff.
+const scopeFiles = scope.filesCommand
+  ? `całe pliki z \`${scope.filesCommand}\``
+  : `pliki z \`${scope.diffCommand} --name-only\` i \`git ls-files --others --exclude-standard\``
+
 const splitPrompt = skill =>
   `Zaplanuj podział analizy skilla /${skill} na co najmniej 2 zadania dla równoległych analizatorów. ` +
-  `Przeczytaj ~/.claude/skills/${skill}/SKILL.md i zakres "${scope.desc}" ` +
-  `(pliki z \`${scope.diffCommand} --name-only\` i \`git ls-files --others --exclude-standard\`). ` +
+  `Przeczytaj ~/.claude/skills/${skill}/SKILL.md i zakres "${scope.desc}" (${scopeFiles}). ` +
   'Dziel po plikach, po kategoriach skilla albo po obu, tak by zadania się nie dublowały, a razem pokrywały cały zakres ' +
   'i wszystkie kategorie skilla. Niczego nie analizuj i nie zmieniaj.'
 
@@ -306,7 +310,8 @@ async function runStage({ skills, applyModel }) {
   if (failed) throw failed.reason
 
   const applyAgent = applyModel ? { ...reviewAgent, model: applyModel } : reviewAgent
-  const merged = await runAgent(step, `${step} scalenie`, mergePrompt(step, settled.map(s => s.value)), { ...applyAgent, schema: MERGE_RESULT })
+  // The merge carries every finding in full; a lighter apply model drops them on a large scope.
+  const merged = await runAgent(step, `${step} scalenie`, mergePrompt(step, settled.map(s => s.value)), { ...reviewAgent, schema: MERGE_RESULT })
   const firstResult = await applyFindings(step, applyAgent, merged.findings)
   const result = await verifyAndRepair(step, firstResult, applyPrompt(merged.findings), r =>
     r.applied.length

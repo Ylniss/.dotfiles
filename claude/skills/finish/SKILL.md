@@ -5,7 +5,7 @@ description: >
   równoległe analizy skilli etapu, scalenie, równoległe zastosowanie ✓ po
   rozłącznych plikach i weryfikacja etapu z naprawą.
   Użyj, gdy użytkownik wywołuje "/finish".
-argument-hint: "[branch bazowy]"
+argument-hint: "[branch bazowy | ścieżki lub opis plików]"
 ---
 
 # Finish
@@ -16,20 +16,31 @@ argument-hint: "[branch bazowy]"
   branch bazowy: /finish <branch>.” i zakończ. W przeciwnym razie zakres to
   `diffCommand` = `git diff HEAD`, `desc` = „niezacommitowane zmiany i nowe
   nieśledzone pliki”.
-- Z branchem: weź `git merge-base <branch> HEAD`, nie czubek brancha — czubek,
-  który poszedł dalej, wniósłby do diffu cudze commity na odwrót.
+- Argument to rev (`git rev-parse --verify --quiet "<argument>^{commit}"`
+  przechodzi) → branch bazowy: weź `git merge-base <branch> HEAD`, nie czubek
+  brancha — czubek, który poszedł dalej, wniósłby do diffu cudze commity na
+  odwrót.
   - Błąd → wypisz „Brak merge-base z <branch>: <stderr>” i zakończ.
   - `git diff --quiet <sha>` bez różnic → wypisz „Brak zmian względem
     <branch>.” i zakończ.
   - W przeciwnym razie `diffCommand` = `git diff <sha>`, `desc` = „zmiany od
     merge-base <sha> z <branch>, łącznie z niezacommitowanymi”.
+- Inny argument to ścieżki albo opis plików → przegląd całych plików, nie
+  diffu:
+  - Zamień argument na pathspeki gita. `filesCommand` =
+    `git ls-files --cached --others --exclude-standard -- <pathspeki>`.
+  - Pusta lista → wypisz „Brak plików dla: <argument>.” i zakończ.
+  - `diffCommand` = `git diff HEAD`, `desc` = „całe pliki <opis>: <N> plików,
+    <L> linii; przegląd wskazanej ścieżki, nie diffu”.
+  - Przed startem podaj w jednej linii pathspeki oraz liczbę plików i linii.
 
 ## 2. Uruchom workflow
 
 - Wczytaj `~/.claude/skills/finish/finish.json`.
 - Uruchom Workflow z `name` = `finish-run` i `args`:
   - `finish` — zawartość `finish.json`,
-  - `scope` — `{ diffCommand, desc }` z kroku 1,
+  - `scope` — `{ diffCommand, desc }` z kroku 1, przy ścieżkach także
+    `filesCommand`,
   - `reviewAgent` — `{}`, agenci dziedziczą model i effort sesji; etap z
     `applyModel` stosuje wyniki tym modelem,
   - `where` — `finish`.
