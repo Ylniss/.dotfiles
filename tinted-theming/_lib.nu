@@ -4,7 +4,7 @@
 
 export def palette [] {
   let slug = ($env.TINTY_SCHEME_SLUG? | default (^tinty current | str trim | str replace -r '^base16-' ''))
-  let path = $"($env.HOME)/.local/share/tinted-theming/tinty/repos/schemes/base16/($slug).yaml"
+  let path = $"($env.HOME)/.local/share/tinted-theming/tinty/scheme-repos/schemes/base16/($slug).yaml"
   (open $path).palette
 }
 

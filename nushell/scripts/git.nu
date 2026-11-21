@@ -28,7 +28,7 @@ def gitd --wrapped [...opts] {
   }
 }
 
-def gitc --wrapped [...opts, message?: string] {
+def gitc --wrapped [message?: string, ...opts] {
   if ($message | is-not-empty) {
     git commit ...$opts -m $message 
   } else {
