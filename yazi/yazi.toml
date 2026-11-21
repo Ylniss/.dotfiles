@@ -88,6 +88,11 @@ use = "onlyoffice"
 url = "*.xlsx"
 use = "onlyoffice"
 
+# The preset archive rule skips disk images, but the extract opener's 7z unpacks ISO fine
+[[open.prepend_rules]]
+mime = "application/iso9660-image"
+use = ["extract", "reveal"]
+
 [[open.prepend_rules]]
 mime = "image/svg+xml"
 use = "inkscape"
